@@ -1,0 +1,25 @@
+function/method comments:
+/*********************************************************/
+//<function>(<params>)
+//
+//input <params>    (if no input not needed)
+//=<what the input is from/what it is>
+//
+//output            (if no output not needed)
+//=<what the output is for>
+//
+//<explaination of the function>
+/*********************************************************/
+
+module comments:
+/*********************************************************/
+//<module>(.mjs)
+//written by <author>
+//collaborators: <list of collaborators>
+//started <start date>
+//updated <date of most recent change>
+//<explaination of module>
+/*********************************************************/
+
+naming conventions:
+FB_<function> = Firebase function
