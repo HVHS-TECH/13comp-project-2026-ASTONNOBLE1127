@@ -20,6 +20,21 @@ export default class Page {
     /*****************************************************/
     constructor() {
         this.#element = document.createElement('div');
+        this.#element.appendChild(this.prepareHTML());
+    }
+
+    /*****************************************************/
+    //pageChangeHandler(_parent)
+    //
+    //input _parent
+    //=the parent element to append to
+    //
+    //changes the title, and calls the display of text
+    /*****************************************************/
+    async pageChangeHandler(_parent) {
+        document.title = this.getPageID();
+        _parent.appendChild(this.#element);
+        this.displayText();
     }
 
     /*****************************************************/
@@ -49,7 +64,7 @@ export default class Page {
     makeElement(_type,_attributes = {},_children = []) {
         let ELEMENT = document.createElement(_type)
         Object.keys(_attributes).forEach(
-            _key => ELEMENT.setAttribute(key,_attributes[key]))
+            _key => ELEMENT.setAttribute(_key,_attributes[_key]))
         _children.forEach(_child => ELEMENT.appendChild(_child))
         return ELEMENT
     }

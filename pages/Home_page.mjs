@@ -32,7 +32,7 @@ export default class Home_page extends Page {
                 id: 'description'
             }),
             this.makeElement('button',{
-                id= 'login_button'
+                id: 'login_button'
             })
         ])
     }
