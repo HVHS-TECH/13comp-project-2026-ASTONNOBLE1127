@@ -7,12 +7,15 @@
         <script type="module">
             import Content_manager from "./controllers/Content_manager.mjs"
             import FB_IO from "./controllers/FB_IO.mjs"
+            import Page from "./pages/Page.mjs"
+            import Home_page from "./pages/Home_page.mjs"
             import {
                 INSTANCES,
                 CONTENT_MANAGER_INSTANCE,
                 FB_IO_INSTANCE
             } from "./controllers/Instance_vault.mjs"
-            
+            INSTANCES[CONTENT_MANAGER_INSTANCE] = new Content_manager(document.getElementById('page'))
+            INSTANCES[CONTENT_MANAGER_INSTANCE].changePage(Home_page)
         </script>
     </body>
 </html>

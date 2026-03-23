@@ -8,8 +8,7 @@
 
 export default class Content_manager {
     /*****************************************************/
-    //private variables 
-    //(dunno if variable is the correct term)
+    //private fields
     /*****************************************************/
     //#root is to reference the root element
     #root
