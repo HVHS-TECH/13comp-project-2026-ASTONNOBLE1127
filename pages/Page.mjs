@@ -99,6 +99,12 @@ export default class Page {
             )
             element.push(this.makeElement('br'))
         })
+        element.push(
+            this.makeElement('button',{
+                id: 'submit',
+                type: 'submit'
+            })
+        )
         this.appendForm(element)
     }
 

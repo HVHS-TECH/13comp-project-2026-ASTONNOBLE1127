@@ -13,6 +13,16 @@
                 CONTENT_MANAGER_INSTANCE,
                 FB_IO_INSTANCE
             } from "./controllers/Instance_vault.mjs"
+            INSTANCES[FB_IO_INSTANCE] = new FB_IO({
+                apiKey: "AIzaSyDE84nef0feckye-XKyG92DPC51wjpVSPQ",
+                authDomain: "comp-aston-noble-52b63.firebaseapp.com",
+                databaseURL: "https://comp-aston-noble-52b63-default-rtdb.asia-southeast1.firebasedatabase.app",
+                projectId: "comp-aston-noble-52b63",
+                storageBucket: "comp-aston-noble-52b63.firebasestorage.app",
+                messagingSenderId: "811507469212",
+                appId: "1:811507469212:web:39d407634945d7b81d1659",
+                measurementId: "G-LGH84WESYC"
+            })
             INSTANCES[CONTENT_MANAGER_INSTANCE] = new Content_manager(document.getElementById('page'))
             INSTANCES[CONTENT_MANAGER_INSTANCE].changePage(Home_page)
         </script>

@@ -33,12 +33,7 @@ export default class Registration_page extends Page {
             }),
             this.makeElement('form',{
                 id: 'registration-form'
-            },[
-                this.makeElement('button',{
-                    id: 'submit',
-                    type: 'submit'
-                })
-            ])
+            })
         ])
     }
     
@@ -52,6 +47,7 @@ export default class Registration_page extends Page {
         document.getElementById('description').textContent = "Fill the fields below to register"
         this.createForm({cheese:'',cheddar:''},{cheese:'number'})
         document.getElementById('registration-form').addEventListener('submit', (_event) => this.attemptRegister(_event));
+        document.getElementById('submit').innerHTML = 'submit'
 
     }
 
