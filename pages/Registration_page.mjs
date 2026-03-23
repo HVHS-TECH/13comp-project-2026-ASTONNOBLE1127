@@ -59,11 +59,15 @@ export default class Registration_page extends Page {
     //
     //makes the page not reload and attemps to register
     /*****************************************************/
-    attemptRegister(_event){
+    async attemptRegister(_event){
         _event.preventDefault();
+        let registrationFields = {}
         const FORMFIELDS = document.querySelectorAll('.field');
-        FORMFIELDS.forEach(_el =>
-            console.log(_el.value))
+        FORMFIELDS.forEach(_el => {
+            if (_el.value.replace(/\s+/g, "").length > 0) registrationFields[_el.id] = _el.value
+            else return
+        })
+        if (Object.keys(registrationFields).length == FORMFIELDS.length) alert(registrationFields)
     }
 
     /*****************************************************/
