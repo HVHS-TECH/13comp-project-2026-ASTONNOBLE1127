@@ -70,6 +70,54 @@ export default class Page {
     }
 
     /*****************************************************/
+    //createForm(_ID = [],_inputType = [])
+    //
+    //input _ID
+    //=ID and label of the new element
+    //input inputType
+    //=the type of input
+    //
+    //makes a form to prevent lots of repeating
+    /*****************************************************/
+    createForm(_ID = {},_inputType = {}) {
+        let element = []
+        Object.keys(_ID).forEach(_id => {
+            element.push(
+                this.makeElement('label',{
+                    id: _id,
+                    class: 'label'
+                })
+            )
+            element.push(
+                this.makeElement('input',{
+                    id: _id,
+                    class: 'field',
+                    placeholder: _id,
+                    value: _ID[_id],
+                    type: _inputType[_id]
+                })
+            )
+            element.push(this.makeElement('br'))
+        })
+        this.appendForm(element)
+    }
+
+    /*****************************************************/
+    //appendForm(_form)
+    //
+    //input _form
+    //=the form to append
+    //
+    //appends the form
+    /*****************************************************/
+    appendForm(_form) {
+        _form.forEach(_el =>
+        document.querySelector('form').appendChild(_el))
+        document.querySelectorAll(".label").forEach(_el => 
+            _el.innerHTML = _el.id + ": ")
+    }
+
+    /*****************************************************/
     //abstract methods
     /*****************************************************/
     prepareHTML(){};

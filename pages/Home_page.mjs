@@ -28,7 +28,7 @@ export default class Home_page extends Page {
     //
     //prepares the HTML for creation
     /*****************************************************/
-    prepareHTML() {
+    prepareHTML(_form) {
         return this.makeElement('div',{},[
             this.makeElement('h1',{
                 id: 'title'
