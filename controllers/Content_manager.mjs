@@ -2,7 +2,7 @@
 //Content_manager.mjs
 //written by Aston Noble
 //started 22/03/2026
-//updated 22/03/2026
+//updated 23/03/2026
 //manages the page changes
 /*********************************************************/
 

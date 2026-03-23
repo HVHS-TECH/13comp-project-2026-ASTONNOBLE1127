@@ -10,6 +10,11 @@
 //imports
 /*********************************************************/
 import Page from "./Page.mjs"
+import Registration_page from "./Registration_page.mjs";
+import {
+    INSTANCES,
+    CONTENT_MANAGER_INSTANCE
+} from "../controllers/Instance_vault.mjs"
 
 export default class Home_page extends Page {
     /*****************************************************/
@@ -46,6 +51,8 @@ export default class Home_page extends Page {
         document.getElementById('title').textContent = "Welcome to the Home Page!";
         document.getElementById('description').textContent = "click the button below to login"
         document.getElementById('login_button').textContent = "login"
+        document.getElementById('login_button').onclick = () =>
+            INSTANCES[CONTENT_MANAGER_INSTANCE].changePage(Registration_page)
     }
 
     /*****************************************************/
