@@ -88,6 +88,7 @@ export default class Page {
                     class: 'label'
                 })
             )
+            if (_inputType[_id] != 'dropdown') {
             element.push(
                 this.makeElement('input',{
                     id: _id,
@@ -97,6 +98,20 @@ export default class Page {
                     type: _inputType[_id]
                 })
             )
+        } else {
+            let dropdownEls = []
+            Object.keys(_ID[_id]).forEach(_option =>{
+                    dropdownEls.push(this.makeElement('option',{class:"option",id: _option}))
+                })
+            element.push(
+                this.makeElement('select',{
+                    id: _id,
+                    class: 'field',
+                    placeholder: _id,
+                    type: _inputType[_id]
+                },dropdownEls)
+            )
+        }
             element.push(this.makeElement('br'))
         })
         element.push(
@@ -121,6 +136,8 @@ export default class Page {
         document.querySelector('form').appendChild(_el))
         document.querySelectorAll(".label").forEach(_el => 
             _el.innerHTML = _el.id + ": ")
+        document.querySelectorAll('.option').forEach(_el =>
+            _el.innerHTML = _el.id)
     }
 
     /*****************************************************/

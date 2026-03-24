@@ -94,40 +94,6 @@ export default class FB_IO {
     }
 
     /*****************************************************/
-    //isHigh(_input,_quantity)
-    //
-    //input _input
-    //=boolean with true for high and false for low
-    //input _quantity
-    //=quantity to read
-    //
-    //output
-    //=limitToFirst(_quantity) or limitToLast(_quantity)
-    //
-    //used for the FB_SortedRead method
-    /*****************************************************/
-    isHigh(_input,_quantity) {
-        if (_input == true) return limitToFirst(_quantity)
-        else return limitToLast(_quantity)
-    }
-
-    /*****************************************************/
-    //isOrderChild(_input)
-    //
-    //input _input
-    //=boolean with true for child and false for key
-    //
-    //output
-    //=orderByChild() or orderByKey()
-    //
-    //used for the FB_SortedRead method
-    /*****************************************************/
-    isOrderChild(_input) {
-        if (_input == true) return orderByChild()
-        else return orderByKey()
-    }
-    
-    /*****************************************************/
     //FB_SortedRead(_path,_side,_quantity,_orderBy)
     //
     //input _path
@@ -183,6 +149,85 @@ export default class FB_IO {
         onValue(FB_REF, (snapshot) => {
             const FB_DATA = snapshot.val();
             _method(FB_DATA);
+        })
+    }
+    
+    /*****************************************************/
+    //isHigh(_input,_quantity)
+    //
+    //input _input
+    //=boolean with true for high and false for low
+    //input _quantity
+    //=quantity to read
+    //
+    //output
+    //=limitToFirst(_quantity) or limitToLast(_quantity)
+    //
+    //used for the FB_SortedRead method
+    /*****************************************************/
+    isHigh(_input,_quantity) {
+        if (_input == true) return limitToFirst(_quantity)
+        else return limitToLast(_quantity)
+    }
+
+    /*****************************************************/
+    //isOrderChild(_input)
+    //
+    //input _input
+    //=boolean with true for child and false for key
+    //
+    //output
+    //=orderByChild() or orderByKey()
+    //
+    //used for the FB_SortedRead method
+    /*****************************************************/
+    isOrderChild(_input) {
+        if (_input == true) return orderByChild()
+        else return orderByKey()
+    }
+    
+    /*****************************************************/
+    //
+    //google auth methods
+    //
+    /*****************************************************/
+
+    /*****************************************************/
+    //googleAuthenticate()
+    //
+    //authenticates the user to the firebase
+    /*****************************************************/
+    async googleAuthenticate() {
+        const PROVIDER = new GoogleAuthProvider()
+        PROVIDER.setCustomParameters({prompt: 'select_account'})
+        const AUTH = await signInWithPopup(getAuth(), PROVIDER)
+        if (await this.FB_Read("users/"+AUTH.user.uid) == null) return true 
+        else return false
+    }
+
+    /*****************************************************/
+    //FB_Register(_formFields)
+    //
+    //input _formFields
+    //=the fields of the form calling the function
+    //
+    //registers the users details to the firebase
+    /*****************************************************/
+    FB_Register(_formFields){
+        onAuthStateChanged(getAuth(),_user => {
+            let userDetails = {
+                [_user.uid]:{
+                    private: {
+                        email: _user.email
+                    },
+                    publicFixed: {
+                        PhotoURL: _user.photoURL,
+                        uid: _user.uid
+                    },
+                    public: _formFields
+                }
+            }
+            this.FB_Write("/users/",userDetails);
         })
     }
 }
