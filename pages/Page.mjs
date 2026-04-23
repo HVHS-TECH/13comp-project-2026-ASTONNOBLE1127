@@ -2,7 +2,7 @@
 //Page.mjs
 //written by Aston Noble
 //started 23/03/2026
-//updated 23/03/2026
+//updated 23/04/2026
 //parent class for the pages
 /*********************************************************/
 
@@ -74,7 +74,7 @@ export default class Page {
     //
     //input _ID
     //=ID and label of the new element
-    //input inputType
+    //input _inputType
     //=the type of input
     //
     //makes a form to prevent lots of repeating
@@ -139,7 +139,7 @@ export default class Page {
         document.querySelectorAll('.option').forEach(_el =>
             _el.innerHTML = _el.id)
     }
-
+    
     /*****************************************************/
     //abstract methods
     /*****************************************************/

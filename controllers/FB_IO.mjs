@@ -32,6 +32,8 @@ import {
     onAuthStateChanged,
     signOut
 } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+import { CONTENT_MANAGER_INSTANCE, INSTANCES } from "./Instance_vault.mjs";
+import Home_page from "../pages/Home_page.mjs"
 
 export default class FB_IO {
     /*****************************************************/
@@ -54,8 +56,10 @@ export default class FB_IO {
     //
     //initializes the firebase
     /*****************************************************/
-    FB_Init(_FB_Config) {
+    async FB_Init(_FB_Config) {
         getDatabase(initializeApp(_FB_Config));
+        signOut(getAuth())
+        this.userCheck()
     }
 
     /*****************************************************/
@@ -203,6 +207,25 @@ export default class FB_IO {
         const AUTH = await signInWithPopup(getAuth(), PROVIDER)
         if (await this.FB_Read("users/"+AUTH.user.uid) == null) return true 
         else return false
+    }
+
+    /*****************************************************/
+    //userCheck(_function)
+    //
+    //input _function
+    //=the function to call when checked
+    //
+    //calls onAuthStateChange
+    /*****************************************************/
+    userCheck(_function) {
+        onAuthStateChanged(getAuth(),async _user => {
+            if(_user != null) {
+                if (await this.FB_Read(`/users/${_user.uid}/publicFixed/uid`) == _user.uid) {
+                    await console.log('success')
+                    INSTANCES[CONTENT_MANAGER_INSTANCE].changePage(Home_page)
+                }
+            }
+        })
     }
 
     /*****************************************************/

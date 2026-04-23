@@ -6,7 +6,7 @@
             import Content_manager from "./controllers/Content_manager.mjs"
             import FB_IO from "./controllers/FB_IO.mjs"
             import Page from "./pages/Page.mjs"
-            import Home_page from "./pages/Home_page.mjs"
+            import Landing_page from "./pages/Landing_page.mjs"
             import Registration_page from './pages/Registration_page.mjs'
             import {
                 INSTANCES,
@@ -24,7 +24,7 @@
                 measurementId: "G-LGH84WESYC"
             })
             INSTANCES[CONTENT_MANAGER_INSTANCE] = new Content_manager(document.getElementById('page'))
-            INSTANCES[CONTENT_MANAGER_INSTANCE].changePage(Home_page)
+            INSTANCES[CONTENT_MANAGER_INSTANCE].changePage(Landing_page)
         </script>
     </body>
 </html>

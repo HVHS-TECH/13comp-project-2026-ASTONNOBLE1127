@@ -1,16 +1,12 @@
 /*********************************************************/
 //Home_page.mjs
 //written by Aston Noble
-//started 23/03/2026
-//updated 23/03/2026
+//started 01/04/2026
+//updated 23/04/2026
 //home page class, makes the home page
 /*********************************************************/
 
-/*********************************************************/
-//imports
-/*********************************************************/
 import Page from "./Page.mjs"
-import Registration_page from "./Registration_page.mjs";
 import {
     INSTANCES,
     CONTENT_MANAGER_INSTANCE,
@@ -29,17 +25,12 @@ export default class Home_page extends Page {
     //
     //prepares the HTML for creation
     /*****************************************************/
-    prepareHTML(_form) {
+    prepareHTML() {
         return this.makeElement('div',{},[
-            this.makeElement('h1',{
-                id: 'title'
-            }),
-            this.makeElement('p',{
-                id: 'description'
-            }),
-            this.makeElement('button',{
-                id: 'login_button'
-            })
+            this.makeElement('div',{id:'header'},[]),
+            this.makeElement('div',{id:'body',class:'body'},[
+                this.makeElement('p',{})
+            ])
         ])
     }
 
@@ -49,13 +40,62 @@ export default class Home_page extends Page {
     //sets the text on the page and makes the buttons work
     /*****************************************************/
     displayText() {
-        document.getElementById('title').textContent = "Welcome to the Home Page!";
-        document.getElementById('description').textContent = "click the button below to login"
-        document.getElementById('login_button').textContent = "login"
-        document.getElementById('login_button').onclick = async () => {
-            if (await INSTANCES[FB_IO_INSTANCE].googleAuthenticate()) INSTANCES[CONTENT_MANAGER_INSTANCE].changePage(Registration_page)
-        }
+        this.createGates({mahjong:true,unnamed1:false},{mahjong:'unnamed.png',unnamed1:'unnamed1.png'})
     }
+    
+    /*****************************************************/
+    //createGates(_leaderboard,_thumbnail)
+    //
+    //input _leaderboard
+    //=does the game have a leaderboard
+    //input _thumbnail
+    //=the thumbnail and ID
+    //
+    //creates the thumbnail/gates to the games
+    /*****************************************************/
+    createGates(_leaderboard = {},_thumbnail = {}) {
+        let element = []
+        Object.keys(_thumbnail).forEach(_ID => {
+            if (_leaderboard[_ID] == true) {
+                console.log('yes board')
+                element.push(
+                    this.makeElement('div',{class:'gate'},[
+                        this.makeElement('img',{class:'thumb',src:`../${_thumbnail[_ID]}`}),
+                        this.makeElement('button',{class:'play',id:_ID}),
+                        this.makeElement('button',{class:'leaderboard',id:`${_ID}L`})
+                    ])
+                )
+            } else {
+                console.log('no board')
+                element.push(
+                    this.makeElement('div',{class:'gate'},[
+                        this.makeElement('img',{class:'thumb',src:`../${_thumbnail[_ID]}`}),
+                        this.makeElement('button',{class:'play',id:_ID})
+                    ])
+                )
+            }
+        })
+        this.appendGates(element)
+    }
+
+    /*****************************************************/
+    //appendGates(_gates)
+    //
+    //input _gates
+    //=the gates to append
+    //
+    //appends the gates to the body
+    /*****************************************************/
+    appendGates(_gates) {
+        console.log('appending')
+        _gates.forEach(_el => 
+            document.querySelector('.body').appendChild(_el))
+        document.querySelectorAll('.play').forEach(_el =>
+            _el.innerHTML = 'play')
+        document.querySelectorAll('.leaderboard').forEach(_el =>
+            _el.innerHTML = 'leaderboard')
+    }
+
 
     /*****************************************************/
     //getPageID()
