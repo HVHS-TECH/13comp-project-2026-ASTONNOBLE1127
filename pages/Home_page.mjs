@@ -2,11 +2,12 @@
 //Home_page.mjs
 //written by Aston Noble
 //started 01/04/2026
-//updated 23/04/2026
+//updated 25/04/2026
 //home page class, makes the home page
 /*********************************************************/
 
 import Page from "./Page.mjs"
+import Registration_page from "./Registration_page.mjs"
 import {
     INSTANCES,
     CONTENT_MANAGER_INSTANCE,
@@ -19,6 +20,14 @@ export default class Home_page extends Page {
     /*****************************************************/
     //ID of the page
     static #PAGEID = "Home_page"
+    //list of gates directing to
+    static #GATES = {
+        mahjong:{
+            page:Registration_page,
+            leaderboard:true,
+            thumbnail:'unnamed1.png'
+        }
+    }
 
     /*****************************************************/
     //prepareHTML()
@@ -52,7 +61,7 @@ export default class Home_page extends Page {
     //=the thumbnail and ID
     //
     //creates the thumbnail/gates to the games
-    /*****************************************************/
+    /*****************************************************
     createGates(_leaderboard = {},_thumbnail = {}) {
         let element = []
         Object.keys(_thumbnail).forEach(_ID => {
@@ -75,6 +84,27 @@ export default class Home_page extends Page {
         })
         this.appendGates(element)
     }
+*/
+    /*****************************************************/
+    //createGates()
+    //
+    //creates the thumbnail/gates to the games
+    /*****************************************************/
+    createGates() {
+        let element = []
+        Object.keys(Home_page.#GATES).forEach(_gate => {
+            let subElement = []
+            subElement.push(
+                this.makeElement('img',{
+                    class:'thumb',src:`../${Home_page.#GATES[_gate].thumbnail}`}),
+                this.makeElement('button',{class:'play',id:_gate})
+            )
+            if (Home_page.#GATES[_gate].leaderboard = true) {
+                subElement.push(this.makeElement('button',{class:'leaderboard',id:`${_gate}L`}))}
+            element.push(this.makeElement('div',{class:'gate'},subElement))
+        })
+        this.appendGates(element)
+    }
 
     /*****************************************************/
     //appendGates(_gates)
@@ -87,8 +117,10 @@ export default class Home_page extends Page {
     appendGates(_gates) {
         _gates.forEach(_el => 
             document.querySelector('.body').appendChild(_el))
-        document.querySelectorAll('.play').forEach(_el =>
-            _el.innerHTML = 'play')
+        document.querySelectorAll('.play').forEach(_el => {
+            _el.onclick = () => {
+                INSTANCES[CONTENT_MANAGER_INSTANCE].changePage(Home_page.#GATES[_el.id].page)}
+            _el.innerHTML = 'play'})
         document.querySelectorAll('.leaderboard').forEach(_el =>
             _el.innerHTML = 'leaderboard')
     }
