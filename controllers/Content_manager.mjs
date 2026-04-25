@@ -2,7 +2,7 @@
 //Content_manager.mjs
 //written by Aston Noble
 //started 22/03/2026
-//updated 23/03/2026
+//updated 25/04/2026
 //manages the page changes
 /*********************************************************/
 
@@ -41,5 +41,18 @@ export default class Content_manager {
         if (this.#currentPage) await this.#currentPage.cull()
         this.#currentPage = PAGE
         await PAGE.pageChangeHandler(this.#root)
+    }
+
+    /*****************************************************/
+    //makeHeader(_header)
+    //
+    //input _header
+    //=the header class to be displayed
+    //
+    //makes the header
+    /*****************************************************/
+    async makeHeader(_header){
+        const HEADER = await new _header();
+        await HEADER.pageChangeHandler(document.getElementById('header'))
     }
 }

@@ -2,7 +2,7 @@
 //FB_IO.mjs
 //written by Aston Noble
 //started 22/03/2026
-//updated 23/03/2026
+//updated 25/04/2026
 //holds all the firebase methods
 /*********************************************************/
 
@@ -34,6 +34,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
 import { CONTENT_MANAGER_INSTANCE, INSTANCES } from "./Instance_vault.mjs";
 import Home_page from "../pages/Home_page.mjs"
+import Landing_page from "../pages/Landing_page.mjs";
 
 export default class FB_IO {
     /*****************************************************/
@@ -58,7 +59,6 @@ export default class FB_IO {
     /*****************************************************/
     async FB_Init(_FB_Config) {
         getDatabase(initializeApp(_FB_Config));
-        signOut(getAuth())
         this.userCheck()
     }
 
@@ -229,6 +229,19 @@ export default class FB_IO {
     }
 
     /*****************************************************/
+    //auth()
+    //
+    //output
+    //=true or false
+    //
+    //checks if the user is authed
+    /*****************************************************/
+    auth() {
+        if (getAuth().currentUser != null) return true
+            else return false
+    }
+
+    /*****************************************************/
     //FB_Register(_formFields)
     //
     //input _formFields
@@ -252,5 +265,15 @@ export default class FB_IO {
             }
             this.FB_Write("/users/",userDetails);
         })
+    }
+
+    /*****************************************************/
+    //signOut()
+    //
+    //signs the user out and sends them to the landing page
+    /*****************************************************/
+    async signOut() {
+        await signOut(getAuth())
+        INSTANCES[CONTENT_MANAGER_INSTANCE].changePage(Landing_page)
     }
 }

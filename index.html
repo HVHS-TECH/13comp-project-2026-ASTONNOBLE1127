@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <body>
+        <header id="header"></header>
         <main id="page"></main>
         <script type="module">
             import Content_manager from "./controllers/Content_manager.mjs"
@@ -8,6 +9,7 @@
             import Page from "./pages/Page.mjs"
             import Landing_page from "./pages/Landing_page.mjs"
             import Registration_page from './pages/Registration_page.mjs'
+            import Header from './pages/Header.mjs'
             import {
                 INSTANCES,
                 CONTENT_MANAGER_INSTANCE,
@@ -24,6 +26,7 @@
                 measurementId: "G-LGH84WESYC"
             })
             INSTANCES[CONTENT_MANAGER_INSTANCE] = new Content_manager(document.getElementById('page'))
+            INSTANCES[CONTENT_MANAGER_INSTANCE].makeHeader(Header)
             INSTANCES[CONTENT_MANAGER_INSTANCE].changePage(Landing_page)
         </script>
     </body>

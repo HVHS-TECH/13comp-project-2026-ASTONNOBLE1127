@@ -57,7 +57,6 @@ export default class Home_page extends Page {
         let element = []
         Object.keys(_thumbnail).forEach(_ID => {
             if (_leaderboard[_ID] == true) {
-                console.log('yes board')
                 element.push(
                     this.makeElement('div',{class:'gate'},[
                         this.makeElement('img',{class:'thumb',src:`../${_thumbnail[_ID]}`}),
@@ -66,7 +65,6 @@ export default class Home_page extends Page {
                     ])
                 )
             } else {
-                console.log('no board')
                 element.push(
                     this.makeElement('div',{class:'gate'},[
                         this.makeElement('img',{class:'thumb',src:`../${_thumbnail[_ID]}`}),
@@ -87,7 +85,6 @@ export default class Home_page extends Page {
     //appends the gates to the body
     /*****************************************************/
     appendGates(_gates) {
-        console.log('appending')
         _gates.forEach(_el => 
             document.querySelector('.body').appendChild(_el))
         document.querySelectorAll('.play').forEach(_el =>
