@@ -53,39 +53,6 @@ export default class Home_page extends Page {
     }
     
     /*****************************************************/
-    //createGates(_leaderboard,_thumbnail)
-    //
-    //input _leaderboard
-    //=does the game have a leaderboard
-    //input _thumbnail
-    //=the thumbnail and ID
-    //
-    //creates the thumbnail/gates to the games
-    /*****************************************************
-    createGates(_leaderboard = {},_thumbnail = {}) {
-        let element = []
-        Object.keys(_thumbnail).forEach(_ID => {
-            if (_leaderboard[_ID] == true) {
-                element.push(
-                    this.makeElement('div',{class:'gate'},[
-                        this.makeElement('img',{class:'thumb',src:`../${_thumbnail[_ID]}`}),
-                        this.makeElement('button',{class:'play',id:_ID}),
-                        this.makeElement('button',{class:'leaderboard',id:`${_ID}L`})
-                    ])
-                )
-            } else {
-                element.push(
-                    this.makeElement('div',{class:'gate'},[
-                        this.makeElement('img',{class:'thumb',src:`../${_thumbnail[_ID]}`}),
-                        this.makeElement('button',{class:'play',id:_ID})
-                    ])
-                )
-            }
-        })
-        this.appendGates(element)
-    }
-*/
-    /*****************************************************/
     //createGates()
     //
     //creates the thumbnail/gates to the games
