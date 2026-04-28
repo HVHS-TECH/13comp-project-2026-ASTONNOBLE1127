@@ -22,8 +22,6 @@ export default class Header extends Page {
     /*****************************************************/
     //private fields
     /*****************************************************/
-    //#header is the reference to the header element
-    #header
     //ID of the page
     static #PAGEID = "Landing_page"
 
@@ -38,18 +36,6 @@ export default class Header extends Page {
             this.makeElement('div',{id:'admindiv'}),
             this.makeElement('button',{id:'signout'})
         ])
-    }
-    
-    /*****************************************************/
-    //getPageID()
-    //
-    //output
-    //=page ID
-    //
-    //litterally just returns #PAGEID
-    /*****************************************************/
-    getPageID() {
-        return Header.#PAGEID
     }
 
     /*****************************************************/
@@ -70,5 +56,26 @@ export default class Header extends Page {
         SIGNOUT.onclick = () => {
             INSTANCES[FB_IO_INSTANCE].signOut()
         }
+    }
+    
+    /*****************************************************/
+    //checkAdmin()
+    //
+    //checks if the user is an admin
+    /*****************************************************/
+    checkAdmin() {
+        
+    }
+
+    /*****************************************************/
+    //getPageID()
+    //
+    //output
+    //=page ID
+    //
+    //litterally just returns #PAGEID
+    /*****************************************************/
+    getPageID() {
+        return Header.#PAGEID
     }
 }

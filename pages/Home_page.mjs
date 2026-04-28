@@ -2,12 +2,13 @@
 //Home_page.mjs
 //written by Aston Noble
 //started 01/04/2026
-//updated 25/04/2026
+//updated 28/04/2026
 //home page class, makes the home page
 /*********************************************************/
 
 import Page from "./Page.mjs"
 import Registration_page from "./Registration_page.mjs"
+import Mahjong_page from "./Mahjong_page.mjs"
 import {
     INSTANCES,
     CONTENT_MANAGER_INSTANCE,
@@ -23,7 +24,7 @@ export default class Home_page extends Page {
     //list of gates directing to
     static #GATES = {
         mahjong:{
-            page:Registration_page,
+            page:Mahjong_page,
             leaderboard:true,
             thumbnail:'unnamed1.png'
         }
@@ -49,7 +50,7 @@ export default class Home_page extends Page {
     //sets the text on the page and makes the buttons work
     /*****************************************************/
     displayText() {
-        this.createGates({mahjong:true,unnamed1:false},{mahjong:'unnamed.png',unnamed1:'unnamed1.png'})
+        this.createGates()
     }
     
     /*****************************************************/
