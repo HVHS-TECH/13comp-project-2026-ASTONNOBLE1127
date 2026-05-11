@@ -2,7 +2,7 @@
 //Mahjong_page.mjs
 //written by Aston Noble
 //started 28/04/2026
-//updated 29/04/2026
+//updated 12/05/2026
 //mahjong class, makes the mahjong page
 /*********************************************************/
 
@@ -160,7 +160,7 @@ export default class Mahjong_page extends Page {
     //manages the hand
     /*****************************************************/
     manageHand(_hand) {
-        //_hand = ['m1','m1','m1','m2','m3','m4','m5','m6','m7','m8','m9','m9','m9']
+        _hand = ['m1','m1','m1','m2','m3','m4','m5','m6','m7','m8','m9','m9','m9']
         let ponWaits = this.calculatePonWaits(_hand)
         let kanWaits = this.calculateKanWaits(ponWaits)
         let chiWaits = this.calculateChiWaits(_hand)
@@ -363,6 +363,7 @@ export default class Mahjong_page extends Page {
         this.canFormSets(pinzuCounts,'pinzu',possibleSets)
         this.canFormSets(souzuCounts,'souzu',possibleSets)
         console.log(possibleSets)
+        this.isDaShit('0',possibleSets,_hand)
     }
 
     /*****************************************************/
@@ -427,6 +428,45 @@ export default class Mahjong_page extends Page {
         return _sets
     }
 
+    isDaShit(_calledSets,_sets,_hand) {
+        let _handsnap = _hand.slice()
+        const arr = _sets.slice()
+        let arr2 = []
+
+for (let a = 0; a < arr.length; a++) {
+    let seta = this.makeSetArray(arr[a])
+    for (let b = 0; b < arr.length; b++) {
+    let setb = this.makeSetArray(arr[b])
+        for (let c = 0; c < arr.length; c++) {
+    let setc = this.makeSetArray(arr[c])
+            for (let d = 0; d < arr.length; d++) {
+    let setd = this.makeSetArray(arr[d])
+                const hand = [arr[a], arr[b], arr[c], arr[d]];
+                arr2.push(hand)
+                console.log(seta,setb,setc,setd)
+                //console.log(hand);
+
+            }
+        }
+    }
+}
+console.log(arr2)
+    }
+
+    makeSetArray(_set) {
+        
+                let setcounts = []
+                let suit = Object.keys(_set)[0] 
+                    for (let i = 0; i < Object.keys(_set[suit]).length; i++) {
+                        for (let l = 0; l < _set[suit][Object.keys(_set[suit])[i]]; l++) {
+                        let temp = Object.keys(_set[suit])[i]
+                        temp++
+                        setcounts.push(suit[0]+ temp)
+                    }
+                    }
+                
+                return setcounts
+    }
     /*****************************************************/
     //getPageID()
     //
