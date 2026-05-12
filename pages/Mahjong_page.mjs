@@ -572,6 +572,7 @@ export default class Mahjong_page extends Page {
             points.east = BASEPOINTS * 2 + (_honba * 100)
             points.child = BASEPOINTS + (_honba * 100)
         }
+        points = 100 * Math.ceil(points/100)
         return points
     }
 
