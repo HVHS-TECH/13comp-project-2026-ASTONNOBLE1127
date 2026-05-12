@@ -147,7 +147,6 @@ export default class Mahjong_page extends Page {
         }
         console.log(player1,player2,player3,player4,_deck)
         console.log(player1.sort(),player2.sort(),player3.sort(),player4.sort(),_deck.sort())
-        //this.calculatePonWaits(player1.sort())
         this.manageHand(player1.sort())
     }
 
@@ -161,50 +160,26 @@ export default class Mahjong_page extends Page {
     /*****************************************************/
     manageHand(_hand) {
         //_hand = ['m1','m1','m1','m2','m3','m4','m5','m6','m7','m8','m9','m9','m9']
-        _hand = ['Dr','Dr','Dr','m2','m3','m4','m5','m6','m7','m8','m9','m9','m9']
+        //_hand = ['Dr','Dr','Dr','m2','m3','m4','m5','m6','m7','m8','m9','m9','m9']
         let ponWaits = this.calculatePonWaits(_hand)
         let kanWaits = this.calculateKanWaits(ponWaits)
         let chiWaits = this.calculateChiWaits(_hand)
-        let tenpai = this.isTenpai(_hand,ponWaits,kanWaits)
+        let tenpai = this.isTenpai(_hand,ponWaits)
         console.log('hand: '+_hand)
         console.log('pon waits: '+ponWaits)
         console.log('kan waits: '+kanWaits)
         console.log('chi waits: '+chiWaits)
-        if (tenpai == false) console.log('てんぱいじゃない')
+        console.log('win waits: '+tenpai)
     }
-
-    /*****************************************************/
-    //calculateWaits(_hand)
-    //
-    //input _hand
-    //=the hand to calculate waits for
-    //
-    //calculate the waits for a hand
-    /*****************************************************
-    calculateWaits(_hand) {
-        let honors = []
-        let waits = []
-        for (let i = 0; i < _hand.length; i++) {
-            if ((_hand[i].slice(0,1) == 'D') || (_hand[i].slice(0,1) == 'W')) {
-                honors.push(_hand[i])
-            } else break;
-        }
-        if (honors.length > 1) {
-            for (let i = 0; i < honors.length - 1; i++) {
-                if (honors[i] == honors[i + 1]) {
-                    waits.push(honors[i])
-                }
-            }
-        }
-        console.log(waits)
-    }
-    */
 
     /*****************************************************/
     //calculatePonWaits(_hand)
     //
     //input _hand
     //=the hand to calculate pon waits for
+    //
+    //output
+    //=an array of the triplets of the hand
     //
     //calculate the pon waits for a hand
     /*****************************************************/
@@ -223,6 +198,9 @@ export default class Mahjong_page extends Page {
     //
     //input _ponWaits
     //=the pon waits of the hand to calculate kan waits for
+    //
+    //output
+    //=an array of the pairs of the hand
     //
     //calculate the kan waits for a hand
     /*****************************************************/
@@ -243,6 +221,9 @@ export default class Mahjong_page extends Page {
     //
     //input _hand
     //=the hand to calculate chi waits for
+    //
+    //output
+    //=an array of the needed tiles to complete sequences
     //
     //calculate the chi waits for a hand
     /*****************************************************/
@@ -266,49 +247,17 @@ export default class Mahjong_page extends Page {
     }
 
     /*****************************************************/
-    //isTenpai(_hand)
+    //isTenpai(_hand,_ponWaits)
     //
     //input _hand
     //=the hand to check tenpai for
+    //input _ponWaits
+    //=used for the pairs
     //
-    //check if a hand is in tenpai
+    //checks if a hand is in tenpai
     /*****************************************************/
     isTenpai(_hand,_ponWaits) {
         var _handsnapshot = _hand.slice()
-        let honors = []
-        let pairWait = false
-        let completedSets = 0
-        while (0 < _handsnapshot.length && ((_handsnapshot[0][0] === 'D') || (_handsnapshot[0][0] === 'W'))) {
-                honors.push(_handsnapshot.shift())
-        }
-        console.log('non honors: '+_handsnapshot)
-        console.log('honors: '+honors)
-        let singlehonors = 0
-        let honorpairs = 0
-        let honortrips = 0
-        let counts = {}
-        if (honors.length != 0) {
-            for (let tile of honors) {
-                counts[tile] = (counts[tile] || 0) + 1
-            }
-            Object.keys(counts).forEach(_tile => {
-                if (counts[_tile] >=3) honortrips++
-                else if (counts[_tile] == 2) honorpairs++
-            })
-            singlehonors = (honors.length - (2*honorpairs) - (3*honortrips))
-            console.log(singlehonors)
-            console.log(honorpairs)
-            console.log(honortrips)
-            completedSets = honortrips
-            if (singlehonors > 1 || (singlehonors == 1 && honorpairs >= 1) || (honorpairs > 2)) {
-                console.log('not tenpai')
-                return false
-            } else if (singlehonors == 1) {
-                console.log('honor pair wait?')
-                pairWait = true
-            }
-        }
-
         let dragons = []
         let winds = []
         let manzu = []
@@ -327,20 +276,6 @@ export default class Mahjong_page extends Page {
                 souzu.push(_hand[i])
             }
         }
-        console.log(manzu,pinzu,souzu)
-        if (manzu.length == 1) {
-            if (pairWait = true) return false
-            else pairWait = true
-        }
-        if (pinzu.length == 1) {
-            if (pairWait = true) return false
-            else pairWait = true
-        }
-        if (souzu.length == 1) {
-            if (pairWait = true) return false
-            else pairWait = true
-        }
-        //from here manage suits
         let manzuCounts = [0,0,0,0,0,0,0,0,0]
         for (let tile of manzu) {
             manzuCounts[Number(tile[1])-1]++
@@ -361,75 +296,34 @@ export default class Mahjong_page extends Page {
         for (let tile of winds) {
             windsCounts[tile[1]]++
         }
-        console.log(manzuCounts,pinzuCounts,souzuCounts,dragonCounts,windsCounts)
-        completedSets = this.canFormTrips(manzuCounts,completedSets)
-        completedSets = this.canFormTrips(pinzuCounts,completedSets)
-        completedSets = this.canFormTrips(souzuCounts,completedSets)
-        console.log('completed sets: '+completedSets)
-        let possibleSeq = []
-        //let possibleSeq = {'manzu':{0:0,1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0},
-        //'pinzu':{0:0,1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0},
-        //'souzu':{0:0,1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0}}
-        //this.canFormSequences(manzuCounts,'manzu',possibleSeq)
-        //this.canFormSequences(pinzuCounts,'pinzu',possibleSeq)
-        //this.canFormSequences(souzuCounts,'souzu',possibleSeq)
-        //console.log(possibleSeq)
-        let possibleSets = possibleSeq.slice() 
+        let possibleSets = []
         this.canFormSets(manzuCounts,'manzu',possibleSets)
         this.canFormSets(pinzuCounts,'pinzu',possibleSets)
         this.canFormSets(souzuCounts,'souzu',possibleSets)
         this.honorSetFinder(dragonCounts,'Dragon',possibleSets)
         this.honorSetFinder(windsCounts,'Winds',possibleSets)
-        console.log(possibleSets)
-        this.isDaShit(0,possibleSets,_hand)
-        this.calculateSetWaits(0,possibleSets,_hand,_ponWaits)
-        
+        let pairWaits = this.calculatePairWaits(0,possibleSets,_hand)
+        let setWaits = this.calculateSetWaits(0,possibleSets,_hand,_ponWaits)
+        pairWaits.push(...setWaits)
+        if (pairWaits.length == 0) return false
+            else return pairWaits //returns the combination of set and pair waits
     }
 
     /*****************************************************/
-    //canFormTrips(_counts,_trips)
+    //canFormSets(_counts,_suit,_sets)
     //
     //input _counts
-    //=the array that counts how many tiles in a suit
+    //=the object counting how many of each tile
+    //input _suit
+    //=the suit of the tiles
+    //input _sets
+    //=the array of possible sets for a hand
     //
-    //searchs for valid sets
-    /*****************************************************/
-    canFormTrips(_counts,_trips) {
-        let i = _counts.findIndex(c => c > 0)
-        while (i < _counts.length - 1){
-        if (i == -1) {console.log(_trips); break;}
-        if (_counts[i] >= 3) {
-            _trips++
-        }
-        i++
-    }
-    return _trips;
-    }
-
-    /*****************************************************/
-    //canFormSequences(_counts,_trips)
+    //output
+    //=an object with the count of an suited set
     //
-    //input _counts
-    //=the array that counts how many tiles in a suit
-    //
-    //searchs for valid sets
+    //finds suited triplets and sequences
     /*****************************************************/
-    canFormSequences(_counts,_suit,_seqs) {
-        for (let i = 0; i < 7; i++) {
-            if ((_counts[i] >= 1) && (_counts[i+1] >= 1) && (_counts[i+2] >= 1)) {
-                _seqs.push({[_suit]:{
-                    [i]:1,
-                    [i+1]:1,
-                    [i+2]:1
-                }})
-            }
-                //_seqs[_suit][i] += 1
-               // _seqs[_suit][i+1] += 1
-                //_seqs[_suit][i+2] += 1
-        }
-        return _seqs
-    }
-
     canFormSets(_counts,_suit,_sets) {
         for (let i = 0; i < 9; i++) {
             if (_counts[i] >= 3) {
@@ -447,6 +341,22 @@ export default class Mahjong_page extends Page {
         }
         return _sets
     }
+
+    /*****************************************************/
+    //honorSetFinder(_counts,_type,_sets)
+    //
+    //input _counts
+    //=the object counting how many of each honor
+    //input _type
+    //=the type of honor tile (dragon/wind)
+    //input _sets
+    //=the array of possible sets for a hand
+    //
+    //output
+    //=an object with the count of an honor set
+    //
+    //finds honor triplets
+    /*****************************************************/
     honorSetFinder(_counts,_type,_sets) {
         Object.keys(_counts).forEach(_key => {
             if (_counts[_key] >= 3) {
@@ -458,59 +368,166 @@ export default class Mahjong_page extends Page {
         return _sets
     }
 
-    isDaShit(_calledSets,_sets,_hand) { //calculate pair waits
+    /*****************************************************/
+    //calculatePairWaits(_calledSets,_sets,_hand,_ponWaits) 
+    //
+    //input _calledSets
+    //=the ammount of sets called
+    //input _sets
+    //=the possible sets for the hand
+    //input _hand
+    //=the hand to calculate the waits for
+    //
+    //output
+    //=all the pair waits of the hand
+    //
+    //calculates the hands pair waits
+    /*****************************************************/
+    calculatePairWaits(_calledSets,_sets,_hand) {
         let _handsnap = _hand.slice()
         const arr = _sets.slice()
         let arr2 = []
-
-for (let a = 0; a < arr.length; a++) {
-    let seta = this.makeSetArray(arr[a])
-    for (let b = 0; b < arr.length; b++) {
-    let setb = this.makeSetArray(arr[b])
-        for (let c = 0; c < arr.length; c++) {
-    let setc = this.makeSetArray(arr[c])
-            for (let d = 0; d < arr.length; d++) {
-    let setd = this.makeSetArray(arr[d])
-    let poss = seta.slice()
-    poss.push(...setb,...setc,...setd)
-    if (this.AsubsetB(_hand,poss)) {
-        //console.log(poss);
-        arr2.push(...this.AremoveB(_hand,poss))
-    }
+        for (let a = 0; a < arr.length; a++) {
+            let seta = this.makeSetArray(arr[a])
+            for (let b = 0; b < arr.length; b++) {
+                let setb = this.makeSetArray(arr[b])
+                for (let c = 0; c < arr.length; c++) {
+                    let setc = this.makeSetArray(arr[c])
+                    for (let d = 0; d < arr.length; d++) {
+                        let setd = this.makeSetArray(arr[d])
+                        let poss = seta.slice()
+                        poss.push(...setb,...setc,...setd)
+                        if (this.AsubsetB(_hand,poss)) {
+                            arr2.push(...this.AremoveB(_hand,poss))
+                        }
+                    }
+                }
             }
         }
-    }
-}
-console.log(this.removeDuplicates(arr2))
+        return this.removeDuplicates(arr2)
     }
 
-removeDuplicates(arr) {
-return [...new Set(arr)];
-}
-    makeSetArray(_set) {
-        
-                let setcounts = []
-                let suit = Object.keys(_set)[0] 
-                    for (let i = 0; i < Object.keys(_set[suit]).length; i++) {
-                        for (let l = 0; l < _set[suit][Object.keys(_set[suit])[i]]; l++) {
-                        let temp = Object.keys(_set[suit])[i]
-                        if (!isNaN(temp)){
-                            temp++
+    /*****************************************************/
+    //calculateSetWaits(_calledSets,_sets,_hand,_ponWaits) 
+    //
+    //input _calledSets
+    //=the ammount of sets called
+    //input _sets
+    //=the possible sets for the hand
+    //input _hand
+    //=the hand to calculate the waits for
+    //input _ponWaits
+    //=the possible pairs for the hand
+    //
+    //output
+    //=all the set waits of the hand
+    //
+    //calculates the hands set waits
+    /*****************************************************/
+    calculateSetWaits(_calledSets,_sets,_hand,_ponWaits) {
+        let pairs = this.removeDuplicates(_ponWaits).slice()
+        let _handsnap = _hand.slice()
+        const arr = _sets.slice()
+        let arr2 = []
+        for (let a = 0; a < arr.length; a++) {
+            let seta = this.makeSetArray(arr[a])
+            for (let b = 0; b < arr.length; b++) {
+                let setb = this.makeSetArray(arr[b])
+                for (let c = 0; c < arr.length; c++) {
+                    let setc = this.makeSetArray(arr[c])
+                    for (let d = 0; d < _ponWaits.length; d++) {
+                        let poss = seta.slice()
+                        poss.push(...setb,...setc,pairs[d],pairs[d])
+                        if (this.AsubsetB(_hand,poss)) {
+                            if (this.AremoveB(_hand,poss).length ==1) {
+                                arr2.push(this.AremoveB(_hand,poss))
+                            } else {
+                                arr2.push(...this.calculateChiWaits(this.AremoveB(_hand,poss)))
+                            }
                         }
-                        setcounts.push(suit[0]+ temp)
                     }
-                    }
-                
-                return setcounts
+                }
+            }
+        }
+        return this.removeDuplicates(arr2)
     }
+
+    /*****************************************************/
+    //removeDuplicates(_arr)
+    //
+    //input _arr
+    //=the array to remove duplicates for
+    //
+    //output
+    //=an array with duplicates removed
+    //
+    //removes duplicate entries from an array
+    /*****************************************************/
+    removeDuplicates(_arr) {
+        return [...new Set(_arr)];
+    }
+
+    /*****************************************************/
+    //makeSetArray(_set)
+    //
+    //input _set
+    //=the set to turn into an array
+    //
+    //output 
+    //=the array for a possible set
+    //
+    //makes the possible sets object into arrays
+    /*****************************************************/
+    makeSetArray(_set) {
+        let setcounts = []
+        let suit = Object.keys(_set)[0] 
+        for (let i = 0; i < Object.keys(_set[suit]).length; i++) {
+            for (let l = 0; l < _set[suit][Object.keys(_set[suit])[i]]; l++) {
+                let temp = Object.keys(_set[suit])[i]
+                if (!isNaN(temp)){
+                    temp++
+                }
+                setcounts.push(suit[0]+ temp)
+            }
+        }
+        return setcounts
+    }
+
+    /*****************************************************/
+    //AsubsetB(A,B)
+    //
+    //input A
+    //=the set to check
+    //input B
+    //=the subset to check
+    //
+    //output 
+    //=true if B is a subset of A
+    //=false if B is not a subset of A
+    //
+    //A ∈ B: checks if B is a subset of A
+    /*****************************************************/
     AsubsetB(A,B) {
         const result = B.every(val => A.includes(val) 
-        && B.filter(el => el === val).length
-        <=
-        A.filter(el => el === val).length
-        );
+            && B.filter(el => el === val).length
+            <=
+            A.filter(el => el === val).length);
         return result
     }
+
+    /*****************************************************/
+    //AremoveB(A,B)
+    //
+    //input A
+    //=the array to subtract from
+    //input B
+    //=the array of items to remove
+    //
+    //output
+    //=the array with the result of A\B
+    //
+    //A\B: removes the values of B from A
+    /*****************************************************/
     AremoveB(A,B) {
         let result = [...A];
         for (let item of B) {
@@ -521,39 +538,7 @@ return [...new Set(arr)];
         }
         return result
     }
-
-      calculateSetWaits(_calledSets,_sets,_hand,_ponWaits) { //calculate set waits
-        let pairs = _ponWaits.slice()
-        this.removeDuplicates(pairs)
-        let _handsnap = _hand.slice()
-        const arr = _sets.slice()
-        let arr2 = []
-
-for (let a = 0; a < arr.length; a++) {
-    let seta = this.makeSetArray(arr[a])
-    for (let b = 0; b < arr.length; b++) {
-    let setb = this.makeSetArray(arr[b])
-        for (let c = 0; c < arr.length; c++) {
-    let setc = this.makeSetArray(arr[c])
-            for (let d = 0; d < _ponWaits.length; d++) {
-    let poss = seta.slice()
-    //console.log(...setb,...setc,pairs[d],pairs[d])
-    poss.push(...setb,...setc,pairs[d],pairs[d])
-    if (this.AsubsetB(_hand,poss)) {
-        //console.log(this.AremoveB(_hand,poss) + poss);
-        //console.log(this.AremoveB(_hand,poss))
-        if (this.AremoveB(_hand,poss).length ==1) {
-        arr2.push(this.AremoveB(_hand,poss))
-        } else {
-            arr2.push(...this.calculateChiWaits(this.AremoveB(_hand,poss)))
-        }
-    }
-            }
-        }
-    }
-}
-console.log(this.removeDuplicates(arr2))
-    }
+    
     /*****************************************************/
     //getPageID()
     //
