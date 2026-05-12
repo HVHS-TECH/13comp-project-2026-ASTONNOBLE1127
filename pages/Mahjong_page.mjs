@@ -540,6 +540,42 @@ export default class Mahjong_page extends Page {
     }
     
     /*****************************************************/
+    //calculatePoints(_han,_fu,_honba,_ron,_dealer)
+    //
+    //input _han
+    //=the main score used in calculating points
+    //input _fu
+    //=the sub score used in calculating points
+    //input _honba
+    //=the repeat count
+    //input _ron
+    //=the type of win, true on ron, false on tsumo
+    //input _dealer
+    //=is the player dealer
+    //
+    //output
+    //=the ammount of points to take from each person
+    //
+    //calculates the points for a hand
+    /*****************************************************/
+    calculatePoints(_han,_fu,_honba,_ron,_dealer) {
+        const BASEPOINTS = _fu * (2 ^ (2 + _han))
+        if (_ron == true) {
+            if (_dealer == false) {
+                points = BASEPOINTS * 4 + (_honba * 300)
+            } else if (_dealer == true) {
+                points = BASEPOINTS * 6 + (_honba * 300)
+            }
+        } else if (_dealer == true) {
+            points = BASEPOINTS * 2 + (_honba * 100)
+        } else {
+            points.east = BASEPOINTS * 2 + (_honba * 100)
+            points.child = BASEPOINTS + (_honba * 100)
+        }
+        return points
+    }
+
+    /*****************************************************/
     //getPageID()
     //
     //output
