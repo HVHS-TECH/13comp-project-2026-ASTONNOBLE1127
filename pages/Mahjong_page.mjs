@@ -573,6 +573,44 @@ export default class Mahjong_page extends Page {
             points.child = BASEPOINTS + (_honba * 100)
         }
         points = 100 * Math.ceil(points/100)
+        if (BASEPOINTS >= 2000) return false
+            else return points
+    }
+
+    /*****************************************************/
+    //manganHandler(_han,_honba,_ron,_dealer)
+    //
+    //input _han
+    //=the main score used in calculating points
+    //input _honba
+    //=the repeat count
+    //input _ron
+    //=the type of win, true on ron, false on tsumo
+    //input _dealer
+    //=is the player dealer?
+    //
+    //output
+    //=the ammount of points to take from each person
+    //
+    //handles point higher than the formula can handle
+    /*****************************************************/
+    manganHandler(_han,_honba,_ron,_dealer) {
+        let basePoints
+        let points
+        if (_han <= 5) {basePoints = 2000
+        } else if (_han <= 7) {basePoints = 3000
+        } else if (_han <= 10) {basePoints = 4000
+        } else if (_han <= 12) {basePoints = 6000
+        } else if (_han >= 13) {basePoints = 9000}
+        if (_ron == true) {
+            points = basePoints * 4 + (_honba * 300)
+            if (_dealer = true) points = basePoints * 6 + (_honba * 300)
+        } else {
+            if (_dealer = false) {
+                points.east = basePoints * 2 + (_honba * 100)
+                points.child = basePoints + (_honba * 100)
+            } else points = basePoints * 2 + (_honba * 100)
+        }
         return points
     }
 
