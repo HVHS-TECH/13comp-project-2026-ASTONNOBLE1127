@@ -2,7 +2,7 @@
 //Mahjong_page.mjs
 //written by Aston Noble
 //started 28/04/2026
-//updated 12/05/2026
+//updated 13/05/2026
 //mahjong class, makes the mahjong page
 /*********************************************************/
 
@@ -10,6 +10,11 @@
 //imports
 /*********************************************************/
 import Page from "./Page.mjs"
+import {
+    INSTANCES,
+    CONTENT_MANAGER_INSTANCE,
+    FB_IO_INSTANCE
+} from "../controllers/Instance_vault.mjs"
 
 export default class Mahjong_page extends Page {
     /*****************************************************/
@@ -17,6 +22,8 @@ export default class Mahjong_page extends Page {
     /*****************************************************/
     //ID of the page
     static #PAGEID = "Mahjong_page"
+    //lobby boolean
+    #isInLobby = false
     
     /*****************************************************/
     //prepareHTML()
@@ -24,7 +31,7 @@ export default class Mahjong_page extends Page {
     //prepares the HTML for creation
     /*****************************************************/
     prepareHTML() {
-        this.createDeck()
+        //this.createDeck()
         return this.makeElement('div',{},[
             this.makeElement('button',{id:'join'}),
             this.makeElement('a',{id:'waitCount'}),
@@ -38,17 +45,46 @@ export default class Mahjong_page extends Page {
     //sets the text on the page and makes the buttons work
     /*****************************************************/
     displayText() {
+        INSTANCES[FB_IO_INSTANCE].FB_Listener('waitLists/mahjong',this.managePlayerCount)
+        let waitlist = INSTANCES[FB_IO_INSTANCE].FB_Read('waitLists/mahjong')
+        this.managePlayerCount(waitlist)
         document.getElementById('join').innerHTML = 'join'
         document.getElementById('waitCount').innerHTML = '0'
         document.getElementById('join').onclick = () => {
-            this.createDeck() // for testing
-            document.getElementById('waitIndicator').appendChild(this.makeElement(
-                'div',{id:'waitBox'},[this.makeElement('a',{id:'waiting'}),
+            if (this.#isInLobby == false) {
+                this.#isInLobby = true
+                let uid = {}
+                let uuid = {}
+                uid[1] = INSTANCES[FB_IO_INSTANCE].getUID()
+                uuid[uid[1]] = uid[1]
+                INSTANCES[FB_IO_INSTANCE].FB_Write('waitLists/mahjong/',uuid)
+                //this.createDeck() // for testing
+                document.getElementById('waitIndicator').appendChild(this.makeElement(
+                    'div',{id:'waitBox'},[this.makeElement('a',{id:'waiting'}),
                     this.makeElement('button',{id:'leave'})]
-            ))
-            document.getElementById('waiting').innerHTML = 'waiting'
-            document.getElementById('leave').innerHTML = 'leave'
+                ))
+                document.getElementById('waiting').innerHTML = 'waiting'
+                document.getElementById('leave').innerHTML = 'leave'
+                document.getElementById('leave').onclick = () => {
+                    this.#isInLobby = false
+                    INSTANCES[FB_IO_INSTANCE].FB_Remove('waitLists/mahjong/'+uid[1])
+                    document.getElementById('waiting').remove()
+                    document.getElementById('leave').remove()
+                }
+            }
         }
+    }
+
+    /*****************************************************/
+    //managePlayerCount(_count)
+    //
+    //manages the player count counter
+    /*****************************************************/
+    managePlayerCount(_count) {
+        if (_count != null) {
+            let count = Object.keys(_count).length
+            document.getElementById('waitCount').innerHTML = count
+        } else document.getElementById('waitCount').innerHTML = '0'
     }
 
     /*****************************************************/

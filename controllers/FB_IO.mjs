@@ -2,7 +2,7 @@
 //FB_IO.mjs
 //written by Aston Noble
 //started 22/03/2026
-//updated 28/04/2026
+//updated 13/05/2026
 //holds all the firebase methods
 /*********************************************************/
 
@@ -238,6 +238,19 @@ export default class FB_IO {
     /*****************************************************/
     auth() {
         if (getAuth().currentUser != null) return true
+            else return false
+    }
+
+    /*****************************************************/
+    //getUID()
+    //
+    //output
+    //=the users UID
+    //
+    //gets the users UID
+    /*****************************************************/
+    getUID() {
+        if (getAuth().currentUser != null) return getAuth().currentUser.uid
             else return false
     }
 
