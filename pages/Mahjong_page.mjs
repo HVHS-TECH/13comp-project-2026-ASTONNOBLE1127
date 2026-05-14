@@ -55,7 +55,7 @@ export default class Mahjong_page extends Page {
         }
         let waitlist = await INSTANCES[FB_IO_INSTANCE].FB_Read('waitLists/mahjong')
         this.managePlayerCount(waitlist)
-        if (waitlist[INSTANCES[FB_IO_INSTANCE].getUID()] != null) this.joinedWaitlist()
+        //if (waitlist[INSTANCES[FB_IO_INSTANCE].getUID()] != null) this.joinedWaitlist()
     }
 
     /*****************************************************/
@@ -69,7 +69,8 @@ export default class Mahjong_page extends Page {
         let uuid = {}
         let d = new Date();
         uid[1] = INSTANCES[FB_IO_INSTANCE].getUID()
-        uuid[uid[1]] = d.getTime();
+        uuid[uid[1]] = {}
+        uuid[uid[1]]['time'] = d.getTime();
         INSTANCES[FB_IO_INSTANCE].FB_Write('waitLists/mahjong/',uuid)
         //this.createDeck() // for testing
         document.getElementById('waitIndicator').appendChild(this.makeElement(
@@ -91,10 +92,16 @@ export default class Mahjong_page extends Page {
     //
     //manages the player count counter
     /*****************************************************/
-    managePlayerCount(_count) {
+    async managePlayerCount(_count) {
         if (_count != null) {
             let count = Object.keys(_count).length
             document.getElementById('waitCount').innerHTML = count
+            if (count >= 4) {
+                let lob = await INSTANCES[FB_IO_INSTANCE].FB_SortedRead("/waitLists/mahjong",false,4,true,"time")
+                lob.forEach(_item => console.log(_item.val()))
+                console.log(lob)
+                console.log(lob.val())
+            }
         } else document.getElementById('waitCount').innerHTML = '0'
     }
 

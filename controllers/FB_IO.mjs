@@ -114,11 +114,12 @@ export default class FB_IO {
     //
     //outputs a sorted selection of data from the firebase
     /*****************************************************/
-    async FB_SortedRead(_path,_side,_quantity,_orderBy) {
+    async FB_SortedRead(_path,_side,_quantity,_orderBy,_childidk) {
         const FB_REF = ref(getDatabase(),_path);
         const LIMITTO = await this.isHigh(_side,_quantity);
-        const ORDERBY = await this.isOrderChild(_orderBy);
+        const ORDERBY = await this.isOrderChild(_orderBy,_childidk);
         const QUERY = query(FB_REF,ORDERBY,LIMITTO);
+        console.log(FB_REF,ORDERBY,LIMITTO,QUERY)
         return await get(QUERY);
     }
 
@@ -185,8 +186,8 @@ export default class FB_IO {
     //
     //used for the FB_SortedRead method
     /*****************************************************/
-    isOrderChild(_input) {
-        if (_input == true) return orderByChild()
+    isOrderChild(_input,_childidk) {
+        if (_input == true) return orderByChild(_childidk)
         else return orderByKey()
     }
     
