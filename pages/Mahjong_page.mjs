@@ -50,10 +50,13 @@ export default class Mahjong_page extends Page {
         document.getElementById('join').innerHTML = 'join'
         document.getElementById('join').onclick = () => {
             if (this.#isInLobby == false) {
-                this.joinedWaitlist()
+                this.joinedWaitlist(false)
             }
         }
         let waitlist = await INSTANCES[FB_IO_INSTANCE].FB_Read('waitLists/mahjong')
+        if (waitlist[INSTANCES[FB_IO_INSTANCE].getUID()] != null) {
+            this.joinedWaitlist(true)
+        }
         this.managePlayerCount(waitlist)
         //if (waitlist[INSTANCES[FB_IO_INSTANCE].getUID()] != null) this.joinedWaitlist()
     }
@@ -63,7 +66,7 @@ export default class Mahjong_page extends Page {
     //
     //makes the leave button
     /*****************************************************/
-    joinedWaitlist() {
+    joinedWaitlist(_preEx) {
         this.#isInLobby = true
         let uid = {}
         let uuid = {}
@@ -71,7 +74,10 @@ export default class Mahjong_page extends Page {
         uid[1] = INSTANCES[FB_IO_INSTANCE].getUID()
         uuid[uid[1]] = {}
         uuid[uid[1]]['time'] = d.getTime();
+        uuid[uid[1]]['uid'] = uid[1]
+        if (_preEx == false) {
         INSTANCES[FB_IO_INSTANCE].FB_Write('waitLists/mahjong/',uuid)
+        }
         //this.createDeck() // for testing
         document.getElementById('waitIndicator').appendChild(this.makeElement(
             'div',{id:'waitBox'},[this.makeElement('a',{id:'waiting'}),
