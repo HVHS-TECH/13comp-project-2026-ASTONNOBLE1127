@@ -2,7 +2,7 @@
 //Mahjong_page.mjs
 //written by Aston Noble
 //started 28/04/2026
-//updated 13/05/2026
+//updated 15/05/2026
 //mahjong class, makes the mahjong page
 /*********************************************************/
 
@@ -62,7 +62,10 @@ export default class Mahjong_page extends Page {
     }
 
     /*****************************************************/
-    //joinedWaitlist()
+    //joinedWaitlist(_preEx)
+    //
+    //input _preEx
+    //=a boolean stating if the player is already in the list
     //
     //makes the leave button
     /*****************************************************/
@@ -76,7 +79,7 @@ export default class Mahjong_page extends Page {
         uuid[uid[1]]['time'] = d.getTime();
         uuid[uid[1]]['uid'] = uid[1]
         if (_preEx == false) {
-        INSTANCES[FB_IO_INSTANCE].FB_Write('waitLists/mahjong/',uuid)
+            INSTANCES[FB_IO_INSTANCE].FB_Write('waitLists/mahjong/',uuid)
         }
         //this.createDeck() // for testing
         document.getElementById('waitIndicator').appendChild(this.makeElement(
@@ -95,6 +98,9 @@ export default class Mahjong_page extends Page {
 
     /*****************************************************/
     //managePlayerCount(_count)
+    //
+    //input _count
+    //=the read of the waitlist
     //
     //manages the player count counter
     /*****************************************************/
@@ -457,7 +463,7 @@ export default class Mahjong_page extends Page {
                         let setd = this.makeSetArray(arr[d])
                         let poss = seta.slice()
                         poss.push(...setb,...setc,...setd)
-                        if (this.AsubsetB(_hand,poss)) {
+                        if (this.AsupersetB(_hand,poss)) {
                             arr2.push(...this.AremoveB(_hand,poss))
                         }
                     }
@@ -498,7 +504,7 @@ export default class Mahjong_page extends Page {
                     for (let d = 0; d < _ponWaits.length; d++) {
                         let poss = seta.slice()
                         poss.push(...setb,...setc,pairs[d],pairs[d])
-                        if (this.AsubsetB(_hand,poss)) {
+                        if (this.AsupersetB(_hand,poss)) {
                             if (this.AremoveB(_hand,poss).length ==1) {
                                 arr2.push(this.AremoveB(_hand,poss))
                             } else {
@@ -554,7 +560,7 @@ export default class Mahjong_page extends Page {
     }
 
     /*****************************************************/
-    //AsubsetB(A,B)
+    //AsupersetB(A,B)
     //
     //input A
     //=the set to check
@@ -565,9 +571,9 @@ export default class Mahjong_page extends Page {
     //=true if B is a subset of A
     //=false if B is not a subset of A
     //
-    //A ∈ B: checks if B is a subset of A
+    //A ⊇ B: checks if A is a superset of B
     /*****************************************************/
-    AsubsetB(A,B) {
+    AsupersetB(A,B) {
         const result = B.every(val => A.includes(val) 
             && B.filter(el => el === val).length
             <=
