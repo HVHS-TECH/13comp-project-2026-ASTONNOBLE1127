@@ -23,7 +23,9 @@ import {
     limitToFirst,
     limitToLast,
     onValue,
-    remove
+    remove,
+    push,
+    equalTo
 } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
 import {
     getAuth,
@@ -95,6 +97,48 @@ export default class FB_IO {
         const FB_REF = ref(getDatabase(),_path);
         const RAWREAD = await get(FB_REF);
         return RAWREAD.val();
+    }
+
+
+    /*****************************************************/
+    //FB_Push(_path,_object)
+    //
+    //input _path
+    //=path to push to
+    //input _object
+    //=object to push to the firebase
+    //
+    //output
+    //=proof that the promise was fufilled
+    //
+    //pushs _object to _path in the firebase
+    /*****************************************************/
+    async FB_Push(_path,_object) {
+        const FB_REF = ref(getDatabase(),_path);
+        return await update(push(FB_REF),_object);
+    }
+
+    /*****************************************************/
+    //FB_Finder(_path,_lim,_child,_val)
+    //
+    //input _path
+    //=path to read from
+    //input _lim
+    //=the limit of how many to read
+    //input _child
+    //=the child key
+    //input _val
+    //=the value to look for
+    //
+    //output
+    //=the place of the thing
+    //
+    //finds a value in the database
+    /*****************************************************/
+    async FB_Finder(_path,_lim,_child,_val) {
+        const FB_REF = ref(getDatabase(),_path);
+        const QUERY = query(FB_REF,limitToFirst(_lim),orderByChild(_child),equalTo(_val));
+        return await get(QUERY);
     }
 
     /*****************************************************/

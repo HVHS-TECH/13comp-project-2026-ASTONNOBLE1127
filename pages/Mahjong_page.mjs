@@ -45,8 +45,9 @@ export default class Mahjong_page extends Page {
     //sets the text on the page and makes the buttons work
     /*****************************************************/
     async displayText() {
+        this.method0()
         document.getElementById('waitCount').innerHTML = '0'
-        INSTANCES[FB_IO_INSTANCE].FB_Listener('waitLists/mahjong',this.managePlayerCount)
+        //INSTANCES[FB_IO_INSTANCE].FB_Listener('waitLists/mahjong',this.managePlayerCount)
         document.getElementById('join').innerHTML = 'join'
         document.getElementById('join').onclick = () => {
             if (this.#isInLobby == false) {
@@ -55,9 +56,9 @@ export default class Mahjong_page extends Page {
         }
         let waitlist = await INSTANCES[FB_IO_INSTANCE].FB_Read('waitLists/mahjong')
         if (waitlist[INSTANCES[FB_IO_INSTANCE].getUID()] != null) {
-            this.joinedWaitlist(true)
+            //this.joinedWaitlist(true)
         }
-        this.managePlayerCount(waitlist)
+        //this.managePlayerCount(waitlist)
         //if (waitlist[INSTANCES[FB_IO_INSTANCE].getUID()] != null) this.joinedWaitlist()
     }
 
@@ -115,6 +116,45 @@ export default class Mahjong_page extends Page {
                 console.log(lob.val())
             }
         } else document.getElementById('waitCount').innerHTML = '0'
+    }
+
+    /*****************************************************/
+    //
+    /*****************************************************/
+    async method0() {
+        const UID = INSTANCES[FB_IO_INSTANCE].getUID()
+        let j = 0
+        for (let i = 1; i < 5; i++) {
+            let ref = await INSTANCES[FB_IO_INSTANCE].FB_Finder('/lobbies/mahjong/',1,`players/player${i}`,UID)
+            console.log(ref.val())
+            if (ref.val() != null) j++; break; 
+        }
+        console.log(j)
+        if (j < 1) this.method(UID)
+    }
+
+    /*****************************************************/
+    //
+    /*****************************************************/
+    async method(UID) {
+        let ref = await INSTANCES[FB_IO_INSTANCE].FB_Finder('/lobbies/mahjong/',1,'open','true')
+        console.log(ref.val())
+        if (ref.val() == null) INSTANCES[FB_IO_INSTANCE].FB_Write(`/lobbies/mahjong/lobby${UID}`,{players:{player1:UID},open:'true'})
+            else {
+                let lobby = await INSTANCES[FB_IO_INSTANCE].FB_Read(`/lobbies/mahjong/${Object.keys(ref.val())[0]}/players/`)
+                for (let i = 2; i < 5; i++) {
+                    if (lobby != null) {
+                        console.log('ds')
+                        if (lobby[`player${i}`] == undefined) {
+                            INSTANCES[FB_IO_INSTANCE].FB_Write(`/lobbies/mahjong/${Object.keys(ref.val())[0]}/players/`,{[`player${i}`]:UID})
+                            break;
+                        }
+                    } else {
+                        INSTANCES[FB_IO_INSTANCE].FB_Remove(`/lobbies/mahjong/${Object.keys(ref.val())[0]}`)
+                        this.method0(UID)
+                    }
+                }
+            }
     }
 
     /*****************************************************/
