@@ -54,10 +54,10 @@ export default class Mahjong_page extends Page {
                 this.joinedWaitlist(false)
             }
         }
-        let waitlist = await INSTANCES[FB_IO_INSTANCE].FB_Read('waitLists/mahjong')
-        if (waitlist[INSTANCES[FB_IO_INSTANCE].getUID()] != null) {
+        //let waitlist = await INSTANCES[FB_IO_INSTANCE].FB_Read('waitLists/mahjong')
+        //if (waitlist[INSTANCES[FB_IO_INSTANCE].getUID()] != null) {
             //this.joinedWaitlist(true)
-        }
+        //}
         //this.managePlayerCount(waitlist)
         //if (waitlist[INSTANCES[FB_IO_INSTANCE].getUID()] != null) this.joinedWaitlist()
     }
@@ -127,7 +127,7 @@ export default class Mahjong_page extends Page {
         for (let i = 1; i < 5; i++) {
             let ref = await INSTANCES[FB_IO_INSTANCE].FB_Finder('/lobbies/mahjong/',1,`players/player${i}`,UID)
             console.log(ref.val())
-            if (ref.val() != null) j++; break; 
+            if (ref.val() != null) j++; //break; 
         }
         console.log(j)
         if (j < 1) this.method(UID)
