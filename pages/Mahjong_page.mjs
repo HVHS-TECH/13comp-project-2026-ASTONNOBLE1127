@@ -2,7 +2,7 @@
 //Mahjong_page.mjs
 //written by Aston Noble
 //started 28/04/2026
-//updated 15/05/2026
+//updated 25/05/2026
 //mahjong class, makes the mahjong page
 /*********************************************************/
 
@@ -45,44 +45,24 @@ export default class Mahjong_page extends Page {
     //sets the text on the page and makes the buttons work
     /*****************************************************/
     async displayText() {
-        this.method0()
+        let lobby = await this.lobbyCheck(false)
+        if (lobby != false) this.makeLeaveButton(lobby)
         document.getElementById('waitCount').innerHTML = '0'
-        //INSTANCES[FB_IO_INSTANCE].FB_Listener('waitLists/mahjong',this.managePlayerCount)
         document.getElementById('join').innerHTML = 'join'
         document.getElementById('join').onclick = () => {
-            if (this.#isInLobby == false) {
-                this.joinedWaitlist(false)
-            }
+            this.lobbyCheck(true)
         }
-        //let waitlist = await INSTANCES[FB_IO_INSTANCE].FB_Read('waitLists/mahjong')
-        //if (waitlist[INSTANCES[FB_IO_INSTANCE].getUID()] != null) {
-            //this.joinedWaitlist(true)
-        //}
-        //this.managePlayerCount(waitlist)
-        //if (waitlist[INSTANCES[FB_IO_INSTANCE].getUID()] != null) this.joinedWaitlist()
     }
 
-    /*****************************************************/
-    //joinedWaitlist(_preEx)
+   /*****************************************************/
+    //makeLeaveButton(_ref)
     //
-    //input _preEx
-    //=a boolean stating if the player is already in the list
+    //input _ref
+    //=the path of the player in the lobby
     //
     //makes the leave button
     /*****************************************************/
-    joinedWaitlist(_preEx) {
-        this.#isInLobby = true
-        let uid = {}
-        let uuid = {}
-        let d = new Date();
-        uid[1] = INSTANCES[FB_IO_INSTANCE].getUID()
-        uuid[uid[1]] = {}
-        uuid[uid[1]]['time'] = d.getTime();
-        uuid[uid[1]]['uid'] = uid[1]
-        if (_preEx == false) {
-            INSTANCES[FB_IO_INSTANCE].FB_Write('waitLists/mahjong/',uuid)
-        }
-        //this.createDeck() // for testing
+    makeLeaveButton(_ref) {
         document.getElementById('waitIndicator').appendChild(this.makeElement(
             'div',{id:'waitBox'},[this.makeElement('a',{id:'waiting'}),
             this.makeElement('button',{id:'leave'})]
@@ -91,67 +71,65 @@ export default class Mahjong_page extends Page {
         document.getElementById('leave').innerHTML = 'leave'
         document.getElementById('leave').onclick = () => {
             this.#isInLobby = false
-            INSTANCES[FB_IO_INSTANCE].FB_Remove('waitLists/mahjong/'+uid[1])
             document.getElementById('waiting').remove()
             document.getElementById('leave').remove()
+            INSTANCES[FB_IO_INSTANCE].FB_Remove(_ref)
         }
     }
 
     /*****************************************************/
-    //managePlayerCount(_count)
+    //lobbyCheck(_join)
     //
-    //input _count
-    //=the read of the waitlist
+    //input _join
+    //=whether tto join a lobby if they are not in one
     //
-    //manages the player count counter
+    //checks if the player is in a lobby
     /*****************************************************/
-    async managePlayerCount(_count) {
-        if (_count != null) {
-            let count = Object.keys(_count).length
-            document.getElementById('waitCount').innerHTML = count
-            if (count >= 4) {
-                let lob = await INSTANCES[FB_IO_INSTANCE].FB_SortedRead("/waitLists/mahjong",false,4,true,"time")
-                lob.forEach(_item => console.log(_item.val()))
-                console.log(lob)
-                console.log(lob.val())
-            }
-        } else document.getElementById('waitCount').innerHTML = '0'
-    }
-
-    /*****************************************************/
-    //
-    /*****************************************************/
-    async method0() {
+    async lobbyCheck(_join) {
         const UID = INSTANCES[FB_IO_INSTANCE].getUID()
         let j = 0
+        let lobby
         for (let i = 1; i < 5; i++) {
             let ref = await INSTANCES[FB_IO_INSTANCE].FB_Finder('/lobbies/mahjong/',1,`players/player${i}`,UID)
-            console.log(ref.val())
-            if (ref.val() != null) j++; //break; 
+            let refval = ref.val()
+            if (refval != null) {j++; lobby = `/lobbies/mahjong/${Object.keys(ref.val())[0]}/players/player${i}`}
         }
-        console.log(j)
-        if (j < 1) this.method(UID)
+        if (j < 1 && this.#isInLobby == false) {
+            if (_join == true) {
+                this.#isInLobby = true
+                this.joinLobby(UID)
+                return true
+            } else this.#isInLobby = false; return false
+        } else this.#isInLobby = true; return lobby
     }
 
     /*****************************************************/
+    //joinLobby(UID)
     //
+    //input UID
+    //=the uid of the player
+    //
+    //makes the player join a lobby
     /*****************************************************/
-    async method(UID) {
+    async joinLobby(UID) {
+        let d = new Date();
+        let D = d.getTime();
         let ref = await INSTANCES[FB_IO_INSTANCE].FB_Finder('/lobbies/mahjong/',1,'open','true')
-        console.log(ref.val())
-        if (ref.val() == null) INSTANCES[FB_IO_INSTANCE].FB_Write(`/lobbies/mahjong/lobby${UID}`,{players:{player1:UID},open:'true'})
-            else {
+        if (ref.val() == null) {
+            INSTANCES[FB_IO_INSTANCE].FB_Write(`/lobbies/mahjong/lobby${UID}${D}`,{players:{player1:UID},open:'true'})
+            this.makeLeaveButton(`/lobbies/mahjong/lobby${UID}${D}/players/player1`)
+        } else {
                 let lobby = await INSTANCES[FB_IO_INSTANCE].FB_Read(`/lobbies/mahjong/${Object.keys(ref.val())[0]}/players/`)
-                for (let i = 2; i < 5; i++) {
+                for (let i = 1; i < 5; i++) {
                     if (lobby != null) {
-                        console.log('ds')
                         if (lobby[`player${i}`] == undefined) {
                             INSTANCES[FB_IO_INSTANCE].FB_Write(`/lobbies/mahjong/${Object.keys(ref.val())[0]}/players/`,{[`player${i}`]:UID})
+                            this.makeLeaveButton(`/lobbies/mahjong/${Object.keys(ref.val())[0]}/players/player${i}`)
                             break;
                         }
                     } else {
                         INSTANCES[FB_IO_INSTANCE].FB_Remove(`/lobbies/mahjong/${Object.keys(ref.val())[0]}`)
-                        this.method0(UID)
+                        this.joinLobby(UID)
                     }
                 }
             }
