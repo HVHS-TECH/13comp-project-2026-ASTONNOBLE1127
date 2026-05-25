@@ -2,7 +2,7 @@
 //Mahjong_page.mjs
 //written by Aston Noble
 //started 28/04/2026
-//updated 25/05/2026
+//updated 26/05/2026
 //mahjong class, makes the mahjong page
 /*********************************************************/
 
@@ -24,6 +24,8 @@ export default class Mahjong_page extends Page {
     static #PAGEID = "Mahjong_page"
     //lobby boolean
     #isInLobby = false
+    //listener boolean
+    #listenerIsOn = false
     
     /*****************************************************/
     //prepareHTML()
@@ -63,6 +65,7 @@ export default class Mahjong_page extends Page {
     //makes the leave button
     /*****************************************************/
     makeLeaveButton(_ref) {
+        let str = _ref.slice(0,-16)
         document.getElementById('waitIndicator').appendChild(this.makeElement(
             'div',{id:'waitBox'},[this.makeElement('a',{id:'waiting'}),
             this.makeElement('button',{id:'leave'})]
@@ -74,6 +77,12 @@ export default class Mahjong_page extends Page {
             document.getElementById('waiting').remove()
             document.getElementById('leave').remove()
             INSTANCES[FB_IO_INSTANCE].FB_Remove(_ref)
+            this.#listenerIsOn = false
+            INSTANCES[FB_IO_INSTANCE].FB_DestroyListener(str)
+        }
+        if (_ref.slice(-1) == '1' && this.#listenerIsOn == false) {
+            this.#listenerIsOn = true
+            INSTANCES[FB_IO_INSTANCE].FB_Listener(str,this.method0.bind(this))
         }
     }
 
@@ -136,6 +145,26 @@ export default class Mahjong_page extends Page {
                 if (j > 0) this.joinLobby(UID);
             }
     }
+
+    /*****************************************************/
+    //
+    /*****************************************************/
+    async method0(_ref) {
+        console.log(_ref)
+        if (_ref == null) return
+        let lobby = await this.lobbyCheck(false);
+        //console.log(lobby)
+        if (Object.keys(_ref['players']).length == 4 && _ref['open'] == true) {
+            //let lobby = this.lobbyCheck(false)
+        }
+    }
+
+
+    /*****************************************************/
+    //createGame()
+    //
+    //
+    /*****************************************************/
 
     /*****************************************************/
     //createDeck()
@@ -343,7 +372,6 @@ export default class Mahjong_page extends Page {
     //checks if a hand is in tenpai
     /*****************************************************/
     isTenpai(_hand,_ponWaits) {
-        var _handsnapshot = _hand.slice()
         let dragons = []
         let winds = []
         let manzu = []
@@ -470,7 +498,6 @@ export default class Mahjong_page extends Page {
     //calculates the hands pair waits
     /*****************************************************/
     calculatePairWaits(_calledSets,_sets,_hand) {
-        let _handsnap = _hand.slice()
         const arr = _sets.slice()
         let arr2 = []
         for (let a = 0; a < arr.length; a++) {
@@ -512,7 +539,6 @@ export default class Mahjong_page extends Page {
     /*****************************************************/
     calculateSetWaits(_calledSets,_sets,_hand,_ponWaits) {
         let pairs = this.removeDuplicates(_ponWaits).slice()
-        let _handsnap = _hand.slice()
         const arr = _sets.slice()
         let arr2 = []
         for (let a = 0; a < arr.length; a++) {

@@ -2,7 +2,7 @@
 //FB_IO.mjs
 //written by Aston Noble
 //started 22/03/2026
-//updated 21/05/2026
+//updated 26/05/2026
 //holds all the firebase methods
 /*********************************************************/
 
@@ -25,7 +25,8 @@ import {
     onValue,
     remove,
     push,
-    equalTo
+    equalTo,
+    off
 } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
 import {
     getAuth,
@@ -37,6 +38,7 @@ import {
 import { CONTENT_MANAGER_INSTANCE, INSTANCES } from "./Instance_vault.mjs";
 import Home_page from "../pages/Home_page.mjs"
 import Landing_page from "../pages/Landing_page.mjs";
+import Mahjong_page from "../pages/Mahjong_page.mjs";
 
 export default class FB_IO {
     /*****************************************************/
@@ -195,10 +197,23 @@ export default class FB_IO {
     /*****************************************************/
     FB_Listener(_path,_method) {
         const FB_REF = ref(getDatabase(),_path);
-        onValue(FB_REF, (snapshot) => {
-            const FB_DATA = snapshot.val();
-            _method(FB_DATA);
-        })
+        function passer(_snapshot) {
+            _method(_snapshot.val())
+        }
+        onValue(FB_REF, passer)
+    }
+
+    /*****************************************************/
+    //FB_DestroyListener(_path)
+    //
+    //input _path
+    //=the path listener of the listener 
+    //
+    //destroys listeners
+    /*****************************************************/
+    FB_DestroyListener(_path) {
+        const FB_REF = ref(getDatabase(),_path);
+        off(FB_REF)
     }
     
     /*****************************************************/
