@@ -92,7 +92,7 @@ export default class Mahjong_page extends Page {
         for (let i = 1; i < 5; i++) {
             let ref = await INSTANCES[FB_IO_INSTANCE].FB_Finder('/lobbies/mahjong/',1,`players/player${i}`,UID)
             let refval = ref.val()
-            if (refval != null) {j++; lobby = `/lobbies/mahjong/${Object.keys(ref.val())[0]}/players/player${i}`}
+            if (refval != null) {j++; lobby = `/lobbies/mahjong/${Object.keys(refval)[0]}/players/player${i}`}
         }
         if (j < 1 && this.#isInLobby == false) {
             if (_join == true) {
@@ -119,6 +119,7 @@ export default class Mahjong_page extends Page {
             INSTANCES[FB_IO_INSTANCE].FB_Write(`/lobbies/mahjong/lobby${UID}${D}`,{players:{player1:UID},open:'true'})
             this.makeLeaveButton(`/lobbies/mahjong/lobby${UID}${D}/players/player1`)
         } else {
+            let j = 0
                 let lobby = await INSTANCES[FB_IO_INSTANCE].FB_Read(`/lobbies/mahjong/${Object.keys(ref.val())[0]}/players/`)
                 for (let i = 1; i < 5; i++) {
                     if (lobby != null) {
@@ -129,9 +130,10 @@ export default class Mahjong_page extends Page {
                         }
                     } else {
                         INSTANCES[FB_IO_INSTANCE].FB_Remove(`/lobbies/mahjong/${Object.keys(ref.val())[0]}`)
-                        this.joinLobby(UID)
+                        j++
                     }
                 }
+                if (j > 0) this.joinLobby(UID);
             }
     }
 
