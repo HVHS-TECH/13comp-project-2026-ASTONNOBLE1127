@@ -2,7 +2,7 @@
 //Mahjong_page.mjs
 //written by Aston Noble
 //started 28/04/2026
-//updated 26/05/2026
+//updated 27/05/2026
 //mahjong class, makes the mahjong page
 /*********************************************************/
 
@@ -153,9 +153,15 @@ export default class Mahjong_page extends Page {
         console.log(_ref)
         if (_ref == null) return
         let lobby = await this.lobbyCheck(false);
-        //console.log(lobby)
-        if (Object.keys(_ref['players']).length == 4 && _ref['open'] == true) {
-            //let lobby = this.lobbyCheck(false)
+        console.log(lobby)
+        if (INSTANCES[FB_IO_INSTANCE].getUID() == _ref['players'][`player${lobby.slice(-1)}`]) {
+            console.log('true')
+            console.log(Object.keys(_ref['players']).length == 4 && _ref['open'] == 'true')
+            if (Object.keys(_ref['players']).length == 4 && _ref['open'] == 'true') {
+                console.log('???')
+                INSTANCES[FB_IO_INSTANCE].FB_Write(lobby.slice(0,-16),{open:"false"})
+                this.createGame()
+            }
         }
     }
 
@@ -165,6 +171,9 @@ export default class Mahjong_page extends Page {
     //
     //
     /*****************************************************/
+    createGame() {
+
+    }
 
     /*****************************************************/
     //createDeck()
