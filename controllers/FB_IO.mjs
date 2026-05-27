@@ -2,7 +2,7 @@
 //FB_IO.mjs
 //written by Aston Noble
 //started 22/03/2026
-//updated 26/05/2026
+//updated 28/05/2026
 //holds all the firebase methods
 /*********************************************************/
 
@@ -38,7 +38,7 @@ import {
 import { CONTENT_MANAGER_INSTANCE, INSTANCES } from "./Instance_vault.mjs";
 import Home_page from "../pages/Home_page.mjs"
 import Landing_page from "../pages/Landing_page.mjs";
-import Mahjong_page from "../pages/Mahjong_page.mjs";
+import Mahjong_lobby_page from "../pages/Mahjong_lobby_page.mjs";
 
 export default class FB_IO {
     /*****************************************************/

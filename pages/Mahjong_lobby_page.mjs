@@ -1,9 +1,9 @@
 /*********************************************************/
-//Mahjong_page.mjs
+//Mahjong_lobby_page.mjs
 //written by Aston Noble
 //started 28/04/2026
 //updated 27/05/2026
-//mahjong class, makes the mahjong page
+//mahjong lobby class, makes the mahjong lobby page
 /*********************************************************/
 
 /*********************************************************/
@@ -16,16 +16,18 @@ import {
     FB_IO_INSTANCE
 } from "../controllers/Instance_vault.mjs"
 
-export default class Mahjong_page extends Page {
+export default class Mahjong_lobby_page extends Page {
     /*****************************************************/
     //private fields
     /*****************************************************/
     //ID of the page
-    static #PAGEID = "Mahjong_page"
+    static #PAGEID = "Mahjong_lobby_page"
     //lobby boolean
     #isInLobby = false
     //listener boolean
     #listenerIsOn = false
+    //lobby
+    #currentLobby
     
     /*****************************************************/
     //prepareHTML()
@@ -65,7 +67,7 @@ export default class Mahjong_page extends Page {
     //makes the leave button
     /*****************************************************/
     makeLeaveButton(_ref) {
-        let str = _ref.slice(0,-16)
+        this.#currentLobby = _ref.slice(0,-16)
         document.getElementById('waitIndicator').appendChild(this.makeElement(
             'div',{id:'waitBox'},[this.makeElement('a',{id:'waiting'}),
             this.makeElement('button',{id:'leave'})]
@@ -78,11 +80,12 @@ export default class Mahjong_page extends Page {
             document.getElementById('leave').remove()
             INSTANCES[FB_IO_INSTANCE].FB_Remove(_ref)
             this.#listenerIsOn = false
-            INSTANCES[FB_IO_INSTANCE].FB_DestroyListener(str)
+            INSTANCES[FB_IO_INSTANCE].FB_Write(this.#currentLobby,{open:"true"})
+            INSTANCES[FB_IO_INSTANCE].FB_DestroyListener(this.#currentLobby)
         }
         if (_ref.slice(-1) == '1' && this.#listenerIsOn == false) {
             this.#listenerIsOn = true
-            INSTANCES[FB_IO_INSTANCE].FB_Listener(str,this.method0.bind(this))
+            INSTANCES[FB_IO_INSTANCE].FB_Listener(this.#currentLobby,this.method0.bind(this))
         }
     }
 
@@ -159,7 +162,7 @@ export default class Mahjong_page extends Page {
             console.log(Object.keys(_ref['players']).length == 4 && _ref['open'] == 'true')
             if (Object.keys(_ref['players']).length == 4 && _ref['open'] == 'true') {
                 console.log('???')
-                INSTANCES[FB_IO_INSTANCE].FB_Write(lobby.slice(0,-16),{open:"false"})
+                INSTANCES[FB_IO_INSTANCE].FB_Write(this.#currentLobby,{open:"false"})
                 this.createGame()
             }
         }
@@ -171,8 +174,19 @@ export default class Mahjong_page extends Page {
     //
     //
     /*****************************************************/
-    createGame() {
-
+    async createGame() {
+        let playOrder = this.shuffleDeck(['player1','player2','player3','player4'])
+        let deck = this.createDeck()
+        this.shuffleDeck(deck)
+        this.cutDeck(deck)
+        let deadwall = this.deadWall(deck)
+        let hands = this.deal(deck)
+        INSTANCES[FB_IO_INSTANCE].FB_Write(this.#currentLobby,{deadwall:deadwall})
+        INSTANCES[FB_IO_INSTANCE].FB_Write(this.#currentLobby,{deck:deck})
+        INSTANCES[FB_IO_INSTANCE].FB_Write(this.#currentLobby,{hands:hands})
+        let playO = {playOrder:{1:playOrder[0],2:playOrder[1],3:playOrder[2],4:playOrder[3]}}
+        INSTANCES[FB_IO_INSTANCE].FB_Write(this.#currentLobby,playO)
+        INSTANCES[FB_IO_INSTANCE].FB_Write(this.#currentLobby,{turn:1,round:1})
     }
 
     /*****************************************************/
@@ -189,7 +203,7 @@ export default class Mahjong_page extends Page {
                     else deck.push('m'+l,'p'+l,'s'+l)
             }
         }
-        this.shuffleDeck(deck)
+        return deck
     }
 
     /*****************************************************/
@@ -209,7 +223,7 @@ export default class Mahjong_page extends Page {
             _deck[y] = p
             _deck[x] = q
         }
-        this.cutDeck(_deck)
+        return _deck
     }
 
     /*****************************************************/
@@ -226,7 +240,7 @@ export default class Mahjong_page extends Page {
         _deck = _deck.slice(i,_deck.length)
         _deck = _deck.concat(half)
         console.log(_deck)
-        this.deadWall(_deck)
+        return _deck
     }
 
     /*****************************************************/
@@ -247,7 +261,7 @@ export default class Mahjong_page extends Page {
         }
         for(let i = 1; i < 5; i++) kan[i] = _deck.splice(0,1)[0]
         console.log('dora tiles: '+dora,'ura dora tiles: '+ura,'kan draw tiles: '+kan,'wall: '+_deck)
-        this.deal(_deck)
+        return {kan:kan,dora:dora,ura:ura}
     }
 
     /*****************************************************/
@@ -269,9 +283,10 @@ export default class Mahjong_page extends Page {
             player3.push(_deck.splice(0,1)[0])
             player4.push(_deck.splice(0,1)[0])
         }
-        console.log(player1,player2,player3,player4,_deck)
-        console.log(player1.sort(),player2.sort(),player3.sort(),player4.sort(),_deck.sort())
-        this.manageHand(player1.sort())
+        return {1:player1.sort(),2:player2.sort(),3:player3.sort(),4:player4.sort()}
+        //console.log(player1,player2,player3,player4,_deck)
+        //console.log(player1.sort(),player2.sort(),player3.sort(),player4.sort(),_deck.sort())
+        //this.manageHand(player1.sort())
     }
 
     /*****************************************************/
@@ -744,6 +759,6 @@ export default class Mahjong_page extends Page {
     //litterally just returns #PAGEID
     /*****************************************************/
     getPageID() {
-        return Mahjong_page.#PAGEID
+        return Mahjong_lobby_page.#PAGEID
     }
 }
