@@ -8,7 +8,7 @@
 
 import Page from "./Page.mjs"
 import Registration_page from "./Registration_page.mjs"
-import Mahjong_lobby_page from "./Mahjong_lobby_page.mjs"
+import Mahjong_page from "./Mahjong_page.mjs"
 import {
     INSTANCES,
     CONTENT_MANAGER_INSTANCE,
@@ -24,7 +24,7 @@ export default class Home_page extends Page {
     //list of gates directing to
     static #GATES = {
         mahjong:{
-            page:Mahjong_lobby_page,
+            page:Mahjong_page,
             leaderboard:true,
             thumbnail:'unnamed1.png'
         }

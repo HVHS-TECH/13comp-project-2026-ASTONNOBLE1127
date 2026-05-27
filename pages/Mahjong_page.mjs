@@ -1,9 +1,9 @@
 /*********************************************************/
-//Mahjong_lobby_page.mjs
+//Mahjong_page.mjs
 //written by Aston Noble
 //started 28/04/2026
 //updated 28/05/2026
-//mahjong lobby class, makes the mahjong lobby page
+//mahjong class, makes the mahjong page
 /*********************************************************/
 
 /*********************************************************/
@@ -16,12 +16,12 @@ import {
     FB_IO_INSTANCE
 } from "../controllers/Instance_vault.mjs"
 
-export default class Mahjong_lobby_page extends Page {
+export default class Mahjong_page extends Page {
     /*****************************************************/
     //private fields
     /*****************************************************/
     //ID of the page
-    static #PAGEID = "Mahjong_lobby_page"
+    static #PAGEID = "Mahjong_page"
     //lobby boolean
     #isInLobby = false
     //listener boolean
@@ -759,6 +759,6 @@ export default class Mahjong_lobby_page extends Page {
     //litterally just returns #PAGEID
     /*****************************************************/
     getPageID() {
-        return Mahjong_lobby_page.#PAGEID
+        return Mahjong_page.#PAGEID
     }
 }
