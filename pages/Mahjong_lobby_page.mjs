@@ -2,7 +2,7 @@
 //Mahjong_lobby_page.mjs
 //written by Aston Noble
 //started 28/04/2026
-//updated 27/05/2026
+//updated 28/05/2026
 //mahjong lobby class, makes the mahjong lobby page
 /*********************************************************/
 
