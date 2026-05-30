@@ -82,6 +82,7 @@ export default class Mahjong_page extends Page {
             this.#listenerIsOn = false
             INSTANCES[FB_IO_INSTANCE].FB_Write(this.#currentLobby,{open:"true"})
             INSTANCES[FB_IO_INSTANCE].FB_DestroyListener(this.#currentLobby)
+            document.getElementById('waitCount').innerHTML = '0'
         }
         if (_ref.slice(-1) == '1' && this.#listenerIsOn == false) {
             this.#listenerIsOn = true
@@ -153,15 +154,11 @@ export default class Mahjong_page extends Page {
     //
     /*****************************************************/
     async method0(_ref) {
-        console.log(_ref)
         if (_ref == null) return
         let lobby = await this.lobbyCheck(false);
-        console.log(lobby)
+        document.getElementById('waitCount').innerHTML = Object.keys(_ref['players']).length
         if (INSTANCES[FB_IO_INSTANCE].getUID() == _ref['players'][`player${lobby.slice(-1)}`]) {
-            console.log('true')
-            console.log(Object.keys(_ref['players']).length == 4 && _ref['open'] == 'true')
             if (Object.keys(_ref['players']).length == 4 && _ref['open'] == 'true') {
-                console.log('???')
                 INSTANCES[FB_IO_INSTANCE].FB_Write(this.#currentLobby,{open:"false"})
                 this.createGame()
             }
@@ -177,6 +174,7 @@ export default class Mahjong_page extends Page {
     async createGame() {
         let playOrder = this.shuffleDeck(['player1','player2','player3','player4'])
         let deck = this.createDeck()
+        let waits = {}
         this.shuffleDeck(deck)
         this.cutDeck(deck)
         let deadwall = this.deadWall(deck)
@@ -187,6 +185,10 @@ export default class Mahjong_page extends Page {
         let playO = {playOrder:{1:playOrder[0],2:playOrder[1],3:playOrder[2],4:playOrder[3]}}
         INSTANCES[FB_IO_INSTANCE].FB_Write(this.#currentLobby,playO)
         INSTANCES[FB_IO_INSTANCE].FB_Write(this.#currentLobby,{turn:1,round:1})
+        Object.keys(hands).forEach(_hand => {
+            waits[_hand] = this.manageHand(hands[_hand])
+        })
+        INSTANCES[FB_IO_INSTANCE].FB_Write(this.#currentLobby,{waits:waits})
     }
 
     /*****************************************************/
@@ -309,6 +311,7 @@ export default class Mahjong_page extends Page {
         console.log('kan waits: '+kanWaits)
         console.log('chi waits: '+chiWaits)
         console.log('win waits: '+tenpai)
+        return {ponWaits:ponWaits,kanWaits:kanWaits,chiWaits:chiWaits,waits:tenpai}
     }
 
     /*****************************************************/
