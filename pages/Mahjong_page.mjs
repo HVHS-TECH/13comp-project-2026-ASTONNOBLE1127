@@ -2,7 +2,7 @@
 //Mahjong_page.mjs
 //written by Aston Noble
 //started 28/04/2026
-//updated 28/05/2026
+//updated 01/06/2026
 //mahjong class, makes the mahjong page
 /*********************************************************/
 
@@ -28,6 +28,8 @@ export default class Mahjong_page extends Page {
     #listenerIsOn = false
     //lobby
     #currentLobby
+    //current player
+    #currentPlayer
     
     /*****************************************************/
     //prepareHTML()
@@ -131,6 +133,7 @@ export default class Mahjong_page extends Page {
         if (ref.val() == null) {
             INSTANCES[FB_IO_INSTANCE].FB_Write(`/lobbies/mahjong/lobby${UID}${D}`,{players:{player1:UID},open:'true'})
             this.makeLeaveButton(`/lobbies/mahjong/lobby${UID}${D}/players/player1`)
+            this.#currentPlayer = 'player1'
         } else {
             let j = 0
                 let lobby = await INSTANCES[FB_IO_INSTANCE].FB_Read(`/lobbies/mahjong/${Object.keys(ref.val())[0]}/players/`)
@@ -139,6 +142,7 @@ export default class Mahjong_page extends Page {
                         if (lobby[`player${i}`] == undefined) {
                             INSTANCES[FB_IO_INSTANCE].FB_Write(`/lobbies/mahjong/${Object.keys(ref.val())[0]}/players/`,{[`player${i}`]:UID})
                             this.makeLeaveButton(`/lobbies/mahjong/${Object.keys(ref.val())[0]}/players/player${i}`)
+                            this.#currentPlayer = `player${i}`
                             break;
                         }
                     } else {
@@ -165,6 +169,44 @@ export default class Mahjong_page extends Page {
         }
     }
 
+    /*****************************************************/
+    //displayHand()
+    /*****************************************************/
+    async displayHand() {
+        let val = await INSTANCES[FB_IO_INSTANCE].FB_Read(`${this.#currentLobby}/hands/${this.#currentPlayer}`)
+        let handtiles = []
+        val.forEach(_tile => {
+            console.warn(handtiles)
+            handtiles.push(this.makeElement('button',{
+                textContent:_tile,id:_tile,class:'tile','data-value':_tile},[]))
+        })
+        document.getElementById('waitIndicator').appendChild(this.makeElement('div',{id:'handDiv'},handtiles))
+        document.querySelectorAll('.tile').forEach(_el => {
+            _el.innerHTML = _el.getAttribute('data-value')
+            _el.addEventListener("click", (e) => {this.discard(e,val)});
+        })
+    }
+
+    /*****************************************************/
+    //discard(_tile)
+    /*****************************************************/
+    async discard(_tile,_bronchitis) {
+        let val = _tile['target'].getAttribute('data-value')
+        let d = new Date();
+        let D = d.getTime();
+        for (let i = 0; i < _bronchitis.length; i++) {
+            if (_bronchitis[i] ==  val) {
+                _bronchitis.splice(i,1)
+                break;
+            }
+        }
+        INSTANCES[FB_IO_INSTANCE].FB_Set(`${this.#currentLobby}/hands/${this.#currentPlayer}`,_bronchitis)
+        INSTANCES[FB_IO_INSTANCE].FB_Write(
+            `${this.#currentLobby}/discards/${this.#currentPlayer}`,
+            {[d.getTime()]:val})
+        //document.getElementById('handDiv').removeChild(_tile['target'])
+        _tile['target'].remove()
+    }
 
     /*****************************************************/
     //createGame()
@@ -184,11 +226,12 @@ export default class Mahjong_page extends Page {
         INSTANCES[FB_IO_INSTANCE].FB_Write(this.#currentLobby,{hands:hands})
         let playO = {playOrder:{1:playOrder[0],2:playOrder[1],3:playOrder[2],4:playOrder[3]}}
         INSTANCES[FB_IO_INSTANCE].FB_Write(this.#currentLobby,playO)
-        INSTANCES[FB_IO_INSTANCE].FB_Write(this.#currentLobby,{turn:1,round:1})
+        INSTANCES[FB_IO_INSTANCE].FB_Write(this.#currentLobby,{turn:1,round:1,repeats:0})
         Object.keys(hands).forEach(_hand => {
             waits[_hand] = this.manageHand(hands[_hand])
         })
         INSTANCES[FB_IO_INSTANCE].FB_Write(this.#currentLobby,{waits:waits})
+        this.displayHand()
     }
 
     /*****************************************************/
@@ -285,7 +328,7 @@ export default class Mahjong_page extends Page {
             player3.push(_deck.splice(0,1)[0])
             player4.push(_deck.splice(0,1)[0])
         }
-        return {1:player1.sort(),2:player2.sort(),3:player3.sort(),4:player4.sort()}
+        return {player1:player1.sort(),player2:player2.sort(),player3:player3.sort(),player4:player4.sort()}
         //console.log(player1,player2,player3,player4,_deck)
         //console.log(player1.sort(),player2.sort(),player3.sort(),player4.sort(),_deck.sort())
         //this.manageHand(player1.sort())

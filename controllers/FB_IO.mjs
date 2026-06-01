@@ -2,7 +2,7 @@
 //FB_IO.mjs
 //written by Aston Noble
 //started 22/03/2026
-//updated 28/05/2026
+//updated 01/06/2026
 //holds all the firebase methods
 /*********************************************************/
 
@@ -16,6 +16,7 @@ import {
     getDatabase,
     ref,
     get,
+    set,
     update,
     query,
     orderByChild,
@@ -98,9 +99,27 @@ export default class FB_IO {
     async FB_Read(_path) {
         const FB_REF = ref(getDatabase(),_path);
         const RAWREAD = await get(FB_REF);
+        console.log('%c' + RAWREAD.val(), 'color: white; background-color: blue;')
         return RAWREAD.val();
     }
 
+    /*****************************************************/
+    //FB_Set(_path,_object)
+    //
+    //input _path
+    //=path to set to
+    //input _object
+    //=object to set to the firebase
+    //
+    //output
+    //=proof that the promise was fufilled
+    //
+    //Sets _object to _path in the firebase
+    /*****************************************************/
+    async FB_Set(_path,_object) {
+        const FB_REF = ref(getDatabase(),_path);
+        return await set(FB_REF,_object);
+    }
 
     /*****************************************************/
     //FB_Push(_path,_object)
