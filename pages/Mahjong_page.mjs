@@ -209,6 +209,17 @@ export default class Mahjong_page extends Page {
     }
 
     /*****************************************************/
+    //pickUp()
+    /*****************************************************/
+    async pickUp() {
+        let tile = await INSTANCES[FB_IO_INSTANCE].FB_Read(`${this.#currentLobby}/deck/`)
+        let drawn = tile[tile.length - 1]
+        console.log(INSTANCES[FB_IO_INSTANCE].FB_Remove(`${this.#currentLobby}/deck/${tile.length-1}`))
+        INSTANCES[FB_IO_INSTANCE].FB_Write(`${this.#currentLobby}/hands/${this.#currentPlayer}`,{100:drawn})
+        this.displayHand()
+    }
+
+    /*****************************************************/
     //createGame()
     //
     //
