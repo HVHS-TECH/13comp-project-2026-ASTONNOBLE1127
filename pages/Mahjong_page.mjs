@@ -30,6 +30,8 @@ export default class Mahjong_page extends Page {
     #currentLobby
     //current player
     #currentPlayer
+    //has discarded
+    #hasDiscarded
     
     /*****************************************************/
     //prepareHTML()
@@ -159,6 +161,7 @@ export default class Mahjong_page extends Page {
     /*****************************************************/
     async method0(_ref) {
         if (_ref == null) return
+        if (_ref['players'] == null) return
         let lobby = await this.lobbyCheck(false);
         document.getElementById('waitCount').innerHTML = Object.keys(_ref['players']).length
         if (INSTANCES[FB_IO_INSTANCE].getUID() == _ref['players'][`player${lobby.slice(-1)}`]) {
@@ -173,10 +176,10 @@ export default class Mahjong_page extends Page {
     //displayHand()
     /*****************************************************/
     async displayHand() {
+        if (document.getElementById('handDiv')) document.getElementById('handDiv').remove()
         let val = await INSTANCES[FB_IO_INSTANCE].FB_Read(`${this.#currentLobby}/hands/${this.#currentPlayer}`)
         let handtiles = []
         val.forEach(_tile => {
-            console.warn(handtiles)
             handtiles.push(this.makeElement('button',{
                 textContent:_tile,id:_tile,class:'tile','data-value':_tile},[]))
         })
@@ -184,6 +187,7 @@ export default class Mahjong_page extends Page {
         document.querySelectorAll('.tile').forEach(_el => {
             _el.innerHTML = _el.getAttribute('data-value')
             _el.addEventListener("click", (e) => {this.discard(e,val)});
+            if (this.#hasDiscarded == true) _el.setAttribute("disabled", true)
         })
     }
 
@@ -200,12 +204,14 @@ export default class Mahjong_page extends Page {
                 break;
             }
         }
-        INSTANCES[FB_IO_INSTANCE].FB_Set(`${this.#currentLobby}/hands/${this.#currentPlayer}`,_bronchitis)
-        INSTANCES[FB_IO_INSTANCE].FB_Write(
+        await INSTANCES[FB_IO_INSTANCE].FB_Set(`${this.#currentLobby}/hands/${this.#currentPlayer}`,_bronchitis)
+        await INSTANCES[FB_IO_INSTANCE].FB_Write(
             `${this.#currentLobby}/discards/${this.#currentPlayer}`,
             {[d.getTime()]:val})
         //document.getElementById('handDiv').removeChild(_tile['target'])
         _tile['target'].remove()
+        this.pickUp()
+        this.displayHand()
     }
 
     /*****************************************************/
@@ -215,7 +221,8 @@ export default class Mahjong_page extends Page {
         let tile = await INSTANCES[FB_IO_INSTANCE].FB_Read(`${this.#currentLobby}/deck/`)
         let drawn = tile[tile.length - 1]
         console.log(INSTANCES[FB_IO_INSTANCE].FB_Remove(`${this.#currentLobby}/deck/${tile.length-1}`))
-        INSTANCES[FB_IO_INSTANCE].FB_Write(`${this.#currentLobby}/hands/${this.#currentPlayer}`,{100:drawn})
+        await INSTANCES[FB_IO_INSTANCE].FB_Write(`${this.#currentLobby}/hands/${this.#currentPlayer}`,{13:drawn})
+        this.#hasDiscarded = false
         this.displayHand()
     }
 
