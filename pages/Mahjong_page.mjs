@@ -2,7 +2,7 @@
 //Mahjong_page.mjs
 //written by Aston Noble
 //started 28/04/2026
-//updated 01/06/2026
+//updated 02/06/2026
 //mahjong class, makes the mahjong page
 /*********************************************************/
 
@@ -32,6 +32,8 @@ export default class Mahjong_page extends Page {
     #currentPlayer
     //has discarded
     #hasDiscarded
+    //play order
+    #playOrder
     
     /*****************************************************/
     //prepareHTML()
@@ -196,6 +198,7 @@ export default class Mahjong_page extends Page {
     /*****************************************************/
     async discard(_tile,_bronchitis) {
         let val = _tile['target'].getAttribute('data-value')
+        this.#hasDiscarded = true
         let d = new Date();
         let D = d.getTime();
         for (let i = 0; i < _bronchitis.length; i++) {
@@ -208,21 +211,45 @@ export default class Mahjong_page extends Page {
         await INSTANCES[FB_IO_INSTANCE].FB_Write(
             `${this.#currentLobby}/discards/${this.#currentPlayer}`,
             {[d.getTime()]:val})
-        //document.getElementById('handDiv').removeChild(_tile['target'])
         _tile['target'].remove()
+        this.checkWaits(val)
         this.pickUp()
         this.displayHand()
+    }
+
+    /*****************************************************/
+    //checkWaits(_tile)
+    /*****************************************************/
+    async checkWaits(_tile) {
+        let skips = {1:true,2:true,3:true,4:true}
+        let waits = await INSTANCES[FB_IO_INSTANCE].FB_Read(`${this.#currentLobby}/waits/`)
+        const POSITION = Object.keys(this.#playOrder['playOrder']).find(POSITION => 
+            this.#playOrder['playOrder'][POSITION] === this.#currentPlayer);
+        let nextPlayer = Number(POSITION) + 1
+        if (nextPlayer == 5) nextPlayer = 1
+        for (let i = 0; i < 3; i++) {
+            let otherPlayers = i + nextPlayer
+            if (otherPlayers > 4) otherPlayers-=4
+            if (waits[this.#playOrder['playOrder'][otherPlayers]].ponWaits?.includes(_tile)) skips[otherPlayers] = false
+            if (waits[this.#playOrder['playOrder'][otherPlayers]].kanWaits?.includes(_tile)) skips[otherPlayers] = false
+            if (waits[this.#playOrder['playOrder'][otherPlayers]].waits != false) skips[otherPlayers] = false
+        }
+        if (waits[this.#playOrder['playOrder'][nextPlayer]].chiWaits?.includes(_tile)) skips[nextPlayer] = false
+        console.log(skips)
     }
 
     /*****************************************************/
     //pickUp()
     /*****************************************************/
     async pickUp() {
+        const POSITION = Object.keys(this.#playOrder['playOrder']).find(POSITION => 
+            this.#playOrder['playOrder'][POSITION] === this.#currentPlayer);
+        let nextPlayer = Number(POSITION) + 1
+        if (nextPlayer == 5) nextPlayer = 1
         let tile = await INSTANCES[FB_IO_INSTANCE].FB_Read(`${this.#currentLobby}/deck/`)
         let drawn = tile[tile.length - 1]
-        console.log(INSTANCES[FB_IO_INSTANCE].FB_Remove(`${this.#currentLobby}/deck/${tile.length-1}`))
-        await INSTANCES[FB_IO_INSTANCE].FB_Write(`${this.#currentLobby}/hands/${this.#currentPlayer}`,{13:drawn})
-        this.#hasDiscarded = false
+        INSTANCES[FB_IO_INSTANCE].FB_Remove(`${this.#currentLobby}/deck/${tile.length-1}`)
+        await INSTANCES[FB_IO_INSTANCE].FB_Write(`${this.#currentLobby}/hands/${this.#playOrder['playOrder'][nextPlayer]}`,{13:drawn})
         this.displayHand()
     }
 
@@ -242,8 +269,8 @@ export default class Mahjong_page extends Page {
         INSTANCES[FB_IO_INSTANCE].FB_Write(this.#currentLobby,{deadwall:deadwall})
         INSTANCES[FB_IO_INSTANCE].FB_Write(this.#currentLobby,{deck:deck})
         INSTANCES[FB_IO_INSTANCE].FB_Write(this.#currentLobby,{hands:hands})
-        let playO = {playOrder:{1:playOrder[0],2:playOrder[1],3:playOrder[2],4:playOrder[3]}}
-        INSTANCES[FB_IO_INSTANCE].FB_Write(this.#currentLobby,playO)
+        this.#playOrder = {playOrder:{1:playOrder[0],2:playOrder[1],3:playOrder[2],4:playOrder[3]}}
+        INSTANCES[FB_IO_INSTANCE].FB_Write(this.#currentLobby,this.#playOrder)
         INSTANCES[FB_IO_INSTANCE].FB_Write(this.#currentLobby,{turn:1,round:1,repeats:0})
         Object.keys(hands).forEach(_hand => {
             waits[_hand] = this.manageHand(hands[_hand])
