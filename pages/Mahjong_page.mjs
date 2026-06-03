@@ -200,13 +200,17 @@ export default class Mahjong_page extends Page {
         let pla = await INSTANCES[FB_IO_INSTANCE].FB_Read(`${this.#currentLobby}/playOrder`)
         //pla[0] = 'timmy'
         this.#playOrder = {playOrder:pla}
+        const POSITION = Object.keys(this.#playOrder['playOrder']).find(POSITION => 
+            this.#playOrder['playOrder'][POSITION] === this.#currentPlayer);
+        INSTANCES[FB_IO_INSTANCE].FB_Listener(`${this.#currentLobby}/skips/${POSITION}`,this.manageSkips.bind(this))
         val.forEach(_tile => {
             handtiles.push(this.makeElement('button',{
-                textContent:_tile,id:_tile,class:'tile','data-value':_tile},[]))
+                textContent:_tile,id:_tile,class:'tile','data-value':_tile},[
+                    this.makeElement('img',{src:`./mahjong_tiles/${_tile}.png`,alt:_tile,'data-value':_tile})]))
         })
         document.getElementById('waitIndicator').appendChild(this.makeElement('div',{id:'handDiv'},handtiles))
         document.querySelectorAll('.tile').forEach(_el => {
-            _el.innerHTML = _el.getAttribute('data-value')
+            //_el.innerHTML = _el.getAttribute('data-value')
             _el.addEventListener("click", (e) => {this.discard(e,val)});
             //if (this.#hasDiscarded == true) 
             console.log(val)
@@ -294,11 +298,39 @@ export default class Mahjong_page extends Page {
             this.#playOrder['playOrder'][POSITION] === this.#currentPlayer);
         let nextPlayer = Number(POSITION) + 1
         if (nextPlayer == 5) nextPlayer = 1
+        INSTANCES[FB_IO_INSTANCE].FB_Write(`${this.#currentLobby}`,{turn:nextPlayer})
         let tile = await INSTANCES[FB_IO_INSTANCE].FB_Read(`${this.#currentLobby}/deck/`)
         let drawn = tile[tile.length - 1]
         INSTANCES[FB_IO_INSTANCE].FB_Remove(`${this.#currentLobby}/deck/${tile.length-1}`)
         await INSTANCES[FB_IO_INSTANCE].FB_Write(`${this.#currentLobby}/hands/${this.#playOrder['playOrder'][nextPlayer]}`,{13:drawn})
         this.displayHand()
+    }
+
+    //
+    //manageSkips(_val)
+    //
+    async manageSkips(_val) {
+        if (_val == false && !document.getElementById('skip')) {
+            const POSITION = Object.keys(this.#playOrder['playOrder']).find(POSITION => 
+                this.#playOrder['playOrder'][POSITION] === this.#currentPlayer);
+            let el = await this.makeElement('button',{id:'skip'})
+            if (!document.getElementById('skip')) {
+                await document.getElementById('waitCount').append(el)
+                document.getElementById('skip').innerHTML = 'skip'
+                document.getElementById('skip').onclick = () => {
+                    INSTANCES[FB_IO_INSTANCE].FB_Write(`${this.#currentLobby}/skips/`,{[POSITION]:true})
+                }
+                let turn = await INSTANCES[FB_IO_INSTANCE].FB_Read(`${this.#currentLobby}/turn`)
+                let temp = await INSTANCES[FB_IO_INSTANCE].FB_SortedRead(
+                    `${this.#currentLobby}/discards/${this.#playOrder['playOrder'][turn]}`,true,1,false)
+                    let currentDiscard = temp.val()
+                    console.warn(Object.values(currentDiscard)[0])
+                let waits = await INSTANCES[FB_IO_INSTANCE].FB_Read(`${this.#currentLobby}/waits/${this.#currentPlayer}`)
+                if (this.#playOrder['playOrder'][turn-1] = await INSTANCES[FB_IO_INSTANCE].getUID()) {
+                    if (waits.chiWaits?.includes(Object.values(currentDiscard)[0])) console.log('d')
+                }
+            }
+        }
     }
 
     /*****************************************************/
@@ -308,6 +340,8 @@ export default class Mahjong_page extends Page {
     /*****************************************************/
     async createGame() {
         let playOrder = this.shuffleDeck(['player1','player2','player3','player4'])
+        this.#playOrder = {playOrder:{1:playOrder[0],2:playOrder[1],3:playOrder[2],4:playOrder[3]}}
+        INSTANCES[FB_IO_INSTANCE].FB_Write(this.#currentLobby,this.#playOrder)
         let deck = this.createDeck()
         let waits = {}
         this.shuffleDeck(deck)
@@ -317,8 +351,6 @@ export default class Mahjong_page extends Page {
         INSTANCES[FB_IO_INSTANCE].FB_Write(this.#currentLobby,{deadwall:deadwall})
         INSTANCES[FB_IO_INSTANCE].FB_Write(this.#currentLobby,{deck:deck})
         INSTANCES[FB_IO_INSTANCE].FB_Write(this.#currentLobby,{hands:hands})
-        this.#playOrder = {playOrder:{1:playOrder[0],2:playOrder[1],3:playOrder[2],4:playOrder[3]}}
-        INSTANCES[FB_IO_INSTANCE].FB_Write(this.#currentLobby,this.#playOrder)
         INSTANCES[FB_IO_INSTANCE].FB_Write(this.#currentLobby,{turn:1,round:1,repeats:0})
         Object.keys(hands).forEach(_hand => {
             waits[_hand] = this.manageHand(hands[_hand])
