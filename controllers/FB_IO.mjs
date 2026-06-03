@@ -231,6 +231,7 @@ export default class FB_IO {
     //destroys listeners
     /*****************************************************/
     FB_DestroyListener(_path) {
+        console.log(_path)
         const FB_REF = ref(getDatabase(),_path);
         off(FB_REF)
     }
