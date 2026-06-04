@@ -322,15 +322,88 @@ export default class Mahjong_page extends Page {
                 }
                 let turn = await INSTANCES[FB_IO_INSTANCE].FB_Read(`${this.#currentLobby}/turn`)
                 let temp = await INSTANCES[FB_IO_INSTANCE].FB_SortedRead(
-                    `${this.#currentLobby}/discards/${this.#playOrder['playOrder'][turn]}`,true,1,false)
+                    `${this.#currentLobby}/discards/${this.#playOrder['playOrder'][turn]}`,false,1,false)
                     let currentDiscard = temp.val()
                     console.warn(Object.values(currentDiscard)[0])
                 let waits = await INSTANCES[FB_IO_INSTANCE].FB_Read(`${this.#currentLobby}/waits/${this.#currentPlayer}`)
                 if (this.#playOrder['playOrder'][turn-1] = await INSTANCES[FB_IO_INSTANCE].getUID()) {
-                    if (waits.chiWaits?.includes(Object.values(currentDiscard)[0])) console.log('d')
+                    if (waits.chiWaits?.includes(Object.values(currentDiscard)[0])) this.makeStealButton(currentDiscard,'chi',turn)
                 }
+                if (waits.kanWaits?.includes(Object.values(currentDiscard)[0])) this.makeStealButton(currentDiscard,'kan',turn)
+                if (waits.ponWaits?.includes(Object.values(currentDiscard)[0])) this.makeStealButton(currentDiscard,'pon',turn)
+                if (waits.Waits?.includes(Object.values(currentDiscard)[0])) this.makeStealButton(currentDiscard,'ron',turn)
             }
         }
+    }
+
+    //
+    //makeStealButton(_tile,_type,_from)
+    //
+    async makeStealButton(_tile = {},_type,_from) {
+        await document.getElementById('waitCount').append(await this.makeElement('button',{
+            id:_type,'data-value':Object.values(_tile)[0],class:'steal','from':_from}))
+        document.getElementById(_type).innerHTML = _type
+        document.getElementById(_type).onclick = async () => {
+            let hand = await INSTANCES[FB_IO_INSTANCE].FB_Read(`${this.#currentLobby}/hands/${this.#currentPlayer}`)
+            if (_type == 'chi') {
+                let chi = await this.checkChi(Object.values(_tile)[0])
+                console.log(chi)
+                if (chi.length == 1) {
+                    let newHand = this.AremoveB(hand,chi[0])
+                    console.log(chi[0],hand,newHand)
+                    await INSTANCES[FB_IO_INSTANCE].FB_Set(`${this.#currentLobby}/hands/${this.#currentPlayer}`,newHand)
+                }
+            }
+            if (_type == 'kan') {
+                let kan = [Object.values(_tile)[0],Object.values(_tile)[0],Object.values(_tile)[0]]
+                let newHand = this.AremoveB(hand,kan)
+                await INSTANCES[FB_IO_INSTANCE].FB_Set(`${this.#currentLobby}/hands/${this.#currentPlayer}`,newHand)
+            }
+            if (_type == 'pon') {
+                let kan = [Object.values(_tile)[0],Object.values(_tile)[0]]
+                let newHand = this.AremoveB(hand,kan)
+                await INSTANCES[FB_IO_INSTANCE].FB_Set(`${this.#currentLobby}/hands/${this.#currentPlayer}`,newHand)
+            }
+            if (_type == 'ron') {
+                //do something here lol
+            }
+        }
+    }
+
+    //
+    //kanDraw()
+    //
+    async kanDraw() {
+        let kanCount = await INSTANCES[FB_IO_INSTANCE].FB_Read(`${this.#currentLobby}/kanCount`)
+        kanCount++
+        let kanDraw = await INSTANCES[FB_IO_INSTANCE].FB_Read(`${this.#currentLobby}/deadwall/kan/${kanCount}`)
+        let hand = await INSTANCES[FB_IO_INSTANCE].FB_Read(`${this.#currentLobby}/hands/${this.#currentPlayer}`)
+        await hand.push(kanDraw)
+        await INSTANCES[FB_IO_INSTANCE].FB_Set(`${this.#currentLobby}/hands/${this.#currentPlayer}`,hand)
+    }
+
+    //
+    //checkChi(_tile)
+    //
+    async checkChi(_tile) {
+        let viable = []
+        console.log(_tile)
+        let hand = await INSTANCES[FB_IO_INSTANCE].FB_Read(`${this.#currentLobby}/hands/${this.#currentPlayer}`)
+        if (hand.includes(_tile.slice(0,1)+(Number(_tile.slice(1,2))+1))) {
+            if (hand.includes(_tile.slice(0,1)+(Number(_tile.slice(1,2))+2))) {
+                viable.push([_tile.slice(0,1)+(Number(_tile.slice(1,2))+1),_tile.slice(0,1)+(Number(_tile.slice(1,2))+2)])
+            }
+            if (hand.includes(_tile.slice(0,1)+(Number(_tile.slice(1,2))-1))) {
+                viable.push([_tile.slice(0,1)+(Number(_tile.slice(1,2))+1),_tile.slice(0,1)+(Number(_tile.slice(1,2))-1)])
+            }
+        }
+        if (hand.includes(_tile.slice(0,1)+(Number(_tile.slice(1,2))-1))) {
+            if (hand.includes(_tile.slice(0,1)+(Number(_tile.slice(1,2))-2))) {
+                viable.push([_tile.slice(0,1)+(Number(_tile.slice(1,2))-1),_tile.slice(0,1)+(Number(_tile.slice(1,2))-2)])
+            }
+        }
+        console.warn(viable)
+        return viable
     }
 
     /*****************************************************/
@@ -351,7 +424,7 @@ export default class Mahjong_page extends Page {
         INSTANCES[FB_IO_INSTANCE].FB_Write(this.#currentLobby,{deadwall:deadwall})
         INSTANCES[FB_IO_INSTANCE].FB_Write(this.#currentLobby,{deck:deck})
         INSTANCES[FB_IO_INSTANCE].FB_Write(this.#currentLobby,{hands:hands})
-        INSTANCES[FB_IO_INSTANCE].FB_Write(this.#currentLobby,{turn:1,round:1,repeats:0})
+        INSTANCES[FB_IO_INSTANCE].FB_Write(this.#currentLobby,{turn:1,round:1,repeats:0,kanCount:0})
         Object.keys(hands).forEach(_hand => {
             waits[_hand] = this.manageHand(hands[_hand])
         })
