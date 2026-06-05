@@ -34,6 +34,8 @@ export default class Mahjong_page extends Page {
     #hasDiscarded
     //play order
     #playOrder = {playOrder:false}
+    //call count
+    #callCount = 0
     
     /*****************************************************/
     //prepareHTML()
@@ -44,6 +46,7 @@ export default class Mahjong_page extends Page {
         //this.createDeck()
         return this.makeElement('div',{},[
             this.makeElement('button',{id:'join'}),
+            this.makeElement('p',{id:'position'}),
             this.makeElement('a',{id:'waitCount'}),
             this.makeElement('a',{id:'waitIndicator'})
         ])
@@ -202,6 +205,7 @@ export default class Mahjong_page extends Page {
         this.#playOrder = {playOrder:pla}
         const POSITION = Object.keys(this.#playOrder['playOrder']).find(POSITION => 
             this.#playOrder['playOrder'][POSITION] === this.#currentPlayer);
+        document.getElementById('position').innerHTML = POSITION
         INSTANCES[FB_IO_INSTANCE].FB_Listener(`${this.#currentLobby}/skips/${POSITION}`,this.manageSkips.bind(this))
         val.forEach(_tile => {
             handtiles.push(this.makeElement('button',{
@@ -213,8 +217,7 @@ export default class Mahjong_page extends Page {
             //_el.innerHTML = _el.getAttribute('data-value')
             _el.addEventListener("click", (e) => {this.discard(e,val)});
             //if (this.#hasDiscarded == true) 
-            console.log(val)
-            if (val.length != 14) _el.setAttribute("disabled", true)
+            if (![14,11,8,5,2].includes(val.length)) _el.setAttribute("disabled", true)
         })
     
     }
@@ -240,6 +243,7 @@ export default class Mahjong_page extends Page {
         _tile['target'].remove()
         this.checkWaits(val)
         let waits = await this.manageHand(_bronchitis.sort())
+        console.log('bronchitis',_bronchitis,waits)
         await INSTANCES[FB_IO_INSTANCE].FB_Write(`${this.#currentLobby}/waits/${this.#currentPlayer}`,waits)
         //this.pickUp()
         this.displayHand()
@@ -279,12 +283,13 @@ export default class Mahjong_page extends Page {
     skipWaits(_skips) {
         if (_skips.includes(false) == false) {
             INSTANCES[FB_IO_INSTANCE].FB_DestroyListener(`${this.#currentLobby}/skips`)
-            if (Object.values(_skips).some(x => x === true)) {
+            if (Object.values(_skips).some(x => x !== true)) {
                 INSTANCES[FB_IO_INSTANCE].FB_Remove(`${this.#currentLobby}/skips`)
-                this.pickUp()
-            } else {
                 //handle calls in priority order
                 //e.g. (ron,kan/pon,chi)
+            } else {
+                this.pickUp()
+                INSTANCES[FB_IO_INSTANCE].FB_Remove(`${this.#currentLobby}/skips`)
             }
         }
     }
@@ -301,8 +306,9 @@ export default class Mahjong_page extends Page {
         INSTANCES[FB_IO_INSTANCE].FB_Write(`${this.#currentLobby}`,{turn:nextPlayer})
         let tile = await INSTANCES[FB_IO_INSTANCE].FB_Read(`${this.#currentLobby}/deck/`)
         let drawn = tile[tile.length - 1]
+        let nextHand = await INSTANCES[FB_IO_INSTANCE].FB_Read(`${this.#currentLobby}/hands/${this.#playOrder['playOrder'][nextPlayer]}`)
         INSTANCES[FB_IO_INSTANCE].FB_Remove(`${this.#currentLobby}/deck/${tile.length-1}`)
-        await INSTANCES[FB_IO_INSTANCE].FB_Write(`${this.#currentLobby}/hands/${this.#playOrder['playOrder'][nextPlayer]}`,{13:drawn})
+        await INSTANCES[FB_IO_INSTANCE].FB_Write(`${this.#currentLobby}/hands/${this.#playOrder['playOrder'][nextPlayer]}`,{[nextHand.length]:drawn})
         this.displayHand()
     }
 
@@ -331,7 +337,9 @@ export default class Mahjong_page extends Page {
                 }
                 if (waits.kanWaits?.includes(Object.values(currentDiscard)[0])) this.makeStealButton(currentDiscard,'kan',turn)
                 if (waits.ponWaits?.includes(Object.values(currentDiscard)[0])) this.makeStealButton(currentDiscard,'pon',turn)
-                if (waits.Waits?.includes(Object.values(currentDiscard)[0])) this.makeStealButton(currentDiscard,'ron',turn)
+                if (waits.waits != false) {
+                    if (waits.waits?.includes(Object.values(currentDiscard)[0])) this.makeStealButton(currentDiscard,'ron',turn)
+                }
             }
         }
     }
@@ -340,33 +348,51 @@ export default class Mahjong_page extends Page {
     //makeStealButton(_tile,_type,_from)
     //
     async makeStealButton(_tile = {},_type,_from) {
+        const POSITION = Object.keys(this.#playOrder['playOrder']).find(POSITION => 
+            this.#playOrder['playOrder'][POSITION] === this.#currentPlayer);
         await document.getElementById('waitCount').append(await this.makeElement('button',{
             id:_type,'data-value':Object.values(_tile)[0],class:'steal','from':_from}))
-        document.getElementById(_type).innerHTML = _type
+        document.getElementById(_type).innerHTML = _type +' '+_from
         document.getElementById(_type).onclick = async () => {
             let hand = await INSTANCES[FB_IO_INSTANCE].FB_Read(`${this.#currentLobby}/hands/${this.#currentPlayer}`)
+            INSTANCES[FB_IO_INSTANCE].FB_Write(`${this.#currentLobby}/skips/`,{[POSITION]:_type})
             if (_type == 'chi') {
                 let chi = await this.checkChi(Object.values(_tile)[0])
                 console.log(chi)
+                chi = [chi[0]] //remove this later 
                 if (chi.length == 1) {
                     let newHand = this.AremoveB(hand,chi[0])
                     console.log(chi[0],hand,newHand)
+                    chi.push(Object.values(_tile)[0])
                     await INSTANCES[FB_IO_INSTANCE].FB_Set(`${this.#currentLobby}/hands/${this.#currentPlayer}`,newHand)
+                    let jim = {}
+                    jim[this.#callCount] = chi
+                    INSTANCES[FB_IO_INSTANCE].FB_Write(`${this.#currentLobby}/calls/${this.#currentPlayer}`,jim)
                 }
             }
             if (_type == 'kan') {
                 let kan = [Object.values(_tile)[0],Object.values(_tile)[0],Object.values(_tile)[0]]
                 let newHand = this.AremoveB(hand,kan)
+                kan.push(Object.values(_tile)[0])
                 await INSTANCES[FB_IO_INSTANCE].FB_Set(`${this.#currentLobby}/hands/${this.#currentPlayer}`,newHand)
+                let jim = {}
+                jim[this.#callCount] = kan
+                INSTANCES[FB_IO_INSTANCE].FB_Write(`${this.#currentLobby}/calls/${this.#currentPlayer}`,jim)
             }
             if (_type == 'pon') {
-                let kan = [Object.values(_tile)[0],Object.values(_tile)[0]]
-                let newHand = this.AremoveB(hand,kan)
+                let pon = [Object.values(_tile)[0],Object.values(_tile)[0]]
+                let newHand = this.AremoveB(hand,pon)
+                pon.push(Object.values(_tile)[0])
                 await INSTANCES[FB_IO_INSTANCE].FB_Set(`${this.#currentLobby}/hands/${this.#currentPlayer}`,newHand)
+                let jim = {}
+                jim[this.#callCount] = pon
+                INSTANCES[FB_IO_INSTANCE].FB_Write(`${this.#currentLobby}/calls/${this.#currentPlayer}`,jim)
             }
             if (_type == 'ron') {
                 //do something here lol
             }
+            this.#callCount++
+            INSTANCES[FB_IO_INSTANCE].FB_Write(this.#currentLobby,{turn:POSITION})
         }
     }
 
@@ -387,8 +413,17 @@ export default class Mahjong_page extends Page {
     //
     async checkChi(_tile) {
         let viable = []
+        let redFives = []
         console.log(_tile)
-        let hand = await INSTANCES[FB_IO_INSTANCE].FB_Read(`${this.#currentLobby}/hands/${this.#currentPlayer}`)
+        let shand = await INSTANCES[FB_IO_INSTANCE].FB_Read(`${this.#currentLobby}/hands/${this.#currentPlayer}`)
+        let hand = shand.slice()
+            for (let i = 0; i < hand.length; i++) {
+                hand[i] = hand[i].slice(0,2)
+            }
+        if (shand.includes('m5r')) redFives.push('m5r')
+        if (shand.includes('p5r')) redFives.push('p5r')
+        if (shand.includes('s5r')) redFives.push('s5r')
+        
         if (hand.includes(_tile.slice(0,1)+(Number(_tile.slice(1,2))+1))) {
             if (hand.includes(_tile.slice(0,1)+(Number(_tile.slice(1,2))+2))) {
                 viable.push([_tile.slice(0,1)+(Number(_tile.slice(1,2))+1),_tile.slice(0,1)+(Number(_tile.slice(1,2))+2)])
@@ -402,6 +437,16 @@ export default class Mahjong_page extends Page {
                 viable.push([_tile.slice(0,1)+(Number(_tile.slice(1,2))-1),_tile.slice(0,1)+(Number(_tile.slice(1,2))-2)])
             }
         }
+        redFives.forEach(_tile => {
+            for (let i = 0; i < viable.length; i++) {
+                const POSITION = Object.keys(viable[i]).find(POSITION => 
+                    viable[i][POSITION] === _tile.slice(0,2));
+                if (POSITION !== undefined) {
+                    viable[i][POSITION] = _tile;
+                    break;
+                }
+            }
+        })
         console.warn(viable)
         return viable
     }
@@ -544,6 +589,7 @@ export default class Mahjong_page extends Page {
     manageHand(_hand) {
         //_hand = ['m1','m1','m1','m2','m3','m4','m5','m6','m7','m8','m9','m9','m9']
         //_hand = ['Dr','Dr','Dr','m2','m3','m4','m5','m6','m7','m8','m9','m9','m9']
+        //_hand = ['Dr','Dr','Dw','Dw','m1','m2','m3','m4','m5','m6','m7','m8','m9']
         let ponWaits = this.calculatePonWaits(_hand)
         let kanWaits = this.calculateKanWaits(ponWaits)
         let chiWaits = this.calculateChiWaits(_hand)
@@ -687,7 +733,13 @@ export default class Mahjong_page extends Page {
         this.honorSetFinder(windsCounts,'Winds',possibleSets)
         let pairWaits = this.calculatePairWaits(0,possibleSets,_hand)
         let setWaits = this.calculateSetWaits(0,possibleSets,_hand,_ponWaits)
+        if (this.#callCount == 3) {
+            let setWait = this.calculateSetWaits(0,possibleSets,_hand,_ponWaits)
+            pairWaits.push(...setWait)
+        }
         pairWaits.push(...setWaits)
+        if (_hand.length == 1) pairWaits = _hand[0]
+        if (pairWaits.length > 0) alert(pairWaits)
         if (pairWaits.length == 0) return false
             else return pairWaits //returns the combination of set and pair waits
     }
@@ -778,7 +830,9 @@ export default class Mahjong_page extends Page {
                     for (let d = 0; d < arr.length; d++) {
                         let setd = this.makeSetArray(arr[d])
                         let poss = seta.slice()
-                        poss.push(...setb,...setc,...setd)
+                        if (this.#callCount <= 2) poss.push(...setb)
+                        if (this.#callCount <= 1) poss.push(...setc)
+                        if (this.#callCount == 0) poss.push(...setd)
                         if (this.AsupersetB(_hand,poss)) {
                             arr2.push(...this.AremoveB(_hand,poss))
                         }
@@ -818,15 +872,53 @@ export default class Mahjong_page extends Page {
                     let setc = this.makeSetArray(arr[c])
                     for (let d = 0; d < _ponWaits.length; d++) {
                         let poss = seta.slice()
-                        poss.push(...setb,...setc,pairs[d],pairs[d])
+                        poss.push(pairs[d],pairs[d])
+                        if (this.#callCount <= 1) poss.push(...setb)
+                        if (this.#callCount == 0) poss.push(...setc)
                         if (this.AsupersetB(_hand,poss)) {
-                            if (this.AremoveB(_hand,poss).length ==1) {
+                            if (this.AremoveB(_hand,poss).length == 1) {
                                 arr2.push(this.AremoveB(_hand,poss))
                             } else {
                                 arr2.push(...this.calculateChiWaits(this.AremoveB(_hand,poss)))
+                                arr2.push(...this.calculatePonWaits(this.AremoveB(_hand,poss)))
                             }
                         }
                     }
+                }
+            }
+        }
+        return this.removeDuplicates(arr2)
+    }
+
+    /*****************************************************/
+    //calculateSetWait(_calledSets,_sets,_hand,_ponWaits) 
+    //
+    //input _calledSets
+    //=the ammount of sets called
+    //input _sets
+    //=the possible sets for the hand
+    //input _hand
+    //=the hand to calculate the waits for
+    //input _ponWaits
+    //=the possible pairs for the hand
+    //
+    //output
+    //=all the set waits of the hand
+    //
+    //calculates the hands set wait 
+    //exclusive for all other sets called
+    /*****************************************************/
+    calculateSetWait(_calledSets,_sets,_hand,_ponWaits) {
+        let pairs = this.removeDuplicates(_ponWaits).slice()
+        let arr2 = []
+        for (let d = 0; d < _ponWaits.length; d++) {
+            let poss = [pairs[d],pairs[d]]
+            if (this.AsupersetB(_hand,poss)) {
+                if (this.AremoveB(_hand,poss).length == 1) {
+                    arr2.push(this.AremoveB(_hand,poss))
+                } else {
+                    arr2.push(...this.calculateChiWaits(this.AremoveB(_hand,poss)))
+                    arr2.push(...this.calculatePonWaits(this.AremoveB(_hand,poss)))
                 }
             }
         }
