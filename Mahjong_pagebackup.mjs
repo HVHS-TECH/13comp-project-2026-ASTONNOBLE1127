@@ -48,7 +48,6 @@ export default class Mahjong_page extends Page {
             this.makeElement('button',{id:'join'}),
             this.makeElement('p',{id:'position'}),
             this.makeElement('a',{id:'waitCount'}),
-            this.makeElement('a',{id:'stealIndicator'}),
             this.makeElement('a',{id:'waitIndicator'})
         ])
     }
@@ -77,7 +76,7 @@ export default class Mahjong_page extends Page {
     //makes the leave button
     /*****************************************************/
     makeLeaveButton(_ref) {
-        //this.manageHand(['m5'])
+        this.manageHand(['m5'])
         this.#currentLobby = _ref.slice(0,-16)
         document.getElementById('waitIndicator').appendChild(this.makeElement(
             'div',{id:'waitBox'},[this.makeElement('a',{id:'waiting'}),
@@ -291,7 +290,7 @@ export default class Mahjong_page extends Page {
             INSTANCES[FB_IO_INSTANCE].FB_DestroyListener(`${this.#currentLobby}/skips`)
             if (Object.values(_skips).some(x => x !== true)) {
                 alert('taken')
-                //INSTANCES[FB_IO_INSTANCE].FB_Remove(`${this.#currentLobby}/skips`)
+                INSTANCES[FB_IO_INSTANCE].FB_Remove(`${this.#currentLobby}/skips`)
                 //handle calls in priority order
                 //e.g. (ron,kan/pon,chi)
             } else {
@@ -329,11 +328,9 @@ export default class Mahjong_page extends Page {
                 this.#playOrder['playOrder'][POSITION] === this.#currentPlayer);
             let el = await this.makeElement('button',{id:'skip'})
             if (!document.getElementById('skip')) {
-                await document.getElementById('stealIndicator').append(el)
+                await document.getElementById('waitCount').append(el)
                 document.getElementById('skip').innerHTML = 'skip'
                 document.getElementById('skip').onclick = () => {
-                    document.querySelectorAll('.steal').forEach(_el => _el.remove())
-                    document.getElementById('skip').remove()
                     INSTANCES[FB_IO_INSTANCE].FB_Write(`${this.#currentLobby}/skips/`,{[POSITION]:true})
                 }
                 let turn = await INSTANCES[FB_IO_INSTANCE].FB_Read(`${this.#currentLobby}/turn`)
@@ -362,43 +359,11 @@ export default class Mahjong_page extends Page {
     async makeStealButton(_tile = {},_type,_from) {
         const POSITION = Object.keys(this.#playOrder['playOrder']).find(POSITION => 
             this.#playOrder['playOrder'][POSITION] === this.#currentPlayer);
-        await document.getElementById('stealIndicator').append(await this.makeElement('button',{
+            console.log(POSITION,this.#playOrder)
+        await document.getElementById('waitCount').append(await this.makeElement('button',{
             id:_type,'data-value':Object.values(_tile)[0],class:'steal','from':_from}))
         document.getElementById(_type).innerHTML = _type +' '+_from
         document.getElementById(_type).onclick = async () => {
-            INSTANCES[FB_IO_INSTANCE].FB_Write(`${this.#currentLobby}/skips/`,{[POSITION]:_type})
-            INSTANCES[FB_IO_INSTANCE].FB_Listener(`${this.#currentLobby}/skips`,this.steal.bind(this))
-            document.querySelectorAll('.steal').forEach(_el => _el.remove())
-            document.getElementById('skip').remove()
-        }
-    }
-
-    //
-    //steal
-    //
-    async steal(_val) {
-        let turn = await INSTANCES[FB_IO_INSTANCE].FB_Read(`${this.#currentLobby}/turn`)
-        if (_val.includes(false) == false) {
-            INSTANCES[FB_IO_INSTANCE].FB_DestroyListener(`${this.#currentLobby}/skips`)
-            const POSITION = Object.keys(this.#playOrder['playOrder']).find(POSITION => 
-                this.#playOrder['playOrder'][POSITION] === this.#currentPlayer);
-            let _type = _val[POSITION]
-            let typeval
-            let enemtypeval = 0
-            if (_type == 'chi') typeval = 1
-            if (_type == 'pon') typeval = 2
-            if (_type == 'kan') typeval = 3 //this shouldn't need to be higher than pon but idk
-            if (_type == 'ron') typeval = 4
-            _val.forEach(vali => {
-            if (vali == 'chi') enemtypeval = 1
-            if (vali == 'pon') enemtypeval = 2
-            if (vali == 'kan') enemtypeval = 3 //this shouldn't need to be higher than pon but idk
-            if (vali == 'ron') enemtypeval = 4
-            })
-            if (typeval >= enemtypeval) {
-            let temp = await INSTANCES[FB_IO_INSTANCE].FB_SortedRead(
-                `${this.#currentLobby}/discards/${this.#playOrder['playOrder'][turn]}`,false,1,false)
-            let _tile = temp.val()
             INSTANCES[FB_IO_INSTANCE].FB_Write(this.#currentLobby,{turn:POSITION})
             let hand = await INSTANCES[FB_IO_INSTANCE].FB_Read(`${this.#currentLobby}/hands/${this.#currentPlayer}`)
             INSTANCES[FB_IO_INSTANCE].FB_Write(`${this.#currentLobby}/skips/`,{[POSITION]:_type})
@@ -442,7 +407,6 @@ export default class Mahjong_page extends Page {
             this.#callCount++
             INSTANCES[FB_IO_INSTANCE].FB_Write(this.#currentLobby,{turn:POSITION})
         }
-    }
     }
 
     //
