@@ -2,7 +2,7 @@
 //FB_IO.mjs
 //written by Aston Noble
 //started 22/03/2026
-//updated 01/06/2026
+//updated 06/06/2026
 //holds all the firebase methods
 /*********************************************************/
 
@@ -99,7 +99,7 @@ export default class FB_IO {
     async FB_Read(_path) {
         const FB_REF = ref(getDatabase(),_path);
         const RAWREAD = await get(FB_REF);
-        console.log('%c' + RAWREAD.val(), 'color: white; background-color: blue;')
+        //console.log('%c' + RAWREAD.val(), 'color: white; background-color: blue;')
         return RAWREAD.val();
     }
 
@@ -184,7 +184,7 @@ export default class FB_IO {
         const LIMITTO = await this.isHigh(_side,_quantity);
         const ORDERBY = await this.isOrderChild(_orderBy,_childidk);
         const QUERY = query(FB_REF,ORDERBY,LIMITTO);
-        console.log(FB_REF,ORDERBY,LIMITTO,QUERY)
+        //console.log(FB_REF,ORDERBY,LIMITTO,QUERY)
         return await get(QUERY);
     }
 
@@ -231,7 +231,7 @@ export default class FB_IO {
     //destroys listeners
     /*****************************************************/
     FB_DestroyListener(_path) {
-        console.log(_path)
+        //console.log(_path)
         //alert('listener Destroyed: '+_path)
         const FB_REF = ref(getDatabase(),_path);
         off(FB_REF)
