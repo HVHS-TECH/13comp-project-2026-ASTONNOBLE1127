@@ -156,6 +156,7 @@ export default class Mahjong_page extends Page {
                             this.#currentPlayer = `player${i}`
                             INSTANCES[FB_IO_INSTANCE].FB_Listener(`${this.#currentLobby}/hands/${this.#currentPlayer}`,this.displayHand.bind(this))
                             INSTANCES[FB_IO_INSTANCE].FB_Listener(`${this.#currentLobby}/wins`,this.manageWin.bind(this))
+                            this.#callCount = 0  //this place will need to be changed
                             break;
                         }
                     } else {
@@ -344,6 +345,7 @@ export default class Mahjong_page extends Page {
                 let waits = await INSTANCES[FB_IO_INSTANCE].FB_Read(`${this.#currentLobby}/waits/${this.#currentPlayer}`)
                 let turnOverlap = turn + 1
                 if (turnOverlap == 5) turnOverlap = 1
+                console.log(this.#playOrder['playOrder'][turnOverlap] == this.#currentPlayer,waits.chiWaits?.includes(Object.values(currentDiscard)[0]))
                 if (this.#playOrder['playOrder'][turnOverlap] == this.#currentPlayer) {
                     if (waits.chiWaits?.includes(Object.values(currentDiscard)[0])) this.makeStealButton(currentDiscard,'chi',turn)
                 }
@@ -475,6 +477,7 @@ export default class Mahjong_page extends Page {
         let winnerUID = await INSTANCES[FB_IO_INSTANCE].FB_Read(`${this.#currentLobby}/players/${_val}`)
         let winnerName = await INSTANCES[FB_IO_INSTANCE].FB_Read(`users/${winnerUID}/public/username`)
         alert(`${winnerName} won`)
+        
     }
 
     //
