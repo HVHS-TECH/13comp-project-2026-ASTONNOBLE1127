@@ -2,7 +2,7 @@
 //Mahjong_page.mjs
 //written by Aston Noble
 //started 28/04/2026
-//updated 06/06/2026
+//updated 07/06/2026
 //mahjong class, makes the mahjong page
 /*********************************************************/
 
@@ -405,7 +405,7 @@ export default class Mahjong_page extends Page {
             if (_type == 'chi') {
                 let chi = await this.checkChi(Object.values(_tile)[0])
                 console.log(chi)
-                chi = [chi[0]] //remove this later 
+                //chi = [chi[0]] //remove this later 
                 if (chi.length == 1) {
                     let newHand = this.AremoveB(hand,chi[0])
                     console.log(chi[0],hand,newHand)
@@ -414,6 +414,29 @@ export default class Mahjong_page extends Page {
                     let jim = {}
                     jim[this.#callCount] = chi
                     INSTANCES[FB_IO_INSTANCE].FB_Write(`${this.#currentLobby}/calls/${this.#currentPlayer}`,jim)
+                } else if (chi.length > 0) {
+                    let possibleChi = []
+                    chi.forEach(_set => {
+                        possibleChi.push(this.makeElement('button',{class:'chiOptions','data-value':JSON.stringify(_set)},[
+                            this.makeElement('img',{src:`./mahjong_tiles/${_set[0]}.png`}),
+                            this.makeElement('img',{src:`./mahjong_tiles/${_set[1]}.png`})
+                        ]))
+                    })
+                    console.log(possibleChi)
+                    document.getElementById('stealIndicator').append(this.makeElement('div',{id:'chiOptionDiv'},possibleChi))
+                    document.querySelectorAll('.chiOptions').forEach(_el => {
+                        _el.onclick = async () => {
+                            let newChi = JSON.parse(_el.getAttribute('data-value'))
+                            let newHand = this.AremoveB(hand,newChi)
+                            document.querySelectorAll('.chiOptions').forEach(_div => _div.remove())
+                            console.log(newChi,hand,newHand)
+                            newChi.push(Object.values(_tile)[0])
+                            await INSTANCES[FB_IO_INSTANCE].FB_Set(`${this.#currentLobby}/hands/${this.#currentPlayer}`,newHand)
+                            let jim = {}
+                            jim[this.#callCount] = newChi
+                            INSTANCES[FB_IO_INSTANCE].FB_Write(`${this.#currentLobby}/calls/${this.#currentPlayer}`,jim)
+                        }
+                    })
                 }
             }
             if (_type == 'kan') {
