@@ -64,7 +64,7 @@ export default class Home_page extends Page {
             let subElement = []
             subElement.push(
                 this.makeElement('img',{
-                    class:'thumb',src:`../${Home_page.#GATES[_gate].thumbnail}`}),
+                    class:'thumb',src:`${Home_page.#GATES[_gate].thumbnail}`}),
                 this.makeElement('button',{class:'play',id:_gate})
             )
             if (Home_page.#GATES[_gate].leaderboard = true) {
