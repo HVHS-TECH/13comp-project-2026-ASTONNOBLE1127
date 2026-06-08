@@ -617,7 +617,7 @@ export default class Mahjong_page extends Page {
             if (discards[this.#playOrder['playOrder'][currentPos]] != null) {
             Object.values(discards[this.#playOrder['playOrder'][currentPos]])?.forEach(_tile => {
                 console.log(_tile)
-                arr.push(this.makeElement('img',{src:`../mahjong_tiles/${_tile}.png`}))
+                arr.push(this.makeElement('img',{src:`./mahjong_tiles/${_tile}.png`}))
             })}}
             //if (i == 3) arr.reverse()
             let call = `calls0`
@@ -664,7 +664,7 @@ export default class Mahjong_page extends Page {
                     let call = []
                     console.log(_set)
                     Object.values(_set).forEach(_tile => {
-                        call.push(this.makeElement('img',{src:`../mahjong_tiles/${_tile}.png`}))
+                        call.push(this.makeElement('img',{src:`./mahjong_tiles/${_tile}.png`}))
                     })
                     arr.push(this.makeElement('div',{class:'setHolder'},call))
                 })

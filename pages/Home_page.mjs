@@ -26,7 +26,7 @@ export default class Home_page extends Page {
         mahjong:{
             page:Mahjong_page,
             leaderboard:true,
-            thumbnail:'../images/unnamed1.png'
+            thumbnail:'./images/unnamed1.png'
         }
     }
 
