@@ -2,7 +2,7 @@
 //Home_page.mjs
 //written by Aston Noble
 //started 01/04/2026
-//updated 07/06/2026
+//updated 08/06/2026
 //home page class, makes the home page
 /*********************************************************/
 
@@ -26,7 +26,7 @@ export default class Home_page extends Page {
         mahjong:{
             page:Mahjong_page,
             leaderboard:true,
-            thumbnail:'./images/unnamed1.png'
+            thumbnail:'../images/unnamed1.png'
         }
     }
 

@@ -217,13 +217,24 @@ export default class Mahjong_page extends Page {
                 textContent:_tile,id:_tile,class:'tile','data-value':_tile},[
                     this.makeElement('img',{src:`./mahjong_tiles/${_tile}.png`,alt:_tile,'data-value':_tile})]))
         })
+        let correctLength = false
         document.getElementById('waitIndicator').appendChild(this.makeElement('div',{id:'handDiv'},handtiles))
-        document.querySelectorAll('.tile').forEach(_el => {
+        document.querySelectorAll('.tile').forEach(async _el => {
             //_el.innerHTML = _el.getAttribute('data-value')
             _el.addEventListener("click", (e) => {this.discard(e,val)});
             //if (this.#hasDiscarded == true) 
-            if (![14,11,8,5,2].includes(val.length)) _el.setAttribute("disabled", true)
+            if (![14,11,8,5,2].includes(val.length)) {_el.setAttribute("disabled", true)
+            } else {
+                correctLength = true
+            }
         })
+        if (correctLength == true) {
+            let waits = await INSTANCES[FB_IO_INSTANCE].FB_Read(`${this.#currentLobby}/waits/${this.#currentPlayer}/waits`)
+            console.log(waits)
+            if (waits != false) {
+                if (waits.includes(val[val.length - 1])) this.makeTsumoButton(val[val.length - 1])
+            }
+        }
     
     }
 
@@ -328,6 +339,7 @@ export default class Mahjong_page extends Page {
         if (_val == false && !document.getElementById('skip')) {
             const POSITION = Object.keys(this.#playOrder['playOrder']).find(POSITION => 
                 this.#playOrder['playOrder'][POSITION] === this.#currentPlayer);
+            console.log(POSITION)
             let el = await this.makeElement('button',{id:'skip'})
             if (!document.getElementById('skip')) {
                 await document.getElementById('stealIndicator').append(el)
@@ -343,18 +355,43 @@ export default class Mahjong_page extends Page {
                     let currentDiscard = temp.val()
                     console.warn(Object.values(currentDiscard)[0])
                 let waits = await INSTANCES[FB_IO_INSTANCE].FB_Read(`${this.#currentLobby}/waits/${this.#currentPlayer}`)
-                let turnOverlap = turn + 1
+                let turnOverlap = Number(turn) + 1
                 if (turnOverlap == 5) turnOverlap = 1
                 console.log(this.#playOrder['playOrder'][turnOverlap] == this.#currentPlayer,waits.chiWaits?.includes(Object.values(currentDiscard)[0]))
+                console.log(turnOverlap,)
                 if (this.#playOrder['playOrder'][turnOverlap] == this.#currentPlayer) {
-                    if (waits.chiWaits?.includes(Object.values(currentDiscard)[0])) this.makeStealButton(currentDiscard,'chi',turn)
+                    if (waits.chiWaits?.includes(Object.values(currentDiscard)[0].slice(0,2))) this.makeStealButton(currentDiscard,'chi',turn)
                 }
-                if (waits.kanWaits?.includes(Object.values(currentDiscard)[0])) this.makeStealButton(currentDiscard,'kan',turn)
-                if (waits.ponWaits?.includes(Object.values(currentDiscard)[0])) this.makeStealButton(currentDiscard,'pon',turn)
+                if (waits.kanWaits?.includes(Object.values(currentDiscard)[0].slice(0,2))) this.makeStealButton(currentDiscard,'kan',turn)
+                if (waits.ponWaits?.includes(Object.values(currentDiscard)[0].slice(0,2))) this.makeStealButton(currentDiscard,'pon',turn)
                 if (waits.waits != false) {
-                    if (waits.waits?.includes(Object.values(currentDiscard)[0])) this.makeStealButton(currentDiscard,'ron',turn)
+                    if (waits.waits?.includes(Object.values(currentDiscard)[0].slice(0,2))) this.makeStealButton(currentDiscard,'ron',turn)
                 }
             }
+        }
+    }
+
+    //
+    //
+    //
+    async makeTsumoButton(_tile) {
+        document.querySelectorAll('.tile').forEach(_el => _el.setAttribute('disabled',true))
+        let el = await this.makeElement('button',{id:'skip'})
+        await document.getElementById('stealIndicator').append(el)
+        document.getElementById('skip').innerHTML = 'skip'
+        let el2 = await this.makeElement('button',{id:'tsumo','data-value':_tile})
+        await document.getElementById('stealIndicator').append(el2)
+        document.getElementById('tsumo').innerHTML = 'tsumo'
+        el.onclick = () => {
+            el.remove()
+            el2.remove()
+            document.querySelectorAll('.tile').forEach(_el => _el.setAttribute('disabled',false))
+        }
+        el2.onclick = () => {
+            el.remove()
+            el2.remove()
+            //do something here lol
+            INSTANCES[FB_IO_INSTANCE].FB_Write(this.#currentLobby,{wins:this.#currentPlayer})
         }
     }
 
@@ -397,6 +434,7 @@ export default class Mahjong_page extends Page {
             if (vali == 'kan') enemtypeval = 3 //this shouldn't need to be higher than pon but idk
             if (vali == 'ron') enemtypeval = 4
             })
+            console.log(typeval,enemtypeval)
             if (typeval >= enemtypeval) {
             let temp = await INSTANCES[FB_IO_INSTANCE].FB_SortedRead(
                 `${this.#currentLobby}/discards/${this.#playOrder['playOrder'][turn]}`,false,1,false)
@@ -411,7 +449,7 @@ export default class Mahjong_page extends Page {
                 if (chi.length == 1) {
                     let newHand = this.AremoveB(hand,chi[0])
                     console.log(chi[0],hand,newHand)
-                    chi.push(Object.values(_tile)[0])
+                    chi[0].push(Object.values(_tile)[0])
                     await INSTANCES[FB_IO_INSTANCE].FB_Set(`${this.#currentLobby}/hands/${this.#currentPlayer}`,newHand)
                     let jim = {}
                     jim[this.#callCount] = chi
@@ -444,6 +482,10 @@ export default class Mahjong_page extends Page {
             if (_type == 'kan') {
                 let kan = [Object.values(_tile)[0],Object.values(_tile)[0],Object.values(_tile)[0]]
                 let newHand = this.AremoveB(hand,kan)
+                if (newHand.length != (hand.length - kan.length)) {
+                    kan[0] = Object.values(_tile)[0] + 'r'
+                    newHand = this.AremoveB(hand,kan)
+                }
                 kan.push(Object.values(_tile)[0])
                 await INSTANCES[FB_IO_INSTANCE].FB_Set(`${this.#currentLobby}/hands/${this.#currentPlayer}`,newHand)
                 let jim = {}
@@ -454,6 +496,10 @@ export default class Mahjong_page extends Page {
             if (_type == 'pon') {
                 let pon = [Object.values(_tile)[0],Object.values(_tile)[0]]
                 let newHand = this.AremoveB(hand,pon)
+                if (newHand.length != (hand.length - pon.length)) {
+                    pon[0] = Object.values(_tile)[0] + 'r'
+                    newHand = this.AremoveB(hand,pon)
+                }
                 pon.push(Object.values(_tile)[0])
                 await INSTANCES[FB_IO_INSTANCE].FB_Set(`${this.#currentLobby}/hands/${this.#currentPlayer}`,newHand)
                 let jim = {}
@@ -476,7 +522,9 @@ export default class Mahjong_page extends Page {
     async manageWin(_val) {
         let winnerUID = await INSTANCES[FB_IO_INSTANCE].FB_Read(`${this.#currentLobby}/players/${_val}`)
         let winnerName = await INSTANCES[FB_IO_INSTANCE].FB_Read(`users/${winnerUID}/public/username`)
-        alert(`${winnerName} won`)
+        if (winnerName == null) {
+            alert(`${winnerName} won`)
+        }
         
     }
 
