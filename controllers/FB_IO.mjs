@@ -214,7 +214,8 @@ export default class FB_IO {
     //
     //work in progress
     /*****************************************************/
-    FB_Listener(_path,_method) {
+    async FB_Listener(_path,_method) {
+        await this.FB_DestroyListener(_path)
         const FB_REF = ref(getDatabase(),_path);
         function passer(_snapshot) {
             _method(_snapshot.val())
