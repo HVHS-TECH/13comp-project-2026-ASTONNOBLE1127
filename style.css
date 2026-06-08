@@ -1,0 +1,70 @@
+.discardsjr {
+    /*height: 150px;*/
+    background-color: aquamarine;
+    color: brown;
+    background: olive;
+}
+/*html {
+    background-color: aquamarine;
+    color: brown;
+    background: olive;
+}
+#discards3 {
+    margin: 0px;
+}
+#discards1 {
+    margin: 0px;
+}*/
+.discards {
+  display: grid;
+  width:fit-content;
+  grid-template-columns: 150px 250px 150px;
+  grid-template-rows: 150px 250px 150px;
+  gap: 3px;
+  background-color: dodgerblue;
+  padding: 5px;
+}
+.discards .discardsjr {
+  background-color: white;
+  padding: 10px;
+  justify-items: center;
+  align-items: center;  
+}
+.discards #discards2 {
+  display: grid;
+  grid-template-rows: 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+}
+.discards #discards3 {
+  display: grid;
+  grid-template-rows: 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+}
+.discards #discards1 {
+  display: grid;
+  grid-template-rows: 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+  writing-mode: vertical-rl;
+}
+.discards #discards0 {
+  display: grid;
+  grid-template-rows: 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+}
+.discardsjr img {
+    width: 25px;
+    padding-left: 6px;
+    padding-right: 6px;
+    height: 37px;
+}
+.setHolder {
+    width: 120px;
+}
+.setHolder img {
+    width: 25px;
+    padding-left: 0px;
+    padding-right: 0px;
+    height: 37px;
+}

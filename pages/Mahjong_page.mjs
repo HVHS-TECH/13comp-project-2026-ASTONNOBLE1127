@@ -49,6 +49,7 @@ export default class Mahjong_page extends Page {
             this.makeElement('p',{id:'position'}),
             this.makeElement('a',{id:'waitCount'}),
             this.makeElement('a',{id:'stealIndicator'}),
+            this.makeElement('a',{id:'discardDiv'}),
             this.makeElement('a',{id:'waitIndicator'})
         ])
     }
@@ -145,6 +146,8 @@ export default class Mahjong_page extends Page {
             this.#currentPlayer = 'player1'
             INSTANCES[FB_IO_INSTANCE].FB_Listener(`${this.#currentLobby}/hands/${this.#currentPlayer}`,this.displayHand.bind(this))
             INSTANCES[FB_IO_INSTANCE].FB_Listener(`${this.#currentLobby}/wins`,this.manageWin.bind(this))
+            INSTANCES[FB_IO_INSTANCE].FB_Listener(`${this.#currentLobby}/discards`,this.displayDiscards.bind(this))
+            INSTANCES[FB_IO_INSTANCE].FB_Listener(`${this.#currentLobby}/calls`,this.displayDiscards.bind(this))
         } else {
             let j = 0
                 let lobby = await INSTANCES[FB_IO_INSTANCE].FB_Read(`/lobbies/mahjong/${Object.keys(ref.val())[0]}/players/`)
@@ -156,6 +159,8 @@ export default class Mahjong_page extends Page {
                             this.#currentPlayer = `player${i}`
                             INSTANCES[FB_IO_INSTANCE].FB_Listener(`${this.#currentLobby}/hands/${this.#currentPlayer}`,this.displayHand.bind(this))
                             INSTANCES[FB_IO_INSTANCE].FB_Listener(`${this.#currentLobby}/wins`,this.manageWin.bind(this))
+                            INSTANCES[FB_IO_INSTANCE].FB_Listener(`${this.#currentLobby}/discards`,this.displayDiscards.bind(this))
+                            INSTANCES[FB_IO_INSTANCE].FB_Listener(`${this.#currentLobby}/calls`,this.displayDiscards.bind(this))
                             this.#callCount = 0  //this place will need to be changed
                             break;
                         }
@@ -235,7 +240,7 @@ export default class Mahjong_page extends Page {
                 if (waits.includes(val[val.length - 1])) this.makeTsumoButton(val[val.length - 1])
             }
         }
-    
+        this.displayDiscards()
     }
 
     /*****************************************************/
@@ -289,6 +294,9 @@ export default class Mahjong_page extends Page {
                 if (waits[this.#playOrder['playOrder'][otherPlayers]].waits?.includes(_tile.slice(0,2))) skips[otherPlayers] = false
             }
         }
+        console.log(waits[this.#playOrder['playOrder'][nextPlayer]].chiWaits?.includes(_tile.slice(0,2)))
+        console.log(waits[this.#playOrder['playOrder'][nextPlayer]].chiWaits,_tile.slice(0,2))
+        console.log(waits,this.#playOrder['playOrder'],nextPlayer)
         if (waits[this.#playOrder['playOrder'][nextPlayer]].chiWaits?.includes(_tile.slice(0,2))) skips[nextPlayer] = false
         console.log(skips)
         INSTANCES[FB_IO_INSTANCE].FB_Write(this.#currentLobby,{skips:skips})
@@ -452,7 +460,7 @@ export default class Mahjong_page extends Page {
                     chi[0].push(Object.values(_tile)[0])
                     await INSTANCES[FB_IO_INSTANCE].FB_Set(`${this.#currentLobby}/hands/${this.#currentPlayer}`,newHand)
                     let jim = {}
-                    jim[this.#callCount] = chi
+                    jim[this.#callCount] = chi[0]
                     INSTANCES[FB_IO_INSTANCE].FB_Write(`${this.#currentLobby}/calls/${this.#currentPlayer}`,jim)
                 } else if (chi.length > 0) {
                     let possibleChi = []
@@ -522,7 +530,7 @@ export default class Mahjong_page extends Page {
     async manageWin(_val) {
         let winnerUID = await INSTANCES[FB_IO_INSTANCE].FB_Read(`${this.#currentLobby}/players/${_val}`)
         let winnerName = await INSTANCES[FB_IO_INSTANCE].FB_Read(`users/${winnerUID}/public/username`)
-        if (winnerName == null) {
+        if (winnerName != null) {
             alert(`${winnerName} won`)
         }
         
@@ -588,6 +596,86 @@ export default class Mahjong_page extends Page {
         return viable
     }
 
+    //
+    //displayDiscards()
+    //
+    async displayDiscards() {
+        const POSITION = Object.keys(this.#playOrder['playOrder']).find(POSITION => 
+            this.#playOrder['playOrder'][POSITION] === this.#currentPlayer);
+        document.querySelectorAll('.discards').forEach(_el => _el.remove())
+        let discards = await INSTANCES[FB_IO_INSTANCE].FB_Read(`${this.#currentLobby}/discards`)
+        let discard = []
+        for (let i = 0; i < 4; i++) {
+            let currentPos = Number(POSITION) + i + 2
+            if (currentPos > 4) currentPos-=4
+            if (currentPos > 4) currentPos-=4
+            let arr = []
+            console.log(discards,this.#playOrder['playOrder'][currentPos])
+            //console.log(discards[this.#playOrder['playOrder'][currentPos]])
+            if (discards != null) {
+            if (discards[this.#playOrder['playOrder'][currentPos]] != null) {
+            Object.values(discards[this.#playOrder['playOrder'][currentPos]])?.forEach(_tile => {
+                console.log(_tile)
+                arr.push(this.makeElement('img',{src:`../mahjong_tiles/${_tile}.png`}))
+            })}}
+            //if (i == 3) arr.reverse()
+            let call = `calls0`
+            if (i == 1) call = `calls3`
+            if (i == 2) call = `center`
+            if (i == 3) call = `calls1`
+            discard.push(this.makeElement('div',{class:'discardsjr',id:call}),
+            this.makeElement('div',{class:'discardsjr',id:`discards${i}`},arr))
+        }
+        discard.push(this.makeElement('div',{class:'discardsjr',id:'calls2'}))
+        let temp = discard[5]
+        discard[5] = discard[7]
+        discard[7] = temp
+        //let tempEl = document.createElement('div')
+        //tempEl.setAttribute('class','discardsjr')
+        //let tempArr = [tempEl,discard[0],tempEl,discard[3],tempEl,discard[2],tempEl,discard[1],tempEl]
+        document.getElementById('discardDiv').append(this.makeElement('div',{class:'discards'},discard))
+        //document.getElementById('discards1').transformOrigin = "5% 5%";
+        //document.getElementById('discards3').transformOrigin = "5% 5%";
+        document.getElementById('discards1').childNodes.forEach(_el => _el.style.rotate="90deg")
+        document.getElementById('discards3').childNodes.forEach(_el => _el.style.rotate="90deg")
+        document.getElementById('discards0').style.rotate="180deg"
+        console.log(discard)
+        this.displayCalls()
+    }
+
+    //
+    //displayCalls()
+    //
+    async displayCalls() {
+        const POSITION = Object.keys(this.#playOrder['playOrder']).find(POSITION => 
+            this.#playOrder['playOrder'][POSITION] === this.#currentPlayer);
+        let calls = await INSTANCES[FB_IO_INSTANCE].FB_Read(`${this.#currentLobby}/calls`)
+        for (let i = 0; i < 4; i++) {
+            let currentPos = Number(POSITION) + i + 2
+            if (currentPos > 4) currentPos-=4
+            if (currentPos > 4) currentPos-=4
+            let arr = []
+            if (calls != null) {
+                if (calls[this.#playOrder['playOrder'][currentPos]] != undefined) {
+                console.log(calls,this.#playOrder['playOrder'][currentPos])
+                console.log(calls[this.#playOrder['playOrder'][currentPos]])
+                Object.values(calls[this.#playOrder['playOrder'][currentPos]])?.forEach(_set => {
+                    let call = []
+                    console.log(_set)
+                    Object.values(_set).forEach(_tile => {
+                        call.push(this.makeElement('img',{src:`../mahjong_tiles/${_tile}.png`}))
+                    })
+                    arr.push(this.makeElement('div',{class:'setHolder'},call))
+                })
+                let callEl = this.makeElement('div',{id:`call`},arr)
+                console.log(callEl,i)
+                document.getElementById(`calls${i}`).append(callEl)
+            }
+            }
+
+        }
+    }
+
     /*****************************************************/
     //createGame()
     //
@@ -607,6 +695,7 @@ export default class Mahjong_page extends Page {
         INSTANCES[FB_IO_INSTANCE].FB_Write(this.#currentLobby,{deck:deck})
         INSTANCES[FB_IO_INSTANCE].FB_Write(this.#currentLobby,{hands:hands})
         INSTANCES[FB_IO_INSTANCE].FB_Write(this.#currentLobby,{turn:1,round:1,repeats:0,kanCount:0})
+        INSTANCES[FB_IO_INSTANCE].FB_Remove(`${this.#currentLobby}/discards`)
         Object.keys(hands).forEach(_hand => {
             waits[_hand] = this.manageHand(hands[_hand])
         })
