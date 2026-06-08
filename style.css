@@ -18,15 +18,15 @@
 .discards {
   display: grid;
   width:fit-content;
-  grid-template-columns: 150px 250px 150px;
-  grid-template-rows: 150px 250px 150px;
-  gap: 3px;
+  grid-template-columns: 22.5vh 37.5vh 22.5vh;
+  grid-template-rows: 22.5vh 37.5vh 22.5vh;
+  gap: 0.45vh;
   background-color: dodgerblue;
-  padding: 5px;
+  padding: 0.75vh;
 }
 .discards .discardsjr {
   background-color: white;
-  padding: 10px;
+  padding: 1.5vh;
   justify-items: center;
   align-items: center;  
 }
@@ -54,17 +54,31 @@
   grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
 }
 .discardsjr img {
-    width: 25px;
-    padding-left: 6px;
-    padding-right: 6px;
-    height: 37px;
+    width: 3.75vh;
+    padding-left: 0.6vh;
+    padding-right: 0.6vh;
+    height: 5.55vh;
 }
 .setHolder {
-    width: 120px;
+    width: 18vh;
 }
 .setHolder img {
-    width: 25px;
+    width: 3.75vh;
     padding-left: 0px;
     padding-right: 0px;
-    height: 37px;
+    height: 5.55vh;
+}
+#calls0 {
+    transform: rotate(180deg);
+}
+#calls1 {
+    transform: rotate(90deg);
+}
+#calls3 {
+    transform: rotate(-90deg);
+}
+body {
+    display: grid;
+    grid-template-columns: 1fr 5fr;
+
 }

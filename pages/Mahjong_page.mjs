@@ -2,7 +2,7 @@
 //Mahjong_page.mjs
 //written by Aston Noble
 //started 28/04/2026
-//updated 07/06/2026
+//updated 09/06/2026
 //mahjong class, makes the mahjong page
 /*********************************************************/
 
@@ -46,11 +46,12 @@ export default class Mahjong_page extends Page {
         //this.createDeck()
         return this.makeElement('div',{},[
             this.makeElement('button',{id:'join'}),
+            this.makeElement('a',{id:'waitIndicator'}),
             this.makeElement('p',{id:'position'}),
             this.makeElement('a',{id:'waitCount'}),
-            this.makeElement('a',{id:'stealIndicator'}),
             this.makeElement('a',{id:'discardDiv'}),
-            this.makeElement('a',{id:'waitIndicator'})
+            this.makeElement('p',{id:'stealIndicator'}),
+            this.makeElement('a',{id:'hand'})
         ])
     }
 
@@ -223,7 +224,7 @@ export default class Mahjong_page extends Page {
                     this.makeElement('img',{src:`./mahjong_tiles/${_tile}.png`,alt:_tile,'data-value':_tile})]))
         })
         let correctLength = false
-        document.getElementById('waitIndicator').appendChild(this.makeElement('div',{id:'handDiv'},handtiles))
+        document.getElementById('hand').appendChild(this.makeElement('div',{id:'handDiv'},handtiles))
         document.querySelectorAll('.tile').forEach(async _el => {
             //_el.innerHTML = _el.getAttribute('data-value')
             _el.addEventListener("click", (e) => {this.discard(e,val)});
