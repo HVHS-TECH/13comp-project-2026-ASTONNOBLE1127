@@ -100,7 +100,7 @@ body {
     margin-top: 12.5%;
     margin-bottom: 12.5%;
 }
-.headerdiv button {
+.headerdiv button, .gate button {
     aspect-ratio: 4 / 1;
     width:100%;
     border: none;
@@ -110,6 +110,7 @@ body {
     font-family: lemon;
 }
 header {
+    padding: 2vh 0px;
     border: none;
     color:white ;
     cursor: pointer;
@@ -129,7 +130,7 @@ header {
     to {background:linear-gradient(to bottom,olive,#4A412A);}
 }
 main {
-    padding: 12px 24px;
+    padding: 2vh 4vh;
     border: none;
     color: white;
     cursor: pointer;
@@ -151,7 +152,7 @@ main {
     100% { background-position: 50% 0%; }
 }
 
-.headerdiv button:hover ,#pfpDiv:hover {
+.headerdiv button:hover, .gate button:hover {
     border: none;
     cursor: pointer;
 
@@ -167,4 +168,36 @@ main {
 @font-face {
     font-family: lemon;
     src: url(./LEMONMILK-Regular.otf);
+}
+.gate {
+    border-radius: 1vh;
+    display: grid;
+    grid-template-columns: 1fr;
+    width:fit-content;
+    border: none;
+    cursor: pointer;
+    height:100%;
+
+    background: linear-gradient(
+        180deg,
+        darkolivegreen,
+        #4A412A
+    );
+
+    background-size: 150% 150%;
+    animation: gradient 8s ease infinite;
+}
+.gate img {
+    width: 35vh;
+    border-top-left-radius: 1vh;
+    border-top-right-radius: 1vh;
+}
+.body {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 3vh;
+}
+.instructions {
+    border-bottom-left-radius: 1vh;
+    border-bottom-right-radius: 1vh;
 }

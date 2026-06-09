@@ -2,7 +2,7 @@
 //FB_IO.mjs
 //written by Aston Noble
 //started 22/03/2026
-//updated 06/06/2026
+//updated 09/06/2026
 //holds all the firebase methods
 /*********************************************************/
 
@@ -372,5 +372,6 @@ export default class FB_IO {
     async signOut() {
         await signOut(getAuth())
         INSTANCES[CONTENT_MANAGER_INSTANCE].changePage(Landing_page)
+        document.getElementById('pfp').setAttribute('src','./images/unnamed.png')
     }
 }

@@ -2,7 +2,7 @@
 //Home_page.mjs
 //written by Aston Noble
 //started 01/04/2026
-//updated 08/06/2026
+//updated 09/06/2026
 //home page class, makes the home page
 /*********************************************************/
 
@@ -25,9 +25,29 @@ export default class Home_page extends Page {
     static #GATES = {
         mahjong:{
             page:Mahjong_page,
-            leaderboard:true,
-            thumbnail:'./images/unnamed1.png'
-        }
+            instructions:true,
+            thumbnail:'./images/dragonthumb.png'
+        },
+        mahjong1:{
+            page:Mahjong_page,
+            instructions:true,
+            thumbnail:'./images/unnamed.png'
+        }/*,
+        mahjong2:{
+            page:Home_page,
+            instructions:true,
+            thumbnail:'./images/unnamed.png'
+        },
+        mahjong3:{
+            page:Home_page,
+            instructions:true,
+            thumbnail:'./images/unnamed.png'
+        },
+        mahjong4:{
+            page:Home_page,
+            instructions:true,
+            thumbnail:'./images/unnamed.png'
+        }*/
     }
 
     /*****************************************************/
@@ -38,9 +58,7 @@ export default class Home_page extends Page {
     prepareHTML() {
         return this.makeElement('div',{},[
             this.makeElement('div',{id:'header'},[]),
-            this.makeElement('div',{id:'body',class:'body'},[
-                this.makeElement('p',{})
-            ])
+            this.makeElement('div',{id:'body',class:'body'})
         ])
     }
 
@@ -67,8 +85,8 @@ export default class Home_page extends Page {
                     class:'thumb',src:`${Home_page.#GATES[_gate].thumbnail}`}),
                 this.makeElement('button',{class:'play',id:_gate})
             )
-            if (Home_page.#GATES[_gate].leaderboard = true) {
-                subElement.push(this.makeElement('button',{class:'leaderboard',id:`${_gate}L`}))}
+            if (Home_page.#GATES[_gate].instructions = true) {
+                subElement.push(this.makeElement('button',{class:'instructions',id:`${_gate}L`}))}
             element.push(this.makeElement('div',{class:'gate'},subElement))
         })
         this.appendGates(element)
@@ -89,8 +107,8 @@ export default class Home_page extends Page {
             _el.onclick = () => {
                 INSTANCES[CONTENT_MANAGER_INSTANCE].changePage(Home_page.#GATES[_el.id].page)}
             _el.innerHTML = 'play'})
-        document.querySelectorAll('.leaderboard').forEach(_el =>
-            _el.innerHTML = 'leaderboard')
+        document.querySelectorAll('.instructions').forEach(_el =>
+            _el.innerHTML = 'instructions')
     }
 
 
