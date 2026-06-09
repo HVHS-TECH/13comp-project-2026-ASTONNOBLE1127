@@ -36,10 +36,11 @@ import {
     onAuthStateChanged,
     signOut
 } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
-import { CONTENT_MANAGER_INSTANCE, INSTANCES } from "./Instance_vault.mjs";
+import { CONTENT_MANAGER_INSTANCE, FB_IO_INSTANCE, INSTANCES } from "./Instance_vault.mjs";
 import Home_page from "../pages/Home_page.mjs"
 import Landing_page from "../pages/Landing_page.mjs";
 import Mahjong_page from "../pages/Mahjong_page.mjs";
+import Header from "../pages/Header.mjs";
 
 export default class FB_IO {
     /*****************************************************/
@@ -64,7 +65,7 @@ export default class FB_IO {
     /*****************************************************/
     async FB_Init(_FB_Config) {
         getDatabase(initializeApp(_FB_Config));
-        this.userCheck()
+        //this.userCheck()
     }
 
     /*****************************************************/
@@ -300,15 +301,17 @@ export default class FB_IO {
     //calls onAuthStateChange
     /*****************************************************/
     userCheck(_function) {
-        onAuthStateChanged(getAuth(),async _user => {
+        onAuthStateChanged(getAuth(),func)
+            async function func (_user) {
             if(_user != null) {
-                if (await this.FB_Read(`/users/${_user.uid}/publicFixed/uid`) == _user.uid) {
+                if (await INSTANCES[FB_IO_INSTANCE].FB_Read(`/users/${_user.uid}/publicFixed/uid`) == _user.uid) {
                     await console.log('success')
                     INSTANCES[CONTENT_MANAGER_INSTANCE].changePage(Home_page)
                     document.getElementById('pfp').setAttribute('src',_user.photoURL)
                 }
             }
-        })
+            _function()
+        }
     }
 
     /*****************************************************/

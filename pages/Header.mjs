@@ -65,15 +65,23 @@ export default class Header extends Page {
         }
         LEADERBOARDS.onclick = () => INSTANCES[CONTENT_MANAGER_INSTANCE].changePage(Leaderboards_page)
         ACCOUNT.onclick = () => INSTANCES[CONTENT_MANAGER_INSTANCE].changePage(Account_page)
+        this.checkAdmin()
+        INSTANCES[FB_IO_INSTANCE].userCheck(this.checkAdmin.bind(this))
     }
     
     /*****************************************************/
     //checkAdmin()
     //
-    //checks if the user is an admin
+    //checks if the user is an admin    
     /*****************************************************/
-    checkAdmin() {
-        
+    async checkAdmin() {
+        let admin = await INSTANCES[FB_IO_INSTANCE].FB_Read('admin/')
+        if (Object.keys(admin).includes(INSTANCES[FB_IO_INSTANCE].getUID())) {
+            document.getElementById('admindiv').append(this.makeElement('button',{id:'adminbutton'}))
+            document.getElementById('adminbutton').textContent = 'admin'
+        } else {
+            document.getElementById('adminbutton')?.remove()
+        }
     }
 
     /*****************************************************/

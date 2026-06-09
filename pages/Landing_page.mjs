@@ -2,7 +2,7 @@
 //Landing_page.mjs
 //written by Aston Noble
 //started 23/03/2026
-//updated 23/03/2026
+//updated 09/06/2026
 //landing page class, makes the landing page
 /*********************************************************/
 
@@ -30,7 +30,7 @@ export default class Landing_page extends Page {
     //prepares the HTML for creation
     /*****************************************************/
     prepareHTML() {
-        return this.makeElement('div',{},[
+        return this.makeElement('div',{id:'landing_div'},[
             this.makeElement('h1',{
                 id: 'title'
             }),
@@ -51,7 +51,7 @@ export default class Landing_page extends Page {
     displayText() {
         document.getElementById('title').textContent = "Welcome to the Landing Page!";
         document.getElementById('description').textContent = "click the button below to login"
-        document.getElementById('login_button').textContent = "login"
+        document.getElementById('login_button').textContent = "login/register"
         document.getElementById('login_button').onclick = async () => {
             if (await INSTANCES[FB_IO_INSTANCE].googleAuthenticate())
                 INSTANCES[CONTENT_MANAGER_INSTANCE].changePage(Registration_page);

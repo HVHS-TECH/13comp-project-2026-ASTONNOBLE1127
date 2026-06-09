@@ -100,7 +100,7 @@ body {
     margin-top: 12.5%;
     margin-bottom: 12.5%;
 }
-.headerdiv button, .gate button {
+.headerdiv button, .gate button, #landing_div button{
     aspect-ratio: 4 / 1;
     width:100%;
     border: none;
@@ -152,7 +152,7 @@ main {
     100% { background-position: 50% 0%; }
 }
 
-.headerdiv button:hover, .gate button:hover {
+.headerdiv button:hover, .gate button:hover, #landing_div button:hover {
     border: none;
     cursor: pointer;
 
@@ -200,4 +200,38 @@ main {
 .instructions {
     border-bottom-left-radius: 1vh;
     border-bottom-right-radius: 1vh;
+}
+#landing_div {
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 1vh;
+    display: grid;
+    grid-template-columns: 1fr;
+    width:fit-content;
+    border: none;
+    cursor: pointer;
+    height:100%;
+
+    background: linear-gradient(
+        180deg,
+        darkolivegreen,
+        #4A412A
+    );
+
+    background-size: 150% 150%;
+    animation: gradient 8s ease infinite;
+    flex-direction: column;
+    justify-items: center;
+}
+#landing_div button {
+    width: 100%;
+    aspect-ratio: 12 / 1;
+    border-bottom-left-radius: 1vh;
+    border-bottom-right-radius: 1vh;
+    border: none;
+}
+#landing_div h1, #landing_div p {
+    margin: 5vh;
+    color:#B0AA7E;  
+    font-family: lemon;
 }
