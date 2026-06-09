@@ -45,10 +45,12 @@ export default class Mahjong_page extends Page {
     prepareHTML() {
         //this.createDeck()
         return this.makeElement('div',{},[
-            this.makeElement('button',{id:'join'}),
-            this.makeElement('a',{id:'waitIndicator'}),
+                this.makeElement('div',{id:'joindiv'},[
+                this.makeElement('button',{id:'join'}),
+                this.makeElement('a',{id:'waitCount'}),
+                this.makeElement('a',{id:'waitIndicator'})
+            ]),
             this.makeElement('p',{id:'position'}),
-            this.makeElement('a',{id:'waitCount'}),
             this.makeElement('a',{id:'discardDiv'}),
             this.makeElement('p',{id:'stealIndicator'}),
             this.makeElement('a',{id:'hand'})
@@ -63,7 +65,7 @@ export default class Mahjong_page extends Page {
     async displayText() {
         let lobby = await this.lobbyCheck(false)
         if (lobby != false) this.makeLeaveButton(lobby)
-        document.getElementById('waitCount').innerHTML = '0'
+        document.getElementById('waitCount').innerHTML = '0 players in waitlist'
         document.getElementById('join').innerHTML = 'join'
         document.getElementById('join').onclick = () => {
             this.lobbyCheck(true)
@@ -81,21 +83,21 @@ export default class Mahjong_page extends Page {
     makeLeaveButton(_ref) {
         //this.manageHand(['m5'])
         this.#currentLobby = _ref.slice(0,-16)
-        document.getElementById('waitIndicator').appendChild(this.makeElement(
-            'div',{id:'waitBox'},[this.makeElement('a',{id:'waiting'}),
-            this.makeElement('button',{id:'leave'})]
-        ))
-        document.getElementById('waiting').innerHTML = 'waiting'
+        document.getElementById('joindiv').appendChild(/*this.makeElement(
+            'div',{id:'waitBox'},[/*this.makeElement('a',{id:'waiting'}),*/
+            this.makeElement('button',{id:'leave'})/*]
+        )*/)
+        //document.getElementById('waiting').innerHTML = 'waiting'
         document.getElementById('leave').innerHTML = 'leave'
         document.getElementById('leave').onclick = async () => {
             await INSTANCES[FB_IO_INSTANCE].FB_DestroyListener(this.#currentLobby)
             this.#isInLobby = false
-            document.getElementById('waiting').remove()
+            //document.getElementById('waiting').remove()
             document.getElementById('leave').remove()
             INSTANCES[FB_IO_INSTANCE].FB_Remove(_ref)
             this.#listenerIsOn = false
             INSTANCES[FB_IO_INSTANCE].FB_Write(this.#currentLobby,{open:"true"})
-            document.getElementById('waitCount').innerHTML = '0'
+            document.getElementById('waitCount').innerHTML = '0 players in waitlist'
         }
         if (!isNaN(_ref.slice(-1)) && this.#listenerIsOn == false) {
             this.#listenerIsOn = true
@@ -184,9 +186,9 @@ export default class Mahjong_page extends Page {
         //console.log(lobby?.slice(-1),lobby.slice(-1))
         //console.log('fuck you')
         if (INSTANCES[FB_IO_INSTANCE].getUID() == _ref['players'][this.#currentPlayer]) {
-            document.getElementById('waitCount').innerHTML = Object.keys(_ref['players']).length
+            document.getElementById('waitCount').innerHTML = Object.keys(_ref['players']).length + ' players in waitlist'
         } else {
-            document.getElementById('waitCount').innerHTML = '0'
+            document.getElementById('waitCount').innerHTML = '0 players in waitlist'
         }
         if (INSTANCES[FB_IO_INSTANCE].getUID() == _ref['players'][`player1`]) {
             if (Object.keys(_ref['players']).length == 4 && _ref['open'] == 'true') {

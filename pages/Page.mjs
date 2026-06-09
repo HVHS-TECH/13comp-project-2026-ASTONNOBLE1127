@@ -112,7 +112,7 @@ export default class Page {
                 },dropdownEls)
             )
         }
-            element.push(this.makeElement('br'))
+            element.push(this.makeElement('a',{id:`${_id}error`}))
         })
         element.push(
             this.makeElement('button',{

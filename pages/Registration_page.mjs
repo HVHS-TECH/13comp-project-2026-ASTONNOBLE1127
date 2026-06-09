@@ -30,12 +30,14 @@ export default class Registration_page extends Page {
     /*****************************************************/
     prepareHTML() {
         return this.makeElement('div',{},[
-            this.makeElement('h1',{
-                id: 'title'
-            }),
-            this.makeElement('p',{
-                id: 'description'
-            }),
+            this.makeElement('div',{id:'infodiv'},[
+                this.makeElement('h1',{
+                    id: 'title'
+                }),
+                this.makeElement('p',{
+                    id: 'description'
+                })
+            ]),
             this.makeElement('form',{
                 id: 'registration-form'
             })
@@ -68,13 +70,18 @@ export default class Registration_page extends Page {
         _event.preventDefault();
         let registrationFields = {}
         const FORMFIELDS = document.querySelectorAll('.field');
+        let invalid = false
         FORMFIELDS.forEach(_el => {
             if (_el.value.replace(/\s+/g, "").length > 0) {
                 if (Number.isNaN(Number(_el.value))) registrationFields[_el.id] = _el.value
                 else registrationFields[_el.id] = Number(_el.value)
+                document.getElementById(_el.id + 'error').innerHTML = ''
+            } else {
+                invalid = true
+                document.getElementById(_el.id + 'error').innerHTML = 'please fill in the field above'
             }
-            else return
         })
+        if (invalid == true) return
         if (Object.keys(registrationFields).length == FORMFIELDS.length) {
             console.log(registrationFields)
             INSTANCES[FB_IO_INSTANCE].FB_Register(registrationFields)
