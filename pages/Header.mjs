@@ -2,7 +2,7 @@
 //Header.mjs
 //written by Aston Noble
 //started 24/04/2026
-//updated 25/04/2026
+//updated 09/06/2026
 //header class, makes the header
 /*********************************************************/
 
@@ -32,9 +32,12 @@ export default class Header extends Page {
     /*****************************************************/
     prepareHTML() {
         return this.makeElement('div',{},[
-            this.makeElement('button',{id:'homebutton'}),
-            this.makeElement('div',{id:'admindiv'}),
-            this.makeElement('button',{id:'signout'})
+            this.makeElement('div',{id:'pfpDiv'},[this.makeElement('img',{id:'pfp',src:'./images/unnamed.png'})]),
+            this.makeElement('div',{id:'homebuttondiv',class:'headerdiv'},[this.makeElement('button',{id:'homebutton'})]),
+            this.makeElement('div',{id:'accountbuttondiv',class:'headerdiv'},[this.makeElement('button',{id:'accountbutton'})]),
+            this.makeElement('div',{id:'leaderboardsdiv',class:'headerdiv'},[this.makeElement('button',{id:'leaderboards'})]),
+            this.makeElement('div',{id:'signoutdiv',class:'headerdiv'},[this.makeElement('button',{id:'signout'})]),
+            this.makeElement('div',{id:'admindiv',class:'headerdiv'})
         ])
     }
 
@@ -45,9 +48,13 @@ export default class Header extends Page {
     /*****************************************************/
     displayText() {
         const HOME = document.getElementById('homebutton')
+        const ACCOUNT = document.getElementById('accountbutton')
         const SIGNOUT = document.getElementById('signout')
+        const LEADERBOARDS = document.getElementById('leaderboards')
         HOME.textContent = 'home'
         SIGNOUT.textContent = 'signout'
+        LEADERBOARDS.textContent = 'leaderboards'
+        ACCOUNT.textContent = 'account'
         HOME.onclick = () => {
             if (INSTANCES[FB_IO_INSTANCE].auth()) {
                 INSTANCES[CONTENT_MANAGER_INSTANCE].changePage(Home_page)
@@ -56,6 +63,8 @@ export default class Header extends Page {
         SIGNOUT.onclick = () => {
             INSTANCES[FB_IO_INSTANCE].signOut()
         }
+        LEADERBOARDS.onclick = () => INSTANCES[CONTENT_MANAGER_INSTANCE].changePage(Leaderboards_page)
+        ACCOUNT.onclick = () => INSTANCES[CONTENT_MANAGER_INSTANCE].changePage(Account_page)
     }
     
     /*****************************************************/

@@ -80,5 +80,91 @@
 body {
     display: grid;
     grid-template-columns: 1fr 5fr;
+    /*gap:1vh;*/
+    margin: 0px;
+    padding:0px;
+    min-height: 100vh;
+}
+#pfp {  
+    border-radius:100%;
+    aspect-ratio: 1 / 1;
+    width:100%;
+}
+#pfpDiv {
+    aspect-ratio: 1 / 1;
+    padding:10%;
+}
+.headerdiv {
+    aspect-ratio: 4 / 1;
+    width:100%;
+    margin-top: 12.5%;
+    margin-bottom: 12.5%;
+}
+.headerdiv button {
+    aspect-ratio: 4 / 1;
+    width:100%;
+    border: none;
+    background-color:transparent;
+    color:#B0AA7E;
+    font-size: 4vh;
+    font-family: lemon;
+}
+header {
+    border: none;
+    color:white ;
+    cursor: pointer;
+    height:100%;
 
+    background: linear-gradient(
+        180deg,
+        darkolivegreen,
+        #4A412A
+    );
+
+    background-size: 150% 150%;
+    animation: gradient 8s ease infinite;
+}
+@keyframes maine {
+    from {background:linear-gradient(to bottom,olive,#4A412A);}
+    to {background:linear-gradient(to bottom,olive,#4A412A);}
+}
+main {
+    padding: 12px 24px;
+    border: none;
+    color: white;
+    cursor: pointer;
+    height:100%;
+
+    background: linear-gradient(
+        180deg,
+        olive,
+        #4A412A
+    );
+
+    background-size: 150% 150%;
+    animation: gradient 8s ease infinite;
+}
+
+@keyframes gradient {   
+    0% { background-position: 50% 0%; }
+    50% { background-position: 50% 75%; }
+    100% { background-position: 50% 0%; }
+}
+
+.headerdiv button:hover ,#pfpDiv:hover {
+    border: none;
+    cursor: pointer;
+
+    background: linear-gradient(
+        270deg,
+        #604944,
+        #420D09
+    );
+
+    background-size: 600% 600%;
+    animation: gradient 8s ease infinite;
+}
+@font-face {
+    font-family: lemon;
+    src: url(./LEMONMILK-Regular.otf);
 }
