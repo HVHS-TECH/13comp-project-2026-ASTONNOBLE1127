@@ -211,7 +211,7 @@ export default class Mahjong_page extends Page {
         //console.log(`${this.#currentLobby}/hands/${this.#currentPlayer}`)
         let val = await INSTANCES[FB_IO_INSTANCE].FB_Read(`${this.#currentLobby}/hands/${this.#currentPlayer}`)
         let handtiles = []
-        if (Object.values(val).length <= 13) this.#callCount = 0
+        if (Object.values(val).length >= 13) this.#callCount = 0
         if (val == null) return
         //if (this.#playOrder['playOrder'] == false) this.playOrder['playOrder'] = 
         //console.log(await INSTANCES[FB_IO_INSTANCE].FB_Read(`${this.#currentLobby}/playOrder`))
