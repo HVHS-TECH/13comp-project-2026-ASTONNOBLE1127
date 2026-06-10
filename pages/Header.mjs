@@ -2,7 +2,7 @@
 //Header.mjs
 //written by Aston Noble
 //started 24/04/2026
-//updated 09/06/2026
+//updated 10/06/2026
 //header class, makes the header
 /*********************************************************/
 
@@ -12,6 +12,7 @@
 import Page from "./Page.mjs"
 import Landing_page from "./Landing_page.mjs"
 import Home_page from "../pages/Home_page.mjs"
+import Leaderboards_page from "./Leaderboards_page.mjs"
 import {
     INSTANCES,
     CONTENT_MANAGER_INSTANCE,
@@ -65,7 +66,6 @@ export default class Header extends Page {
         }
         LEADERBOARDS.onclick = () => INSTANCES[CONTENT_MANAGER_INSTANCE].changePage(Leaderboards_page)
         ACCOUNT.onclick = () => INSTANCES[CONTENT_MANAGER_INSTANCE].changePage(Account_page)
-        this.checkAdmin()
         INSTANCES[FB_IO_INSTANCE].userCheck(this.checkAdmin.bind(this))
     }
     

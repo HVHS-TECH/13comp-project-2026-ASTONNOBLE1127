@@ -2,7 +2,7 @@
 //Page.mjs
 //written by Aston Noble
 //started 23/03/2026
-//updated 23/04/2026
+//updated 09/06/2026
 //parent class for the pages
 /*********************************************************/
 
