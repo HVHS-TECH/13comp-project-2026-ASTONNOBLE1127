@@ -224,6 +224,9 @@ export default class Mahjong_page extends Page {
         const POSITION = Object.keys(this.#playOrder['playOrder']).find(POSITION => 
             this.#playOrder['playOrder'][POSITION] === this.#currentPlayer);
         document.getElementById('position').innerHTML = POSITION
+        for(let i = 1; i < 5; i++) {
+            await INSTANCES[FB_IO_INSTANCE].FB_DestroyListener(`${this.#currentLobby}/skips/player${i}`)
+        }
         INSTANCES[FB_IO_INSTANCE].FB_Listener(`${this.#currentLobby}/skips/${POSITION}`,this.manageSkips.bind(this))
         val.forEach(_tile => {
             handtiles.push(this.makeElement('button',{
