@@ -1194,6 +1194,9 @@ export default class Mahjong_page extends Page {
                         poss.push(pairs[d],pairs[d])
                         if (this.#callCount <= 1) poss.push(...setb)
                         if (this.#callCount == 0) poss.push(...setc)
+                        if (poss.includes('m5') && _hand.includes('m5r')) poss[poss.indexOf('m5')] = 'm5r'
+                        if (poss.includes('p5') && _hand.includes('p5r')) poss[poss.indexOf('p5')] = 'p5r'
+                        if (poss.includes('s5') && _hand.includes('s5r')) poss[poss.indexOf('s5')] = 's5r'
                         if (this.AsupersetB(_hand,poss)) {
                             if (this.AremoveB(_hand,poss).length == 1) {
                                 arr2.push(this.AremoveB(_hand,poss))
@@ -1228,6 +1231,9 @@ export default class Mahjong_page extends Page {
         let arr2 = []
         for (let d = 0; d < _ponWaits.length; d++) {
             let poss = [pairs[d],pairs[d]]
+            if (poss.includes('m5') && _hand.includes('m5r')) poss[poss.indexOf('m5')] = 'm5r'
+            if (poss.includes('p5') && _hand.includes('p5r')) poss[poss.indexOf('p5')] = 'p5r'
+            if (poss.includes('s5') && _hand.includes('s5r')) poss[poss.indexOf('s5')] = 's5r'
             if (this.AsupersetB(_hand,poss)) {
                 if (this.AremoveB(_hand,poss).length == 1) {
                     arr2.push(this.AremoveB(_hand,poss))
