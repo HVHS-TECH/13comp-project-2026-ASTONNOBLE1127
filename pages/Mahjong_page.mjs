@@ -167,6 +167,9 @@ export default class Mahjong_page extends Page {
                             INSTANCES[FB_IO_INSTANCE].FB_Listener(`${this.#currentLobby}/calls`,this.displayDiscards.bind(this))
                             this.#callCount = 0  //this place will need to be changed
                             break;
+                        } else if (i == 4) {
+                            INSTANCES[FB_IO_INSTANCE].FB_Write(`/lobbies/mahjong/${Object.keys(ref.val())[0]}/`,{open:"false"})
+                            this.joinLobby(UID)
                         }
                     } else {
                         INSTANCES[FB_IO_INSTANCE].FB_Remove(`/lobbies/mahjong/${Object.keys(ref.val())[0]}`)
@@ -241,6 +244,7 @@ export default class Mahjong_page extends Page {
         if (correctLength == true) {
             let waits = await INSTANCES[FB_IO_INSTANCE].FB_Read(`${this.#currentLobby}/waits/${this.#currentPlayer}/waits`)
             console.log(waits)
+            console.log(this.#callCount)
             if (waits != false) {
                 if (waits.includes(val[val.length - 1])) this.makeTsumoButton(val[val.length - 1])
             }
@@ -400,11 +404,18 @@ export default class Mahjong_page extends Page {
             el2.remove()
             document.querySelectorAll('.tile').forEach(_el => _el.setAttribute('disabled',false))
         }
-        el2.onclick = () => {
+        el2.onclick = async () => {
             el.remove()
             el2.remove()
             //do something here lol
-            INSTANCES[FB_IO_INSTANCE].FB_Write(this.#currentLobby,{wins:this.#currentPlayer})
+            INSTANCES[FB_IO_INSTANCE].FB_Write(this.#currentLobby,{wins:{'tsumo':this.#currentPlayer}})
+            let UID = INSTANCES[FB_IO_INSTANCE].getUID()
+                let userwins = await INSTANCES[FB_IO_INSTANCE].FB_Read(`leaderboards/mahjong/${UID}`)
+                console.log(userwins)
+                if (userwins == null) userwins = {wins:0}
+                if (!isNaN(userwins['wins'])) userwins['wins'] = userwins['wins'] + 1
+                    else userwins['wins'] = 1
+                INSTANCES[FB_IO_INSTANCE].FB_Write(`leaderboards/mahjong/${UID}`,userwins)
         }
     }
 
@@ -441,12 +452,21 @@ export default class Mahjong_page extends Page {
             if (_type == 'pon') typeval = 2
             if (_type == 'kan') typeval = 3 //this shouldn't need to be higher than pon but idk
             if (_type == 'ron') typeval = 4
-            _val.forEach(vali => {
-            if (vali == 'chi') enemtypeval = 1
-            if (vali == 'pon') enemtypeval = 2
-            if (vali == 'kan') enemtypeval = 3 //this shouldn't need to be higher than pon but idk
-            if (vali == 'ron') enemtypeval = 4
-            })
+            // await _val.forEach(vali => {
+            // if (vali == 'chi') enemtypeval = 1
+            // if (vali == 'pon') enemtypeval = 2
+            // if (vali == 'kan') enemtypeval = 3 //this shouldn't need to be higher than pon but idk
+            // if (vali == 'ron') enemtypeval = 4
+            // // })
+            // for (let vali of _val) {
+            // if (vali == 'chi') enemtypeval = 1
+            // if (vali == 'pon') enemtypeval = 2
+            // if (vali == 'kan') enemtypeval = 3 //this shouldn't need to be higher than pon but idk
+            // if (vali == 'ron') enemtypeval = 4
+            // }
+            if (_val.includes('ron')) enemtypeval = 4
+            if (_val.includes('kan')) enemtypeval = 3
+            if (_val.includes('pon')) enemtypeval = 2
             console.log(typeval,enemtypeval)
             if (typeval >= enemtypeval) {
             let temp = await INSTANCES[FB_IO_INSTANCE].FB_SortedRead(
@@ -507,11 +527,13 @@ export default class Mahjong_page extends Page {
                 this.kanDraw()
             }
             if (_type == 'pon') {
-                let pon = [Object.values(_tile)[0],Object.values(_tile)[0]]
+                let pon = [Object.values(_tile)[0].slice(0,2),Object.values(_tile)[0].slice(0,2)]
                 let newHand = this.AremoveB(hand,pon)
                 if (newHand.length != (hand.length - pon.length)) {
-                    pon[0] = Object.values(_tile)[0] + 'r'
-                    newHand = this.AremoveB(hand,pon)
+                    if (Object.values(_tile)[0].slice(2,3) != 'r') {
+                        pon[0] = Object.values(_tile)[0] + 'r'
+                        newHand = this.AremoveB(hand,pon)
+                    } else alert('critical error')
                 }
                 pon.push(Object.values(_tile)[0])
                 await INSTANCES[FB_IO_INSTANCE].FB_Set(`${this.#currentLobby}/hands/${this.#currentPlayer}`,newHand)
@@ -521,11 +543,14 @@ export default class Mahjong_page extends Page {
             }
             if (_type == 'ron') {
                 //do something here lol
-                INSTANCES[FB_IO_INSTANCE].FB_Write(this.#currentLobby,{wins:this.#currentPlayer})
+                INSTANCES[FB_IO_INSTANCE].FB_Write(this.#currentLobby,{wins:{[POSITION]:this.#currentPlayer}})
                 let UID = INSTANCES[FB_IO_INSTANCE].getUID()
-                let userwins = INSTANCES[FB_IO_INSTANCE].FB_Read(`leaderboards/mahjong/${UID}`)
-                if (!isNaN(userwins['wins'])) userwins['wins']++
+                let userwins = await INSTANCES[FB_IO_INSTANCE].FB_Read(`leaderboards/mahjong/${UID}`)
+                console.log(userwins)
+                if (userwins == null) userwins = {wins:0}
+                if (!isNaN(userwins['wins'])) userwins['wins'] = userwins['wins'] + 1
                     else userwins['wins'] = 1
+                    userwins['uid'] = UID
                 INSTANCES[FB_IO_INSTANCE].FB_Write(`leaderboards/mahjong/${UID}`,userwins)
                 
             }
@@ -539,10 +564,23 @@ export default class Mahjong_page extends Page {
     //manageWin()
     //
     async manageWin(_val) {
-        let winnerUID = await INSTANCES[FB_IO_INSTANCE].FB_Read(`${this.#currentLobby}/players/${_val}`)
-        let winnerName = await INSTANCES[FB_IO_INSTANCE].FB_Read(`users/${winnerUID}/public/username`)
-        if (winnerName != null) {
-            alert(`${winnerName} won`)
+        let winners = []
+        // await Object.values(_val).forEach(async _player => {
+        //     let winnerUID = await INSTANCES[FB_IO_INSTANCE].FB_Read(`${this.#currentLobby}/players/${_player}`)
+        //     let winnerName = await INSTANCES[FB_IO_INSTANCE].FB_Read(`users/${winnerUID}/public/username`)
+        //     await winners.push(winnerName)
+        // })
+        if (_val == null || _val == undefined) return
+        for (let _player of Object.values(_val)) {
+            let winnerUID = await INSTANCES[FB_IO_INSTANCE].FB_Read(`${this.#currentLobby}/players/${_player}`)
+            let winnerName = await INSTANCES[FB_IO_INSTANCE].FB_Read(`users/${winnerUID}/public/username`)
+            await winners.push(winnerName)
+        }
+        await console.log(winners)
+        let winnerString = `${winners[0]}`
+        for (let i = 1; i < winners.length; i++) winnerString = winnerString + ' and ' +winners[i]
+        if (winners != []) {
+            alert(`${winnerString} won`)
         }
         
     }
@@ -972,6 +1010,41 @@ export default class Mahjong_page extends Page {
         this.canFormSets(manzuCounts,'manzu',possibleSets)
         this.canFormSets(pinzuCounts,'pinzu',possibleSets)
         this.canFormSets(souzuCounts,'souzu',possibleSets)
+        //let newSets = []
+        // for (let _set of possibleSets) {
+        //     let _sets = _set.slice()
+        //     if (_sets.includes('m5')) {
+        //         let index = _sets.indexOf('m5')
+        //         _sets[index] = 'm5r'
+        //         possibleSets.push(newSetssets)
+        //     } else if (_sets.includes('p5')) {
+        //         let index = _sets.indexOf('p5')
+        //         _sets[index] = 'p5r'
+        //         possibleSets.push(newSets)
+        //     } else if (_sets.includes('s5')) {
+        //         let index = _sets.indexOf('s5')
+        //         _sets[index] = 's5r'
+        //         possibleSets.push(newSets)
+        //     }
+        // }   
+        // for (let i = 0;i < possibleSets; i++) {
+        //     let _sets = possibleSets[i].slice()
+        //     if (_sets.includes('m5')) {
+        //         let index = _sets.indexOf('m5')
+        //         _sets[index] = 'm5r'
+        //         possibleSets.push(newSetssets)
+        //     } else if (_sets.includes('p5')) {
+        //         let index = _sets.indexOf('p5')
+        //         _sets[index] = 'p5r'
+        //         possibleSets.push(newSets)
+        //     } else if (_sets.includes('s5')) {
+        //         let index = _sets.indexOf('s5')
+        //         _sets[index] = 's5r'
+        //         possibleSets.push(newSets)
+        //     }
+        // }   
+        // possibleSets.push(...newSets)
+        //console.log(possibleSets)
         this.honorSetFinder(dragonCounts,'Dragon',possibleSets)
         this.honorSetFinder(windsCounts,'Winds',possibleSets)
         let pairWaits = this.calculatePairWaits(0,possibleSets,_hand)
@@ -1076,6 +1149,9 @@ export default class Mahjong_page extends Page {
                         if (this.#callCount <= 2) poss.push(...setb)
                         if (this.#callCount <= 1) poss.push(...setc)
                         if (this.#callCount == 0) poss.push(...setd)
+                        if (poss.includes('m5') && _hand.includes('m5r')) poss[poss.indexOf('m5')] = 'm5r'
+                        if (poss.includes('p5') && _hand.includes('p5r')) poss[poss.indexOf('p5')] = 'p5r'
+                        if (poss.includes('s5') && _hand.includes('s5r')) poss[poss.indexOf('s5')] = 's5r'
                         if (this.AsupersetB(_hand,poss)) {
                             arr2.push(...this.AremoveB(_hand,poss))
                         }

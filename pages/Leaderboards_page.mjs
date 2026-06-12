@@ -68,6 +68,10 @@ export default class Leaderboards_page extends Page {
             document.getElementById('boarddiv').innerHTML = ''
             let arr = []
             let sortedRaw = await INSTANCES[FB_IO_INSTANCE].FB_SortedRead(`leaderboards/${current}`,true,10,true,'wins')
+            sortedRaw.forEach(_score => {
+                arr.push(_score.val())
+            })
+            arr.reverse()
             let sorted = sortedRaw.val()
             for (let i = 0; i < Object.keys(sorted).length;i++) {
                 document.getElementById('boarddiv').append(this.makeElement('div',{id:`placmentDiv${i}`,class:'placementDiv'},[
@@ -76,9 +80,9 @@ export default class Leaderboards_page extends Page {
                     this.makeElement('a',{id:`placmentScore${i}`,class:'placementScore'})
                 ]))
                 document.getElementById(`placment${i}`).innerHTML = (i + 1)+': '
-                let player = await INSTANCES[FB_IO_INSTANCE].FB_Read(`users/${Object.keys(sorted)[i]}/public/username`)
+                let player = await INSTANCES[FB_IO_INSTANCE].FB_Read(`users/${arr[i]['uid']}/public/username`)
                 document.getElementById(`placmentName${i}`).innerHTML = player
-                document.getElementById(`placmentScore${i}`).innerHTML = (sorted[Object.keys(sorted)[i]]['wins'])+' wins'
+                document.getElementById(`placmentScore${i}`).innerHTML = (arr[i]['wins'])+' wins'
             }
         })
     }
