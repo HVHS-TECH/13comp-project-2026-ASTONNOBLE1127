@@ -43,7 +43,6 @@ export default class Mahjong_page extends Page {
     //prepares the HTML for creation
     /*****************************************************/
     prepareHTML() {
-        //this.createDeck()
         return this.makeElement('div',{},[
                 this.makeElement('div',{id:'joindiv'},[
                 this.makeElement('button',{id:'join'}),
@@ -81,23 +80,17 @@ export default class Mahjong_page extends Page {
     //makes the leave button
     /*****************************************************/
     makeLeaveButton(_ref) {
-        //this.manageHand(['m5'])
         this.#currentLobby = _ref.slice(0,-16)
-        document.getElementById('joindiv').appendChild(/*this.makeElement(
-            'div',{id:'waitBox'},[/*this.makeElement('a',{id:'waiting'}),*/
-            this.makeElement('button',{id:'leave'})/*]
-        )*/)
+        document.getElementById('joindiv').appendChild(
+            this.makeElement('button',{id:'leave'}))
         INSTANCES[FB_IO_INSTANCE].FB_Listener(`${this.#currentLobby}/hands/${this.#currentPlayer}`,this.displayHand.bind(this))
         INSTANCES[FB_IO_INSTANCE].FB_Listener(`${this.#currentLobby}/wins`,this.manageWin.bind(this))
         INSTANCES[FB_IO_INSTANCE].FB_Listener(`${this.#currentLobby}/discards`,this.displayDiscards.bind(this))
         INSTANCES[FB_IO_INSTANCE].FB_Listener(`${this.#currentLobby}/calls`,this.displayDiscards.bind(this))
-                            
-        //document.getElementById('waiting').innerHTML = 'waiting'
         document.getElementById('leave').innerHTML = 'leave'
         document.getElementById('leave').onclick = async () => {
             await INSTANCES[FB_IO_INSTANCE].FB_DestroyListener(this.#currentLobby)
             this.#isInLobby = false
-            //document.getElementById('waiting').remove()
             document.getElementById('leave').remove()
             INSTANCES[FB_IO_INSTANCE].FB_Remove(_ref)
             this.#listenerIsOn = false
@@ -106,7 +99,7 @@ export default class Mahjong_page extends Page {
         }
         if (!isNaN(_ref.slice(-1)) && this.#listenerIsOn == false) {
             this.#listenerIsOn = true
-            INSTANCES[FB_IO_INSTANCE].FB_Listener(this.#currentLobby,this.method0.bind(this))
+            INSTANCES[FB_IO_INSTANCE].FB_Listener(this.#currentLobby,this.updatePlayerCount.bind(this))
         }
     }
 
@@ -114,7 +107,7 @@ export default class Mahjong_page extends Page {
     //lobbyCheck(_join)
     //
     //input _join
-    //=whether tto join a lobby if they are not in one
+    //=whether to join a lobby if they are not in one
     //
     //checks if the player is in a lobby
     /*****************************************************/
@@ -152,11 +145,6 @@ export default class Mahjong_page extends Page {
             this.#currentPlayer = 'player1'
             await INSTANCES[FB_IO_INSTANCE].FB_Write(`/lobbies/mahjong/lobby${UID}${D}`,{players:{player1:UID},open:'true'})
             this.makeLeaveButton(`/lobbies/mahjong/lobby${UID}${D}/players/player1`)
-            // INSTANCES[FB_IO_INSTANCE].FB_Listener(`${this.#currentLobby}/hands/${this.#currentPlayer}`,this.displayHand.bind(this))
-            // INSTANCES[FB_IO_INSTANCE].FB_Listener(`${this.#currentLobby}/wins`,this.manageWin.bind(this))
-            // INSTANCES[FB_IO_INSTANCE].FB_Listener(`${this.#currentLobby}/discards`,this.displayDiscards.bind(this))
-            // INSTANCES[FB_IO_INSTANCE].FB_Listener(`${this.#currentLobby}/calls`,this.displayDiscards.bind(this))
-            // this.#callCount = 0
         } else {
             let j = 0
                 let lobby = await INSTANCES[FB_IO_INSTANCE].FB_Read(`/lobbies/mahjong/${Object.keys(ref.val())[0]}/players/`)
@@ -166,11 +154,6 @@ export default class Mahjong_page extends Page {
                             this.#currentPlayer = `player${i}`
                             await INSTANCES[FB_IO_INSTANCE].FB_Write(`/lobbies/mahjong/${Object.keys(ref.val())[0]}/players/`,{[`player${i}`]:UID})
                             this.makeLeaveButton(`/lobbies/mahjong/${Object.keys(ref.val())[0]}/players/player${i}`)
-                            // INSTANCES[FB_IO_INSTANCE].FB_Listener(`${this.#currentLobby}/hands/${this.#currentPlayer}`,this.displayHand.bind(this))
-                            // INSTANCES[FB_IO_INSTANCE].FB_Listener(`${this.#currentLobby}/wins`,this.manageWin.bind(this))
-                            // INSTANCES[FB_IO_INSTANCE].FB_Listener(`${this.#currentLobby}/discards`,this.displayDiscards.bind(this))
-                            // INSTANCES[FB_IO_INSTANCE].FB_Listener(`${this.#currentLobby}/calls`,this.displayDiscards.bind(this))
-                            // this.#callCount = 0  //this place will need to be changed
                             break;
                         } else if (i == 4) {
                             INSTANCES[FB_IO_INSTANCE].FB_Write(`/lobbies/mahjong/${Object.keys(ref.val())[0]}/`,{open:"false"})
@@ -186,14 +169,17 @@ export default class Mahjong_page extends Page {
     }
 
     /*****************************************************/
+    //updatePlayerCount(_ref)
     //
+    //input _ref
+    //=the current players lobby
+    //
+    //updates the player count, 
+    //if player one makes them start game on 4 players
     /*****************************************************/
-    async method0(_ref) {
+    async updatePlayerCount(_ref) {
         if (_ref == null) return
         if (_ref['players'] == null) return
-        //let lobby = await this.lobbyCheck(false);
-        //console.log(lobby?.slice(-1),lobby.slice(-1))
-        //console.log('fuck you')
         console.log(_ref,this.#currentPlayer)
         if (INSTANCES[FB_IO_INSTANCE].getUID() == _ref['players'][this.#currentPlayer]) {
             document.getElementById('waitCount').innerHTML = Object.keys(_ref['players']).length + ' players in current lobby'
@@ -202,7 +188,6 @@ export default class Mahjong_page extends Page {
         }
         if (INSTANCES[FB_IO_INSTANCE].getUID() == _ref['players'][`player1`]) {
             if (Object.keys(_ref['players']).length == 4 && _ref['open'] == 'true') {
-                console.log('kill yourself now')
                 INSTANCES[FB_IO_INSTANCE].FB_Write(this.#currentLobby,{open:"false"})
                 this.createGame()
             }
@@ -211,21 +196,18 @@ export default class Mahjong_page extends Page {
 
     /*****************************************************/
     //displayHand()
+    //
+    //displays the tiles in the users hand
     /*****************************************************/
     async displayHand() {
         if (document.getElementById('handDiv')) {
-            //document.getElementById('handDiv').remove()
             document.querySelectorAll('#handDiv').forEach(_el => _el.remove())
         }
-        //console.log(`${this.#currentLobby}/hands/${this.#currentPlayer}`)
         let val = await INSTANCES[FB_IO_INSTANCE].FB_Read(`${this.#currentLobby}/hands/${this.#currentPlayer}`)
         let handtiles = []
         if (val == null) return
         if (Object.values(val).length >= 13) this.#callCount = 0
-        //if (this.#playOrder['playOrder'] == false) this.playOrder['playOrder'] = 
-        //console.log(await INSTANCES[FB_IO_INSTANCE].FB_Read(`${this.#currentLobby}/playOrder`))
         let pla = await INSTANCES[FB_IO_INSTANCE].FB_Read(`${this.#currentLobby}/playOrder`)
-        //pla[0] = 'timmy'
         this.#playOrder = {playOrder:pla}
         const POSITION = Object.keys(this.#playOrder['playOrder']).find(POSITION => 
             this.#playOrder['playOrder'][POSITION] === this.#currentPlayer);
@@ -242,13 +224,9 @@ export default class Mahjong_page extends Page {
         let correctLength = false
         document.getElementById('hand').appendChild(this.makeElement('div',{id:'handDiv'},handtiles))
         document.querySelectorAll('.tile').forEach(async _el => {
-            //_el.innerHTML = _el.getAttribute('data-value')
             _el.addEventListener("click", (e) => {this.discard(e,val)});
-            //if (this.#hasDiscarded == true) 
             if (![14,11,8,5,2].includes(val.length)) {_el.setAttribute("disabled", true)
-            } else {
-                correctLength = true
-            }
+                } else {correctLength = true}
         })
         if (correctLength == true) {
             let waits = await INSTANCES[FB_IO_INSTANCE].FB_Read(`${this.#currentLobby}/waits/${this.#currentPlayer}/waits`)
@@ -262,7 +240,14 @@ export default class Mahjong_page extends Page {
     }
 
     /*****************************************************/
-    //discard(_tile)
+    //discard(_tile,_bronchitis)
+    //
+    //input _tile
+    //=the element of the tile to discard
+    //input _bronchitis
+    //=the array of the entire hand (reasons)
+    //
+    //discards tiles 
     /*****************************************************/
     async discard(_tile,_bronchitis) {
         let val = _tile['target'].getAttribute('data-value')
@@ -284,12 +269,16 @@ export default class Mahjong_page extends Page {
         let waits = await this.manageHand(_bronchitis.sort())
         console.log('bronchitis',_bronchitis,waits)
         await INSTANCES[FB_IO_INSTANCE].FB_Write(`${this.#currentLobby}/waits/${this.#currentPlayer}`,waits)
-        //this.pickUp()
-        this.displayHand()
+        //this.displayHand()
     }
 
     /*****************************************************/
     //checkWaits(_tile)
+    //
+    //input _tile
+    //=the tile to check waits for
+    //
+    //checks if anyone can call the tile just discarded
     /*****************************************************/
     async checkWaits(_tile) {
         let skips = {1:true,2:true,3:true,4:true}
@@ -304,8 +293,6 @@ export default class Mahjong_page extends Page {
         for (let i = 0; i < 3; i++) {
             let otherPlayers = i + nextPlayer
             if (otherPlayers > 4) otherPlayers-=4
-            //console.log(waits[this.#playOrder['playOrder'][otherPlayers]],otherPlayers)
-            //console.log(waits[this.#playOrder['playOrder'][otherPlayers]].ponWaits)
             if (waits[this.#playOrder['playOrder'][otherPlayers]].ponWaits?.includes(_tile.slice(0,2))) skips[otherPlayers] = false
             if (waits[this.#playOrder['playOrder'][otherPlayers]].kanWaits?.includes(_tile.slice(0,2))) skips[otherPlayers] = false
             if (waits[this.#playOrder['playOrder'][otherPlayers]].waits != false) {
@@ -316,24 +303,27 @@ export default class Mahjong_page extends Page {
         console.log(waits[this.#playOrder['playOrder'][nextPlayer]].chiWaits,_tile.slice(0,2))
         console.log(waits,this.#playOrder['playOrder'],nextPlayer)
         if (waits[this.#playOrder['playOrder'][nextPlayer]].chiWaits?.includes(_tile.slice(0,2))) skips[nextPlayer] = false
-        console.log(skips)
         INSTANCES[FB_IO_INSTANCE].FB_Write(this.#currentLobby,{skips:skips})
         INSTANCES[FB_IO_INSTANCE].FB_Listener(`${this.#currentLobby}/skips/`,this.skipWaits.bind(this))
     }
 
+    /*****************************************************/
+    //skipWaits(_skips)
     //
-    //skipWaits
+    //input _skips
+    //=the object saying how each player responds
     //
+    //handles what to do with a discard,
+    //wheather it's skipped or not
+    /*****************************************************/
     skipWaits(_skips) {
         if (_skips.includes(false) == false) {
             INSTANCES[FB_IO_INSTANCE].FB_DestroyListener(`${this.#currentLobby}/skips`)
             if (Object.values(_skips).some(x => x !== true)) {
-                //alert('taken')
                 //INSTANCES[FB_IO_INSTANCE].FB_Remove(`${this.#currentLobby}/skips`)
                 //handle calls in priority order
                 //e.g. (ron,kan/pon,chi)
             } else {
-                //alert('skipped')
                 this.pickUp()
                 INSTANCES[FB_IO_INSTANCE].FB_Remove(`${this.#currentLobby}/skips`)
             }
@@ -342,9 +332,11 @@ export default class Mahjong_page extends Page {
 
     /*****************************************************/
     //pickUp()
+    //
+    //removes a tile from the deck and
+    //adds it to the next players hand
     /*****************************************************/
     async pickUp() {
-        //console.log('picked up')
         const POSITION = Object.keys(this.#playOrder['playOrder']).find(POSITION => 
             this.#playOrder['playOrder'][POSITION] === this.#currentPlayer);
         let nextPlayer = Number(POSITION) + 1
@@ -355,17 +347,21 @@ export default class Mahjong_page extends Page {
         let nextHand = await INSTANCES[FB_IO_INSTANCE].FB_Read(`${this.#currentLobby}/hands/${this.#playOrder['playOrder'][nextPlayer]}`)
         INSTANCES[FB_IO_INSTANCE].FB_Remove(`${this.#currentLobby}/deck/${tile.length-1}`)
         await INSTANCES[FB_IO_INSTANCE].FB_Write(`${this.#currentLobby}/hands/${this.#playOrder['playOrder'][nextPlayer]}`,{[nextHand.length]:drawn})
-        this.displayHand()
+        //this.displayHand()
     }
 
-    //
+    /*****************************************************/
     //manageSkips(_val)
     //
+    //input _val
+    //=Object with the users response to the possible call
+    //
+    //makes the button for the skips and steals
+    /*****************************************************/
     async manageSkips(_val) {
         if (_val == false && !document.getElementById('skip')) {
             const POSITION = Object.keys(this.#playOrder['playOrder']).find(POSITION => 
                 this.#playOrder['playOrder'][POSITION] === this.#currentPlayer);
-            //console.log(POSITION)
             let el = await this.makeElement('button',{id:'skip'})
             if (!document.getElementById('skip')) {
                 await document.getElementById('stealIndicator').append(el)
@@ -397,9 +393,14 @@ export default class Mahjong_page extends Page {
         }
     }
 
+    /*****************************************************/
+    //makeTsumoButton(_tile)
     //
+    //input _tile
+    //=the tile to tsumo on
     //
-    //
+    //makes the button for tsumo
+    /*****************************************************/
     async makeTsumoButton(_tile) {
         document.querySelectorAll('.tile').forEach(_el => _el.setAttribute('disabled',true))
         let el = await this.makeElement('button',{id:'skip'})
@@ -416,7 +417,6 @@ export default class Mahjong_page extends Page {
         el2.onclick = async () => {
             el.remove()
             el2.remove()
-            //do something here lol
             INSTANCES[FB_IO_INSTANCE].FB_Write(this.#currentLobby,{wins:{'tsumo':this.#currentPlayer}})
             let UID = INSTANCES[FB_IO_INSTANCE].getUID()
                 let userwins = await INSTANCES[FB_IO_INSTANCE].FB_Read(`leaderboards/mahjong/${UID}`)
@@ -428,9 +428,18 @@ export default class Mahjong_page extends Page {
         }
     }
 
-    //
+    /*****************************************************/
     //makeStealButton(_tile,_type,_from)
     //
+    //input _tile
+    //=an object containing the tile to steal
+    //input _type
+    //=the type of steal
+    //input _from
+    //which player to steal it from
+    //
+    //makes the steal button 
+    /*****************************************************/
     async makeStealButton(_tile = {},_type,_from) {
         const POSITION = Object.keys(this.#playOrder['playOrder']).find(POSITION => 
             this.#playOrder['playOrder'][POSITION] === this.#currentPlayer);
@@ -445,9 +454,15 @@ export default class Mahjong_page extends Page {
         }
     }
 
+    /*****************************************************/
+    //steal(_val)
     //
-    //steal
+    //input _val
+    //=the object containing each players 
+    //response to the discard
     //
+    //manages the stealand wheather you have priority
+    /*****************************************************/
     async steal(_val) {
         let turn = await INSTANCES[FB_IO_INSTANCE].FB_Read(`${this.#currentLobby}/turn`)
         if (_val.includes(false) == false) {
@@ -461,18 +476,6 @@ export default class Mahjong_page extends Page {
             if (_type == 'pon') typeval = 2
             if (_type == 'kan') typeval = 3 //this shouldn't need to be higher than pon but idk
             if (_type == 'ron') typeval = 4
-            // await _val.forEach(vali => {
-            // if (vali == 'chi') enemtypeval = 1
-            // if (vali == 'pon') enemtypeval = 2
-            // if (vali == 'kan') enemtypeval = 3 //this shouldn't need to be higher than pon but idk
-            // if (vali == 'ron') enemtypeval = 4
-            // // })
-            // for (let vali of _val) {
-            // if (vali == 'chi') enemtypeval = 1
-            // if (vali == 'pon') enemtypeval = 2
-            // if (vali == 'kan') enemtypeval = 3 //this shouldn't need to be higher than pon but idk
-            // if (vali == 'ron') enemtypeval = 4
-            // }
             if (_val.includes('ron')) enemtypeval = 4
             if (_val.includes('kan')) enemtypeval = 3
             if (_val.includes('pon')) enemtypeval = 2
@@ -487,7 +490,6 @@ export default class Mahjong_page extends Page {
             if (_type == 'chi') {
                 let chi = await this.checkChi(Object.values(_tile)[0])
                 console.log(chi)
-                //chi = [chi[0]] //remove this later 
                 if (chi.length == 1) {
                     let newHand = this.AremoveB(hand,chi[0])
                     console.log(chi[0],hand,newHand)
@@ -551,7 +553,6 @@ export default class Mahjong_page extends Page {
                 INSTANCES[FB_IO_INSTANCE].FB_Write(`${this.#currentLobby}/calls/${this.#currentPlayer}`,jim)
             }
             if (_type == 'ron') {
-                //do something here lol
                 INSTANCES[FB_IO_INSTANCE].FB_Write(this.#currentLobby,{wins:{[POSITION]:this.#currentPlayer}})
                 let UID = INSTANCES[FB_IO_INSTANCE].getUID()
                 let userwins = await INSTANCES[FB_IO_INSTANCE].FB_Read(`leaderboards/mahjong/${UID}`)
@@ -569,35 +570,33 @@ export default class Mahjong_page extends Page {
     }
     }
 
+    /*****************************************************/
+    //manageWin(_val)
     //
-    //manageWin()
-    //
+    //input _val
+    //=the object containing each players 
+    //response to the discard
+    // 
+    //alerts users who won the round
+    /*****************************************************/
     async manageWin(_val) {
         let winners = []
-        // await Object.values(_val).forEach(async _player => {
-        //     let winnerUID = await INSTANCES[FB_IO_INSTANCE].FB_Read(`${this.#currentLobby}/players/${_player}`)
-        //     let winnerName = await INSTANCES[FB_IO_INSTANCE].FB_Read(`users/${winnerUID}/public/username`)
-        //     await winners.push(winnerName)
-        // })
         if (_val == null || _val == undefined) return
         for (let _player of Object.values(_val)) {
             let winnerUID = await INSTANCES[FB_IO_INSTANCE].FB_Read(`${this.#currentLobby}/players/${_player}`)
             let winnerName = await INSTANCES[FB_IO_INSTANCE].FB_Read(`users/${winnerUID}/public/username`)
-            if (winnerName != null) {
-                await winners.push(winnerName)
-            }
+            if (winnerName != null) {await winners.push(winnerName)}
         }
         let winnerString = `${winners[0]}`
-        for (let i = 1; i < winners.length; i++) winnerString = winnerString + ' and ' +winners[i]
-        if (winners.length != 0) {
-            alert(`${winnerString} won`)
-        }
-        
+        for (let i = 1; i < winners.length; i++) winnerString = winnerString+' and '+winners[i]
+        if (winners.length != 0) {alert(`${winnerString} won`)}
     }
 
-    //
+    /*****************************************************/
     //kanDraw()
     //
+    //makes the player pick up from the deadwall after a kan
+    /*****************************************************/
     async kanDraw() {
         let kanCount = await INSTANCES[FB_IO_INSTANCE].FB_Read(`${this.#currentLobby}/kanCount`)
         kanCount++
@@ -607,9 +606,14 @@ export default class Mahjong_page extends Page {
         await INSTANCES[FB_IO_INSTANCE].FB_Set(`${this.#currentLobby}/hands/${this.#currentPlayer}`,hand)
     }
 
-    //
+    /*****************************************************/
     //checkChi(_tile)
     //
+    //input _tile
+    //=the tile that can be stolen
+    //
+    //checks which sequences can go with the stolen tile
+    /*****************************************************/
     async checkChi(_tile) {
         let viable = []
         let redFives = []
@@ -626,7 +630,6 @@ export default class Mahjong_page extends Page {
         if (shand.includes('m5')) blandFives.push('m5')
         if (shand.includes('p5')) blandFives.push('p5')
         if (shand.includes('s5')) blandFives.push('s5')
-        
         if (hand.includes(_tile.slice(0,1)+(Number(_tile.slice(1,2))+1))) {
             if (hand.includes(_tile.slice(0,1)+(Number(_tile.slice(1,2))+2))) {
                 viable.push([_tile.slice(0,1)+(Number(_tile.slice(1,2))+1),_tile.slice(0,1)+(Number(_tile.slice(1,2))+2)])
@@ -655,9 +658,11 @@ export default class Mahjong_page extends Page {
         return viable
     }
 
-    //
+    /*****************************************************/
     //displayDiscards()
     //
+    //displays the discard pile
+    /*****************************************************/
     async displayDiscards() {
         const POSITION = Object.keys(this.#playOrder['playOrder']).find(POSITION => 
             this.#playOrder['playOrder'][POSITION] === this.#currentPlayer);
@@ -669,15 +674,11 @@ export default class Mahjong_page extends Page {
             if (currentPos > 4) currentPos-=4
             if (currentPos > 4) currentPos-=4
             let arr = []
-            //console.log(discards,this.#playOrder['playOrder'][currentPos])
-            //console.log(discards[this.#playOrder['playOrder'][currentPos]])
             if (discards != null) {
             if (discards[this.#playOrder['playOrder'][currentPos]] != null) {
             Object.values(discards[this.#playOrder['playOrder'][currentPos]])?.forEach(_tile => {
-                //console.log(_tile)
                 arr.push(this.makeElement('img',{src:`./mahjong_tiles/${_tile}.png`}))
             })}}
-            //if (i == 3) arr.reverse()
             let call = `calls0`
             if (i == 1) call = `calls3`
             if (i == 2) call = `center`
@@ -689,22 +690,18 @@ export default class Mahjong_page extends Page {
         let temp = discard[5]
         discard[5] = discard[7]
         discard[7] = temp
-        //let tempEl = document.createElement('div')
-        //tempEl.setAttribute('class','discardsjr')
-        //let tempArr = [tempEl,discard[0],tempEl,discard[3],tempEl,discard[2],tempEl,discard[1],tempEl]
         document.getElementById('discardDiv').append(this.makeElement('div',{class:'discards'},discard))
-        //document.getElementById('discards1').transformOrigin = "5% 5%";
-        //document.getElementById('discards3').transformOrigin = "5% 5%";
         document.getElementById('discards1').childNodes.forEach(_el => _el.style.rotate="90deg")
         document.getElementById('discards3').childNodes.forEach(_el => _el.style.rotate="90deg")
         document.getElementById('discards0').style.rotate="180deg"
-        //console.log(discard)
         this.displayCalls()
     }
 
-    //
+    /*****************************************************/
     //displayCalls()
     //
+    //displays what tiles have being called
+    /*****************************************************/
     async displayCalls() {
         const POSITION = Object.keys(this.#playOrder['playOrder']).find(POSITION => 
             this.#playOrder['playOrder'][POSITION] === this.#currentPlayer);
@@ -716,29 +713,24 @@ export default class Mahjong_page extends Page {
             let arr = []
             if (calls != null) {
                 if (calls[this.#playOrder['playOrder'][currentPos]] != undefined) {
-                //console.log(calls,this.#playOrder['playOrder'][currentPos])
-                //console.log(calls[this.#playOrder['playOrder'][currentPos]])
-                Object.values(calls[this.#playOrder['playOrder'][currentPos]])?.forEach(_set => {
-                    let call = []
-                    //console.log(_set)
-                    Object.values(_set).forEach(_tile => {
-                        call.push(this.makeElement('img',{src:`./mahjong_tiles/${_tile}.png`}))
+                    Object.values(calls[this.#playOrder['playOrder'][currentPos]])?.forEach(_set => {
+                        let call = []
+                        Object.values(_set).forEach(_tile => {
+                            call.push(this.makeElement('img',{src:`./mahjong_tiles/${_tile}.png`}))
+                        })
+                        arr.push(this.makeElement('div',{class:'setHolder'},call))
                     })
-                    arr.push(this.makeElement('div',{class:'setHolder'},call))
-                })
-                let callEl = this.makeElement('div',{id:`call`},arr)
-                //console.log(callEl,i)
-                document.getElementById(`calls${i}`).append(callEl)
+                    let callEl = this.makeElement('div',{id:`call`},arr)
+                    document.getElementById(`calls${i}`).append(callEl)
+                }
             }
-            }
-
         }
     }
 
     /*****************************************************/
     //createGame()
     //
-    //
+    //creates the game by dealing and other stuff
     /*****************************************************/
     async createGame() {
         let playOrder = this.shuffleDeck(['player1','player2','player3','player4'])
@@ -756,11 +748,8 @@ export default class Mahjong_page extends Page {
         INSTANCES[FB_IO_INSTANCE].FB_Write(this.#currentLobby,{turn:1,round:1,repeats:0,kanCount:0})
         INSTANCES[FB_IO_INSTANCE].FB_Remove(`${this.#currentLobby}/discards`)
         INSTANCES[FB_IO_INSTANCE].FB_Remove(`${this.#currentLobby}/calls`)
-        Object.keys(hands).forEach(_hand => {
-            waits[_hand] = this.manageHand(hands[_hand])
-        })
+        Object.keys(hands).forEach(_hand => {waits[_hand] = this.manageHand(hands[_hand])})
         INSTANCES[FB_IO_INSTANCE].FB_Write(this.#currentLobby,{waits:waits})
-        //this.displayHand()
         this.pickUp()
     }
 
@@ -859,9 +848,6 @@ export default class Mahjong_page extends Page {
             player4.push(_deck.splice(0,1)[0])
         }
         return {player1:player1.sort(),player2:player2.sort(),player3:player3.sort(),player4:player4.sort()}
-        //console.log(player1,player2,player3,player4,_deck)
-        //console.log(player1.sort(),player2.sort(),player3.sort(),player4.sort(),_deck.sort())
-        //this.manageHand(player1.sort())
     }
 
     /*****************************************************/
@@ -873,14 +859,6 @@ export default class Mahjong_page extends Page {
     //manages the hand
     /*****************************************************/
     manageHand(_hand) {
-        //_hand = ['m1','m1','m1','m2','m3','m4','m5','m6','m7','m8','m9','m9','m9']
-        //_hand = ['Dr','Dr','Dr','m2','m3','m4','m5','m6','m7','m8','m9','m9','m9']
-        //_hand = ['Dr','Dr','Dw','Dw','m1','m2','m3','m4','m5','m6','m7','m8','m9']
-        //this.#callCount = 3
-        //_hand = ['Dr','Dr','Dw','Dw','m1','m2','m3','m4','m5','m6']
-        //_hand = ['Dr','Dr','Dw','Dw','m1','m2','m3']
-        //_hand = ['Dr','Dr','Dw','Dw']
-        //_hand = ['Dr','Dr','Dr','Dw','Dw','m1','m3','m4','m5','m6','m7','m8','m9']
         let ponWaits = this.calculatePonWaits(_hand)
         let kanWaits = this.calculateKanWaits(ponWaits)
         let chiWaits = this.calculateChiWaits(_hand)
@@ -929,7 +907,7 @@ export default class Mahjong_page extends Page {
         let kanWaits = []
         if (_ponWaits.length > 1) {
             for (let i = 0; i < _ponWaits.length - 1; i++) {
-                if ((_ponWaits[i] == _ponWaits[i + 1].slice(0,2))/* && (_ponWaits[i + 1] != _ponWaits[i + 2].slice(0,2))*/) {
+                if ((_ponWaits[i] == _ponWaits[i + 1].slice(0,2))) {
                     kanWaits.push(_ponWaits[i])
                 }
             }
@@ -1020,41 +998,6 @@ export default class Mahjong_page extends Page {
         this.canFormSets(manzuCounts,'manzu',possibleSets)
         this.canFormSets(pinzuCounts,'pinzu',possibleSets)
         this.canFormSets(souzuCounts,'souzu',possibleSets)
-        //let newSets = []
-        // for (let _set of possibleSets) {
-        //     let _sets = _set.slice()
-        //     if (_sets.includes('m5')) {
-        //         let index = _sets.indexOf('m5')
-        //         _sets[index] = 'm5r'
-        //         possibleSets.push(newSetssets)
-        //     } else if (_sets.includes('p5')) {
-        //         let index = _sets.indexOf('p5')
-        //         _sets[index] = 'p5r'
-        //         possibleSets.push(newSets)
-        //     } else if (_sets.includes('s5')) {
-        //         let index = _sets.indexOf('s5')
-        //         _sets[index] = 's5r'
-        //         possibleSets.push(newSets)
-        //     }
-        // }   
-        // for (let i = 0;i < possibleSets; i++) {
-        //     let _sets = possibleSets[i].slice()
-        //     if (_sets.includes('m5')) {
-        //         let index = _sets.indexOf('m5')
-        //         _sets[index] = 'm5r'
-        //         possibleSets.push(newSetssets)
-        //     } else if (_sets.includes('p5')) {
-        //         let index = _sets.indexOf('p5')
-        //         _sets[index] = 'p5r'
-        //         possibleSets.push(newSets)
-        //     } else if (_sets.includes('s5')) {
-        //         let index = _sets.indexOf('s5')
-        //         _sets[index] = 's5r'
-        //         possibleSets.push(newSets)
-        //     }
-        // }   
-        // possibleSets.push(...newSets)
-        //console.log(possibleSets)
         this.honorSetFinder(dragonCounts,'Dragon',possibleSets)
         this.honorSetFinder(windsCounts,'Winds',possibleSets)
         let pairWaits = this.calculatePairWaits(0,possibleSets,_hand)
@@ -1065,7 +1008,6 @@ export default class Mahjong_page extends Page {
         }
         pairWaits.push(...setWaits)
         if (_hand.length == 1) pairWaits = _hand[0]
-        //if (pairWaits.length > 0) alert(pairWaits)
         if (pairWaits.length == 0) return false
             else return pairWaits //returns the combination of set and pair waits
     }
