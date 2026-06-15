@@ -1,20 +1,15 @@
-.discardsjr {
-    /*height: 150px;*/
-    background-color: aquamarine;
-    color: brown;
-    background: olive;
+:root {
+    --text: #B0AA7E;
+    --background1: olive;
+    --background2: #4A412A;
+    --box1: darkolivegreen;
+    --box2: #4A412A;
+    --button1: #604944;
+    --button2: #420D09;
+    --formfield: #3D441E;
+    --formfield2: var(--box2);
+    --font: lemon;
 }
-/*html {
-    background-color: aquamarine;
-    color: brown;
-    background: olive;
-}
-#discards3 {
-    margin: 0px;
-}
-#discards1 {
-    margin: 0px;
-}*/
 .discardsjr {
     background:
         repeating-linear-gradient(
@@ -155,16 +150,16 @@ body {
     margin-top: 12.5%;
     margin-bottom: 12.5%;
 }
-.headerdiv button, .gate button, #landing_div button, #registration-form button, #account_form button, #joindiv button {
+.headerdiv button, .gate button, #landing_div button, #registration-form button, #account_form #submit, #joindiv button {
     aspect-ratio: 4 / 1;
     width:100%;
     border: none;
     background-color:transparent;
-    color:#B0AA7E;
+    color:var(--text);
     font-size: 4vh;
-    font-family: lemon;
+    font-family: var(--font);
 }
-#account_form button {
+#account_form #submit {
     aspect-ratio: 6 / 1;
     font-size: 7vh;
 }
@@ -177,8 +172,8 @@ header {
 
     background: linear-gradient(
         180deg,
-        darkolivegreen,
-        #4A412A
+        var(--box1),
+        var(--box2)
     );
 
     background-size: 150% 150%;
@@ -197,8 +192,8 @@ main {
 
     background: linear-gradient(
         180deg,
-        olive,
-        #4A412A
+        var(--background1),
+        var(--background2)
     );
 
     background-size: 150% 150%;
@@ -217,8 +212,8 @@ main {
 
     background: linear-gradient(
         270deg,
-        #604944,
-        #420D09
+        var(--button1),
+        var(--button2)
     );
 
     background-size: 600% 600%;
@@ -239,8 +234,8 @@ main {
 
     background: linear-gradient(
         180deg,
-        darkolivegreen,
-        #4A412A
+        var(--box1),
+        var(--box2)
     );
 
     background-size: 150% 150%;
@@ -274,8 +269,8 @@ main {
 
     background: linear-gradient(
         180deg,
-        darkolivegreen,
-        #4A412A
+        var(--box1),
+        var(--box2)
     );
 
     background-size: 150% 150%;
@@ -292,14 +287,14 @@ main {
 }
 #landing_div h1, #landing_div p, #infodiv h1, #infodiv p, #joindiv a, #leaderboards_div h1, #leaderboards_div p {
     margin: 5vh;
-    color:#B0AA7E;  
-    font-family: lemon;
+    color:var(--text);  
+    font-family: var(--font);
 }
 #account_form {
     display: grid;
     width: 100%;
     gap: 3vh;
-    grid-template-columns: 1fr 2fr;
+    grid-template-columns: 10fr 16fr;
     border: none;
     cursor: pointer;
     height:100%;
@@ -323,8 +318,8 @@ main {
 
     background: linear-gradient(
         180deg,
-        darkolivegreen,
-        #4A412A
+        var(--box1),
+        var(--box2)
     );
 
     background-size: 150% 150%;
@@ -332,7 +327,7 @@ main {
     flex-direction: column;
     justify-items: center;
 }
-#registration-form button, #account_form button{
+#registration-form button, #account_form #submit{
   grid-column: 1 / span 2;
     border-bottom-left-radius: 1vh;
     border-bottom-right-radius: 1vh;
@@ -342,33 +337,34 @@ main {
 }
 #registration-form input, #registration-form label, #registration-form select, #registration-form input::placeholder {
     margin: 2vh;
-    font-family: lemon;
-    color: #B0AA7E;
+    font-family: var(--font);
+    color: var(--text);
     width:80%;
 }
 #account_form input, #account_form label, #account_form select, #account_form input::placeholder {
     margin: 2vh;
-    font-family: lemon;
-    color: #B0AA7E;
+    font-family: var(--font);
+    color: var(--text);
     width:80%;
+    align-self: center;
 }
 #registration-form input, #registration-form select {
     border: none;
-    background-color: #3D441E;
+    background-color: var(--formfield);
 }
 #account_form input, #account_form select {
     border: none;
-    background-color: #3D441E;
+    background-color: var(--formfield);
 }
 #leaderboards_div select {
     border: none;
     text-align: center;
-    background-color: #3D441E;
+    background-color: var(--formfield);
     margin: 2vh;
     margin-left: auto;
     margin-right: auto;
-    font-family: lemon;
-    color: #B0AA7E;
+    font-family: var(--font);
+    color: var(--text);
     width:40%;
 }
 #joindiv {
@@ -390,8 +386,8 @@ main {
 }
 #boarddiv div a {
     margin: 4vh;
-    font-family: lemon;
-    color: #B0AA7E;
+    font-family: var(--font);
+    color: var(--text);
     width:80%;  
     text-align: center;
 }
@@ -399,3 +395,61 @@ main {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
 }
+.adminlink {
+    color: var(--text);
+    aspect-ratio: 8 / 1;
+    background-color: var(--formfield);
+    border-radius: 1vh;
+    width: 80%;
+    margin: 3vh;
+    border: none;
+    font-family: var(--font);
+        background: linear-gradient(
+        90deg,
+        var(--formfield),
+        #4A412A
+    );
+
+    background-size: 150% 150%;
+    animation: gradientbutton 8s ease infinite;
+}
+.adminfield {
+    color: var(--text);
+    background-color: var(--formfield);
+    border-radius: 1vh;
+    width: 80%;
+    margin: 3vh;
+    border: none;
+    font-family: var(--font);
+        background: linear-gradient(
+        90deg,
+        var(--formfield),
+        var(--formfield2)
+    );
+
+    background-size: 150% 150%;
+    animation: gradientbutton 8s ease infinite;
+}
+
+@keyframes gradientbutton {   
+    0% { background-position: 0% 50%; }
+    50% { background-position: 75% 50%; }
+    100% { background-position: 0% 50%; }
+}
+.paths {
+    color: var(--text);
+    border: none;
+    font-family: var(--font);
+    background: transparent;
+}
+.paths:hover {
+    text-decoration: underline;
+    /*
+    color: #2A334A;
+    background: linear-gradient(
+        270deg,
+        #604944,
+        #420D09
+    );*/
+}
+

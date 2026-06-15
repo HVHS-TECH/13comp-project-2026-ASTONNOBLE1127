@@ -71,9 +71,14 @@ export default class Account_page extends Page {
         document.getElementById('account_form').addEventListener('submit', (_event) => this.updateDetails(_event))
     }
 
+    /*****************************************************/
+    //updateDetails(_event)
     //
+    //input _event 
+    //=the form submit event
     //
-    //
+    //updates the users details
+    /*****************************************************/
     async updateDetails(_event) {
         _event.preventDefault();
         let registrationFields = {}

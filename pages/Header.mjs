@@ -19,6 +19,7 @@ import {
     CONTENT_MANAGER_INSTANCE,
     FB_IO_INSTANCE
 } from "../controllers/Instance_vault.mjs"
+import Admin_page from "./Admin_page.mjs"
 
 export default class Header extends Page {
     /*****************************************************/
@@ -80,6 +81,7 @@ export default class Header extends Page {
         if (Object.keys(admin).includes(INSTANCES[FB_IO_INSTANCE].getUID())) {
             document.getElementById('admindiv').append(this.makeElement('button',{id:'adminbutton'}))
             document.getElementById('adminbutton').textContent = 'admin'
+            document.getElementById('adminbutton').onclick = () => INSTANCES[CONTENT_MANAGER_INSTANCE].changePage(Admin_page)
         } else {
             document.getElementById('adminbutton')?.remove()
         }
