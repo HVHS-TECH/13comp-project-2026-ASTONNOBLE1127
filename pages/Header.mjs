@@ -2,7 +2,7 @@
 //Header.mjs
 //written by Aston Noble
 //started 24/04/2026
-//updated 10/06/2026
+//updated 15/06/2026
 //header class, makes the header
 /*********************************************************/
 
@@ -11,8 +11,9 @@
 /*********************************************************/
 import Page from "./Page.mjs"
 import Landing_page from "./Landing_page.mjs"
-import Home_page from "../pages/Home_page.mjs"
+import Home_page from "./Home_page.mjs"
 import Leaderboards_page from "./Leaderboards_page.mjs"
+import Account_page from "./Account_page.mjs"
 import {
     INSTANCES,
     CONTENT_MANAGER_INSTANCE,

@@ -155,7 +155,7 @@ body {
     margin-top: 12.5%;
     margin-bottom: 12.5%;
 }
-.headerdiv button, .gate button, #landing_div button, #registration-form button, #joindiv button {
+.headerdiv button, .gate button, #landing_div button, #registration-form button, #account_form button, #joindiv button {
     aspect-ratio: 4 / 1;
     width:100%;
     border: none;
@@ -164,7 +164,11 @@ body {
     font-size: 4vh;
     font-family: lemon;
 }
-header {
+#account_form button {
+    aspect-ratio: 6 / 1;
+    font-size: 7vh;
+}
+header { 
     padding: 2vh 0px;
     border: none;
     color:white ;
@@ -207,7 +211,7 @@ main {
     100% { background-position: 50% 0%; }
 }
 
-.headerdiv button:hover, .gate button:hover, #landing_div button:hover, #registration-form button:hover, #joindiv button:hover {
+.headerdiv button:hover, .gate button:hover, #landing_div button:hover, #registration-form button:hover, #account_form button:hover, #joindiv button:hover {
     border: none;
     cursor: pointer;
 
@@ -291,6 +295,19 @@ main {
     color:#B0AA7E;  
     font-family: lemon;
 }
+#account_form {
+    display: grid;
+    width: 100%;
+    gap: 3vh;
+    grid-template-columns: 1fr 2fr;
+    border: none;
+    cursor: pointer;
+    height:100%;
+    background-size: 150% 150%;
+    animation: gradient 8s ease infinite;
+    flex-direction: column;
+    justify-items: center;
+}
 #registration-form {
     margin-left: auto;
     margin-right: auto;
@@ -315,12 +332,12 @@ main {
     flex-direction: column;
     justify-items: center;
 }
-#registration-form button {
+#registration-form button, #account_form button{
   grid-column: 1 / span 2;
     border-bottom-left-radius: 1vh;
     border-bottom-right-radius: 1vh;
 }
-#registration-form a {
+#registration-form a, #account_form a {
   grid-column: 1 / span 2;
 }
 #registration-form input, #registration-form label, #registration-form select, #registration-form input::placeholder {
@@ -329,7 +346,17 @@ main {
     color: #B0AA7E;
     width:80%;
 }
+#account_form input, #account_form label, #account_form select, #account_form input::placeholder {
+    margin: 2vh;
+    font-family: lemon;
+    color: #B0AA7E;
+    width:80%;
+}
 #registration-form input, #registration-form select {
+    border: none;
+    background-color: #3D441E;
+}
+#account_form input, #account_form select {
     border: none;
     background-color: #3D441E;
 }

@@ -52,7 +52,7 @@ export default class Registration_page extends Page {
     displayText() {
         document.getElementById('title').textContent = "Registration Page";
         document.getElementById('description').textContent = "Fill the fields below to register"
-        this.createForm({username:'',age:'',gender:{male:'',female:''}},{username:'string',age:'number',gender:'dropdown'})
+        this.createForm({username:'',age:'',gender:{male:'',female:'',audi:''}},{username:'string',age:'number',gender:'dropdown'})
         document.getElementById('registration-form').addEventListener('submit', (_event) => this.attemptRegister(_event));
         document.getElementById('submit').innerHTML = 'submit'
 
