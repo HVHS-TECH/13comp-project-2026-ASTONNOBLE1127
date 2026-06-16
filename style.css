@@ -167,7 +167,7 @@ header {
     padding: 2vh 0px;
     border: none;
     color:white ;
-    cursor: pointer;
+    /*cursor:not-allowed;*/
     height:100%;
 
     background: linear-gradient(
@@ -187,7 +187,7 @@ main {
     padding: 2vh 4vh;
     border: none;
     color: white;
-    cursor: pointer;
+    /*cursor:not-allowed;*/
     height:100%;
 
     background: linear-gradient(
@@ -208,7 +208,7 @@ main {
 
 .headerdiv button:hover, .gate button:hover, #landing_div button:hover, #registration-form button:hover, #account_form button:hover, #joindiv button:hover {
     border: none;
-    cursor: pointer;
+    cursor:pointer;
 
     background: linear-gradient(
         270deg,
@@ -229,7 +229,7 @@ main {
     grid-template-columns: 1fr;
     width:fit-content;
     border: none;
-    cursor: pointer;
+    /*cursor:not-allowed;*/
     height:100%;
 
     background: linear-gradient(
@@ -264,7 +264,7 @@ main {
     grid-template-columns: 1fr;
     width:fit-content;
     border: none;
-    cursor: pointer;
+    /*cursor:not-allowed;*/
     height:100%;
 
     background: linear-gradient(
@@ -296,7 +296,7 @@ main {
     gap: 3vh;
     grid-template-columns: 10fr 16fr;
     border: none;
-    cursor: pointer;
+    /*cursor:not-allowed;*/
     height:100%;
     background-size: 150% 150%;
     animation: gradient 8s ease infinite;
@@ -313,7 +313,7 @@ main {
     grid-template-columns: 1fr 2fr;
     width:fit-content;
     border: none;
-    cursor: pointer;
+    /*cursor:not-allowed;*/
     height:100%;
 
     background: linear-gradient(
@@ -452,4 +452,80 @@ main {
         #420D09
     );*/
 }
+.centralDiv {
+    width: 100%;
+    height: 100%;
+    display:grid;
+    grid-template-columns: 1fr 2fr 1fr;
+    grid-template-rows: 1fr 2fr 1fr;
+}
 
+#wind0 {
+    transform: rotate(180deg);
+}
+#wind1 {
+    transform: rotate(90deg);
+}
+#wind3 {
+    transform: rotate(-90deg);
+}
+#windimg {
+    aspect-ratio: 1 / 1;
+    height:50%;
+    width:50%;
+}
+.central {
+    min-height: 0px;
+    align-content:center;
+    justify-items: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.central a {
+    font-size: 4vh;
+}
+#central1 #turnIndicatorOn, #central3 #turnIndicatorOn {
+    width: 30%;
+    height: 60%;
+  border: double 1vh transparent;
+  border-radius: 1vh;
+  background-image: radial-gradient(circle, #f5d86a 0%, #b89c32 50%, #423f29 85%, #18170f 100%), linear-gradient(to right, rgb(92, 92, 92), rgb(79, 79, 79));
+  background-origin: border-box;
+  background-clip: content-box, border-box;
+    background-size: 110% 110%;
+    animation: gradient 8s ease infinite;
+}
+#central1 #turnIndicatorOff, #central3 #turnIndicatorOff {
+    width: 30%;
+    height: 60%;
+  border: double 1vh transparent;
+  border-radius: 1vh;
+  background-image: radial-gradient(circle, #2f2c20 0%, #3d3928 40%, #4c4731 70%, #5b553a 100%), linear-gradient(to right, rgb(92, 92, 92), rgb(79, 79, 79));
+  background-origin: border-box;
+  background-clip: content-box, border-box;
+    background-size: 110% 110%;
+    /*animation: gradient 8s ease infinite;*/
+}
+#central0 #turnIndicatorOn, #central2 #turnIndicatorOn {
+    width: 60%;
+    height: 30%;
+  border: double 1vh transparent;
+  border-radius: 1vh;
+  background-image: radial-gradient(circle, #f5d86a 0%, #b89c32 50%, #423f29 85%, #18170f 100%), linear-gradient(to right, rgb(92, 92, 92), rgb(79, 79, 79));
+  background-origin: border-box;
+  background-clip: content-box, border-box;
+    background-size: 110% 110%;
+    animation: gradientbutton 8s ease infinite;
+}
+#central0 #turnIndicatorOff, #central2 #turnIndicatorOff {
+    width: 60%;
+    height: 30%;
+  border: double 1vh transparent;
+  border-radius: 1vh;
+  background-image: radial-gradient(circle, #2f2c20 0%, #3d3928 40%, #4c4731 70%, #5b553a 100%), linear-gradient(to right, rgb(92, 92, 92), rgb(79, 79, 79));
+  background-origin: border-box;
+  background-clip: content-box, border-box;
+    background-size: 110% 110%;
+   /* animation: gradientbutton 8s ease infinite;*/
+}

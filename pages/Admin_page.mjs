@@ -40,7 +40,7 @@ export default class Admin_page extends Page {
             this.makeElement('div',{
                 id:'path'
             }),
-            this.makeElement('form',{
+            this.makeElement('div',{
                 id: 'account_form'
             })
         ])
@@ -75,7 +75,8 @@ export default class Admin_page extends Page {
         // document.getElementById('title').textContent = "Welcome to the Admin Page!";
         // document.getElementById('description').textContent = "change the fields below to modify admin"
         // document.getElementById('submit').innerHTML = 'submit'
-        document.getElementById('account_form').addEventListener('submit', (_event) => this.updateDB(_event))
+        document.getElementById('account_form').addEventListener("keydown", this.updateDB.bind(this));
+        //.addEventListener('submit', (_event) => this.updateDB(_event))
     }
 
     //
@@ -123,11 +124,15 @@ export default class Admin_page extends Page {
     //
     //
     //
-    async updateDB(_event) {
-        _event.preventDefault();
+    async updateDB() {
+        let key = event.key;
+        if (key == "Enter") {
+        } else return
+        console.log('bitch')
+        //_event.preventDefault();
         const FORMFIELDS = document.querySelectorAll('.adminfield');
-        let invalid = false
         FORMFIELDS.forEach(_el => {
+            console.log(_el.getAttribute('data-value'),{[_el.id]:_el.value})
             INSTANCES[FB_IO_INSTANCE].FB_Write(_el.getAttribute('data-value'),{[_el.id]:_el.value})
         })
     }

@@ -87,6 +87,7 @@ export default class Mahjong_page extends Page {
         INSTANCES[FB_IO_INSTANCE].FB_Listener(`${this.#currentLobby}/wins`,this.manageWin.bind(this))
         INSTANCES[FB_IO_INSTANCE].FB_Listener(`${this.#currentLobby}/discards`,this.displayDiscards.bind(this))
         INSTANCES[FB_IO_INSTANCE].FB_Listener(`${this.#currentLobby}/calls`,this.displayDiscards.bind(this))
+        INSTANCES[FB_IO_INSTANCE].FB_Listener(`${this.#currentLobby}/turn`,this.displayDiscards.bind(this))
         document.getElementById('leave').innerHTML = 'leave'
         document.getElementById('leave').onclick = async () => {
             await INSTANCES[FB_IO_INSTANCE].FB_DestroyListener(this.#currentLobby)
@@ -666,9 +667,10 @@ export default class Mahjong_page extends Page {
     async displayDiscards() {
         const POSITION = Object.keys(this.#playOrder['playOrder']).find(POSITION => 
             this.#playOrder['playOrder'][POSITION] === this.#currentPlayer);
-        document.querySelectorAll('.discards').forEach(_el => _el.remove())
+        //document.querySelectorAll('.discards').forEach(_el => _el.remove())
         let discards = await INSTANCES[FB_IO_INSTANCE].FB_Read(`${this.#currentLobby}/discards`)
         let discard = []
+        let discard2 = {}
         for (let i = 0; i < 4; i++) {
             let currentPos = Number(POSITION) + i + 2
             if (currentPos > 4) currentPos-=4
@@ -683,6 +685,7 @@ export default class Mahjong_page extends Page {
             if (i == 1) call = `calls3`
             if (i == 2) call = `center`
             if (i == 3) call = `calls1`
+            discard2[`discards${i}`] = arr
             discard.push(this.makeElement('div',{class:'discardsjr',id:call}),
             this.makeElement('div',{class:'discardsjr',id:`discards${i}`},arr))
         }
@@ -690,11 +693,87 @@ export default class Mahjong_page extends Page {
         let temp = discard[5]
         discard[5] = discard[7]
         discard[7] = temp
-        document.getElementById('discardDiv').append(this.makeElement('div',{class:'discards'},discard))
+        if (document.querySelector('.discards')) {
+            Object.keys(discard2).forEach(_arr => {
+                document.getElementById(_arr).replaceChildren(...discard2[_arr])
+            })
+        } else {
+            document.getElementById('discardDiv').append(this.makeElement('div',{class:'discards'}))
+            document.querySelector('.discards').append(...discard)
+        }
         document.getElementById('discards1').childNodes.forEach(_el => _el.style.rotate="90deg")
         document.getElementById('discards3').childNodes.forEach(_el => _el.style.rotate="90deg")
         document.getElementById('discards0').style.rotate="180deg"
+        this.displayCenter()
         this.displayCalls()
+    }
+
+    //
+    //
+    //
+    async displayCenter() {
+        const POSITION = Object.keys(this.#playOrder['playOrder']).find(POSITION => 
+            this.#playOrder['playOrder'][POSITION] === this.#currentPlayer);
+        let discards = await INSTANCES[FB_IO_INSTANCE].FB_Read(`${this.#currentLobby}/discards`)
+        let discard = []
+        //document.querySelectorAll('central').forEach(_el => {_el.innerHTML='';_el.remove()})
+        for (let i = 0; i < 4; i++) {
+            let currentPos = Number(POSITION) + i + 2
+            if (currentPos > 4) currentPos-=4
+            if (currentPos > 4) currentPos-=4
+            let arr = []
+            if (discards != null) {
+            if (discards[this.#playOrder['playOrder'][currentPos]] != null) {
+            Object.values(discards[this.#playOrder['playOrder'][currentPos]])?.forEach(_tile => {
+                arr.push(this.makeElement('img',{src:`./mahjong_tiles/${_tile}.png`}))
+            })}}
+            let call = `wind0`
+            if (i == 1) call = `wind3`
+            if (i == 2) call = `truecenter`
+            if (i == 3) call = `wind1`
+            discard.push(this.makeElement('div',{class:'central',id:call}),
+            this.makeElement('div',{class:'central',id:`central${i}`}))
+        }
+        discard.push(this.makeElement('div',{class:'central',id:'wind2'}))
+        let temp = discard[5]
+        discard[5] = discard[7]
+        discard[7] = temp
+        if (!document.querySelector('.centerDiv')) {
+            document.getElementById('center').replaceChildren(this.makeElement('div',{class:'centralDiv'},discard))
+        }
+        //document.getElementById('central1').childNodes.forEach(_el => _el.style.rotate="90deg")
+        //document.getElementById('central3').childNodes.forEach(_el => _el.style.rotate="90deg")
+        document.getElementById('central0').style.rotate="180deg"
+        let pfp = {}
+        let place = {1:'東',2:'南',3:'西',4:'北'}
+        console.warn('dig')
+        Object.keys(this.#playOrder['playOrder']).forEach(async _pos => {
+            let player = await INSTANCES[FB_IO_INSTANCE].FB_Read(`${this.#currentLobby}/players/${this.#playOrder['playOrder'][_pos]}`)
+            console.log(`/users/${player}/publicFixed/photoURL`)
+            pfp[_pos] = await INSTANCES[FB_IO_INSTANCE].FB_Read(`/users/${player}/publicFixed/PhotoURL`)
+            let post = Number(_pos) - Number(POSITION) + 2
+            if (post >= 4) post-=4
+            if (post >= 4) post-=4
+            if (post < 0) post+=4
+            console.error(post,_pos)
+            //document.getElementById(`wind${Number(post)}`).innerHTML = ''
+            //document.getElementById(`central${Number(post)}`).innerHTML = ''
+            await console.log(post)
+            document.getElementById(`wind${Number(post)}`).replaceChildren(
+                this.makeElement('img',{src:pfp[_pos],id:'windimg'}),
+                this.makeElement('a',{id:`place${_pos}`}))
+                document.getElementById(`place${_pos}`).innerHTML = place[_pos]
+                console.log(_pos,place[_pos],_pos,document.getElementById(`place${_pos}`))
+            if (await INSTANCES[FB_IO_INSTANCE].FB_Read(`${this.#currentLobby}/turn`) == _pos) {
+                document.getElementById(`central${Number(post)}`).replaceChildren(
+                    this.makeElement('div',{id:'turnIndicatorOn'})
+                )
+            } else {
+                document.getElementById(`central${Number(post)}`).replaceChildren(
+                    this.makeElement('div',{id:'turnIndicatorOff'})
+                )
+            }
+        })
     }
 
     /*****************************************************/
@@ -721,8 +800,10 @@ export default class Mahjong_page extends Page {
                         arr.push(this.makeElement('div',{class:'setHolder'},call))
                     })
                     let callEl = this.makeElement('div',{id:`call`},arr)
-                    document.getElementById(`calls${i}`).append(callEl)
+                    document.getElementById(`calls${i}`).replaceChildren(callEl)
                 }
+            } else { 
+                document.getElementById(`calls${i}`).innerHTML = ''
             }
         }
     }
@@ -745,7 +826,7 @@ export default class Mahjong_page extends Page {
         INSTANCES[FB_IO_INSTANCE].FB_Write(this.#currentLobby,{deadwall:deadwall})
         INSTANCES[FB_IO_INSTANCE].FB_Write(this.#currentLobby,{deck:deck})
         INSTANCES[FB_IO_INSTANCE].FB_Write(this.#currentLobby,{hands:hands})
-        INSTANCES[FB_IO_INSTANCE].FB_Write(this.#currentLobby,{turn:1,round:1,repeats:0,kanCount:0})
+        INSTANCES[FB_IO_INSTANCE].FB_Write(this.#currentLobby,{turn:1,round:1,repeats:0,kanCount:0,wins:null})
         INSTANCES[FB_IO_INSTANCE].FB_Remove(`${this.#currentLobby}/discards`)
         INSTANCES[FB_IO_INSTANCE].FB_Remove(`${this.#currentLobby}/calls`)
         Object.keys(hands).forEach(_hand => {waits[_hand] = this.manageHand(hands[_hand])})
