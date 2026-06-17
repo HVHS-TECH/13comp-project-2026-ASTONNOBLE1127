@@ -406,7 +406,6 @@ export default class Mahjong_page extends Page {
     /*****************************************************/
     async makeTsumoButton(_tile) {
         document.querySelectorAll('.tile').forEach(_el => _el.setAttribute('disabled',true))
-        if (await INSTANCES[FB_IO_INSTANCE].FB_Read(`${this.#currentLobby}/wins/tsumo`)==this.#currentPlayer) return
         let el = await this.makeElement('button',{id:'skip'})
         await document.getElementById('stealIndicator').append(el)
         document.getElementById('skip').innerHTML = 'skip'
