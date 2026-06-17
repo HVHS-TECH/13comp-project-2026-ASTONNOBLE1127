@@ -485,7 +485,7 @@ main {
 .central a {
     font-size: 4vh;
 }
-#central1 #turnIndicatorOn, #central3 #turnIndicatorOn {
+#central1 .turnIndicatorOn, #central3 .turnIndicatorOn {
     width: 30%;
     height: 60%;
   border: double 1vh transparent;
@@ -496,7 +496,7 @@ main {
     background-size: 110% 110%;
     animation: gradient 8s ease infinite;
 }
-#central1 #turnIndicatorOff, #central3 #turnIndicatorOff {
+#central1 .turnIndicatorOff, #central3 .turnIndicatorOff {
     width: 30%;
     height: 60%;
   border: double 1vh transparent;
@@ -507,7 +507,7 @@ main {
     background-size: 110% 110%;
     /*animation: gradient 8s ease infinite;*/
 }
-#central0 #turnIndicatorOn, #central2 #turnIndicatorOn {
+#central0 .turnIndicatorOn, #central2 .turnIndicatorOn {
     width: 60%;
     height: 30%;
   border: double 1vh transparent;
@@ -518,7 +518,7 @@ main {
     background-size: 110% 110%;
     animation: gradientbutton 8s ease infinite;
 }
-#central0 #turnIndicatorOff, #central2 #turnIndicatorOff {
+#central0 .turnIndicatorOff, #central2 .turnIndicatorOff {
     width: 60%;
     height: 30%;
   border: double 1vh transparent;

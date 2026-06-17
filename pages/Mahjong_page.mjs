@@ -49,7 +49,7 @@ export default class Mahjong_page extends Page {
                 this.makeElement('a',{id:'waitCount'}),
                 this.makeElement('a',{id:'waitIndicator'})
             ]),
-            this.makeElement('p',{id:'position'}),
+            //this.makeElement('p',{id:'position'}),
             this.makeElement('a',{id:'discardDiv'}),
             this.makeElement('p',{id:'stealIndicator'}),
             this.makeElement('a',{id:'hand'})
@@ -79,7 +79,7 @@ export default class Mahjong_page extends Page {
     //
     //makes the leave button
     /*****************************************************/
-    makeLeaveButton(_ref) {
+    async makeLeaveButton(_ref) {
         this.#currentLobby = _ref.slice(0,-16)
         document.getElementById('joindiv').appendChild(
             this.makeElement('button',{id:'leave'}))
@@ -88,6 +88,8 @@ export default class Mahjong_page extends Page {
         INSTANCES[FB_IO_INSTANCE].FB_Listener(`${this.#currentLobby}/discards`,this.displayDiscards.bind(this))
         INSTANCES[FB_IO_INSTANCE].FB_Listener(`${this.#currentLobby}/calls`,this.displayDiscards.bind(this))
         INSTANCES[FB_IO_INSTANCE].FB_Listener(`${this.#currentLobby}/turn`,this.displayDiscards.bind(this))
+        let calls = await INSTANCES[FB_IO_INSTANCE].FB_Read(`${this.#currentLobby}/calls/${this.#currentPlayer}`)
+        if (calls != null) this.#callCount = calls.length
         document.getElementById('leave').innerHTML = 'leave'
         document.getElementById('leave').onclick = async () => {
             await INSTANCES[FB_IO_INSTANCE].FB_DestroyListener(this.#currentLobby)
@@ -212,7 +214,7 @@ export default class Mahjong_page extends Page {
         this.#playOrder = {playOrder:pla}
         const POSITION = Object.keys(this.#playOrder['playOrder']).find(POSITION => 
             this.#playOrder['playOrder'][POSITION] === this.#currentPlayer);
-        document.getElementById('position').innerHTML = POSITION
+        //document.getElementById('position').innerHTML = POSITION
         for(let i = 1; i < 5; i++) {
             await INSTANCES[FB_IO_INSTANCE].FB_DestroyListener(`${this.#currentLobby}/skips/${i}`)
         }
@@ -223,7 +225,7 @@ export default class Mahjong_page extends Page {
                     this.makeElement('img',{src:`./mahjong_tiles/${_tile}.png`,alt:_tile,'data-value':_tile})]))
         })
         let correctLength = false
-        document.getElementById('hand').appendChild(this.makeElement('div',{id:'handDiv'},handtiles))
+        document.getElementById('hand').replaceChildren(this.makeElement('div',{id:'handDiv'},handtiles))
         document.querySelectorAll('.tile').forEach(async _el => {
             _el.addEventListener("click", (e) => {this.discard(e,val)});
             if (![14,11,8,5,2].includes(val.length)) {_el.setAttribute("disabled", true)
@@ -738,7 +740,8 @@ export default class Mahjong_page extends Page {
         let temp = discard[5]
         discard[5] = discard[7]
         discard[7] = temp
-        if (!document.querySelector('.centerDiv')) {
+        if (!document.querySelector('.centralDiv')) {
+            //console.log(document.querySelector('.centerDiv'))
             document.getElementById('center').replaceChildren(this.makeElement('div',{class:'centralDiv'},discard))
         }
         //document.getElementById('central1').childNodes.forEach(_el => _el.style.rotate="90deg")
@@ -746,32 +749,33 @@ export default class Mahjong_page extends Page {
         document.getElementById('central0').style.rotate="180deg"
         let pfp = {}
         let place = {1:'東',2:'南',3:'西',4:'北'}
-        console.warn('dig')
         Object.keys(this.#playOrder['playOrder']).forEach(async _pos => {
             let player = await INSTANCES[FB_IO_INSTANCE].FB_Read(`${this.#currentLobby}/players/${this.#playOrder['playOrder'][_pos]}`)
-            console.log(`/users/${player}/publicFixed/photoURL`)
             pfp[_pos] = await INSTANCES[FB_IO_INSTANCE].FB_Read(`/users/${player}/publicFixed/PhotoURL`)
             let post = Number(_pos) - Number(POSITION) + 2
             if (post >= 4) post-=4
             if (post >= 4) post-=4
             if (post < 0) post+=4
-            console.error(post,_pos)
             //document.getElementById(`wind${Number(post)}`).innerHTML = ''
             //document.getElementById(`central${Number(post)}`).innerHTML = ''
-            await console.log(post)
             document.getElementById(`wind${Number(post)}`).replaceChildren(
                 this.makeElement('img',{src:pfp[_pos],id:'windimg'}),
                 this.makeElement('a',{id:`place${_pos}`}))
                 document.getElementById(`place${_pos}`).innerHTML = place[_pos]
-                console.log(_pos,place[_pos],_pos,document.getElementById(`place${_pos}`))
             if (await INSTANCES[FB_IO_INSTANCE].FB_Read(`${this.#currentLobby}/turn`) == _pos) {
-                document.getElementById(`central${Number(post)}`).replaceChildren(
-                    this.makeElement('div',{id:'turnIndicatorOn'})
-                )
+                if (!document.getElementById(`turnIndicator${post}`)) {
+                    document.getElementById(`central${Number(post)}`).replaceChildren(
+                        this.makeElement('div',{class:'turnIndicatorOn',id:`turnIndicator${post}`})
+                    )
+                } else document.getElementById(`turnIndicator${post}`).setAttribute('class','turnIndicatorOn')
             } else {
-                document.getElementById(`central${Number(post)}`).replaceChildren(
-                    this.makeElement('div',{id:'turnIndicatorOff'})
-                )
+                //console.log(document.getElementById(`turnIndicator${post}`),post)
+                if (!document.getElementById(`turnIndicator${post}`)) {
+                    //console.log('jim')
+                    document.getElementById(`central${Number(post)}`).replaceChildren(
+                        this.makeElement('div',{class:'turnIndicatorOff',id:`turnIndicator${post}`})
+                    )
+                } else document.getElementById(`turnIndicator${post}`).setAttribute('class','turnIndicatorOff')
             }
         })
     }
