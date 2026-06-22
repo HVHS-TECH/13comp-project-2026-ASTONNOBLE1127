@@ -9,6 +9,7 @@
 import Page from "./Page.mjs"
 import Registration_page from "./Registration_page.mjs"
 import Mahjong_page from "./Mahjong_page.mjs"
+import Clicker_game_page from "./Clicker_game_page.mjs"
 import {
     INSTANCES,
     CONTENT_MANAGER_INSTANCE,
@@ -28,8 +29,8 @@ export default class Home_page extends Page {
             instructions:true,
             thumbnail:'./images/dragonthumb.png'
         },
-        mahjong1:{
-            page:Mahjong_page,
+        clicker:{
+            page:Clicker_game_page,
             instructions:true,
             thumbnail:'./images/unnamed.png'
         }/*,
