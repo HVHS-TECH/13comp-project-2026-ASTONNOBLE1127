@@ -99,7 +99,7 @@ export default class Page {
                 })
             )
         } else {
-            let dropdownEls = []
+            let dropdownEls = [this.makeElement('option',{class:"option",id: '--select--'})]
             Object.keys(_ID[_id]).forEach(_option =>{
                     dropdownEls.push(this.makeElement('option',{class:"option",id: _option}))
                 })

@@ -72,7 +72,8 @@ export default class Registration_page extends Page {
         const FORMFIELDS = document.querySelectorAll('.field');
         let invalid = false
         FORMFIELDS.forEach(_el => {
-            if (_el.value.replace(/\s+/g, "").length > 0) {
+            if (_el.value.replace(/\s+/g, "").length > 0 && (
+                !(_el.nodeName == 'SELECT') || (_el.value != '--select--' ))) {
                 if (Number.isNaN(Number(_el.value))) registrationFields[_el.id] = _el.value
                 else registrationFields[_el.id] = Number(_el.value)
                 document.getElementById(_el.id + 'error').innerHTML = ''
