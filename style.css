@@ -10,6 +10,19 @@
     --formfield2: var(--box2);
     --font: lemon;
 }
+/*
+:root {
+    --text: #e2adf2;
+    --background1: #574ae2;
+    --background2: #222a68;
+    --box1: #654597;
+    --box2: #222a68;
+    --button1: #686022;
+    --button2: #779745;
+    --formfield: #ab81cd;
+    --formfield2: var(--box2);
+    --font: lemon;
+}*/
 .discardsjr {
     background:
         repeating-linear-gradient(
@@ -407,7 +420,7 @@ main {
         background: linear-gradient(
         90deg,
         var(--formfield),
-        #4A412A
+        var(--formfield2)
     );
 
     background-size: 150% 150%;
