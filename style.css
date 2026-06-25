@@ -142,7 +142,7 @@
 }
 body {
     display: grid;
-    grid-template-columns: 1fr 5fr;
+    grid-template-columns: 1fr 5fr 0fr;
     /*gap:1vh;*/
     margin: 0px;
     padding:0px;
@@ -541,4 +541,22 @@ main {
   background-clip: content-box, border-box;
     background-size: 110% 110%;
    /* animation: gradientbutton 8s ease infinite;*/
+}
+#box {
+    padding: 2vh 0px;
+    resize: horizontal;
+    direction: rtl;
+    overflow: auto;
+    height:100%;
+    width: 2vh;
+    max-width: 40vw;
+    border: 0px solid black;
+    background: linear-gradient(
+        180deg,
+        var(--box1),
+        var(--box2)
+    );
+
+    background-size: 150% 150%;
+    animation: gradient 8s ease infinite;
 }
