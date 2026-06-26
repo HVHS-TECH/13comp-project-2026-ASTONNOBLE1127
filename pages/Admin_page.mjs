@@ -41,7 +41,7 @@ export default class Admin_page extends Page {
                 id:'path'
             }),
             this.makeElement('div',{
-                id: 'account_form'
+                id: 'admin_form'
             })
         ])
     }
@@ -75,7 +75,7 @@ export default class Admin_page extends Page {
         // document.getElementById('title').textContent = "Welcome to the Admin Page!";
         // document.getElementById('description').textContent = "change the fields below to modify admin"
         // document.getElementById('submit').innerHTML = 'submit'
-        document.getElementById('account_form').addEventListener("keydown", this.updateDB.bind(this));
+        document.getElementById('admin_form').addEventListener("keydown", this.updateDB.bind(this));
         //.addEventListener('submit', (_event) => this.updateDB(_event))
     }
 
@@ -97,24 +97,40 @@ export default class Admin_page extends Page {
             document.getElementById(i).innerHTML = _path.slice(indicies[i],indicies[i+1])
             document.getElementById(i).onclick = () => {this.makeAdmin(_path.slice(0,indicies[i+1]))}
         }
-        document.getElementById('account_form').innerHTML = ''
+        document.getElementById('admin_form').innerHTML = ''
         const ADMIN = await INSTANCES[FB_IO_INSTANCE].FB_Read(_path)
         Object.keys(ADMIN).forEach(_field => {
             if (this.isObject(ADMIN[_field])) {
-                document.getElementById('account_form').append(
+                document.getElementById('admin_form').append(
+                    this.makeElement('button',{id:`${_field}remove`,class:'adminlink'}),
                     this.makeElement('label',{id:`${_field}label`}),
                     this.makeElement('button',{id:`${_field}value`,class:'adminlink'})
                 )
+                document.getElementById(`${_field}remove`).onclick = () => {
+                    INSTANCES[FB_IO_INSTANCE].FB_Remove(`${_path}${_field}/`)
+                    document.getElementById(`${_field}remove`).remove()
+                    document.getElementById(`${_field}label`).remove()
+                    document.getElementById(`${_field}value`).remove()
+                }
+                document.getElementById(`${_field}remove`).innerHTML = 'remove'
                 document.getElementById(`${_field}label`).innerHTML = _field + ': '
                 document.getElementById(`${_field}value`).innerHTML = 'enter'
                 document.getElementById(`${_field}value`).onclick = () => {
                     this.makeAdmin(`${_path}${_field}/`)
                 }
             } else {
-                document.getElementById('account_form').append(
+                document.getElementById('admin_form').append(
+                    this.makeElement('button',{id:`${_field}remove`,class:'adminlink'}),
                     this.makeElement('label',{id:`${_field}label`}),
                     this.makeElement('input',{id:`${_field}`,class:'adminfield','data-value':_path})
                 )
+                document.getElementById(`${_field}remove`).onclick = () => {
+                    INSTANCES[FB_IO_INSTANCE].FB_Remove(`${_path}${_field}/`)
+                    document.getElementById(`${_field}remove`).remove()
+                    document.getElementById(`${_field}label`).remove()
+                    document.getElementById(`${_field}`).remove()
+                }
+                document.getElementById(`${_field}remove`).innerHTML = 'remove'
                 document.getElementById(`${_field}label`).innerHTML = _field + ': '
                 document.getElementById(`${_field}`).setAttribute('value',ADMIN[_field])
             }

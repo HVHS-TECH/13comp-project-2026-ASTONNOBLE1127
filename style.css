@@ -1,4 +1,92 @@
+/* :root {
+    --text: #171d1c;
+
+    --background1: #efe9f4;
+    --background2: #5fbff9;
+
+    --box1: #16bac5;
+    --box2: #5863f8;
+
+    --button1: #5fbff9;
+    --button2: #5863f8;
+
+    --formfield: #efe9f4;
+    --formfield2: var(--box2);
+
+    --font: lemon;
+} */
+
+/* :root {
+    --text: #e8faff;
+
+    --background1: #0f2027;
+    --background2: #203a43;
+
+    --box1: #2c5364;
+    --box2: #1f3b4d;
+
+    --button1: #3ba7b8;
+    --button2: #2e8c9c;
+
+    --formfield: #1a2e36;
+    --formfield2: var(--box2);
+
+    --font: lemon;
+} */
+
 :root {
+    --text: #2a2a2a;
+
+    --background1: #ffe5ec;
+    --background2: #ffd6c4;
+
+    --box1: #ffc9d9;
+    --box2: #ffb3c1;
+
+    --button1: #ff8fa3;
+    --button2: #ff758f;
+
+    --formfield: #ffe9ef;
+    --formfield2: #ffeef2;
+
+    --font: lemon;
+}
+
+
+/* :root {
+    --text: #1a1a1a;
+
+    --background1: #dfe9f3;
+    --background2: #ffffff;
+
+    --box1: #c7d7ff;
+    --box2: #9bb8ff;
+
+    --button1: #6f8cff;
+    --button2: #4a6aff;
+
+    --formfield: #eef3ff;
+    --formfield2: var(--box2);
+
+    --font: lemon;
+} */
+/* :root {
+    --text: #2b2b2b;
+    --background1: #fff9e6;
+    --background2: #fff3c9;
+
+    --box1: #ffe8a3;
+    --box2: #ffd77a;
+
+    --button1: #ffcf66;
+    --button2: #e6b45c;
+
+    --formfield: #fff4d4;
+    --formfield2: var(--box2);
+
+    --font: lemon;
+} */
+/* :root {
     --text: #B0AA7E;
     --background1: olive;
     --background2: #4A412A;
@@ -9,9 +97,8 @@
     --formfield: #3D441E;
     --formfield2: var(--box2);
     --font: lemon;
-}
-/*
-:root {
+} */
+/* :root {
     --text: #e2adf2;
     --background1: #574ae2;
     --background2: #222a68;
@@ -22,7 +109,7 @@
     --formfield: #ab81cd;
     --formfield2: var(--box2);
     --font: lemon;
-}*/
+} */
 .discardsjr {
     background:
         repeating-linear-gradient(
@@ -219,7 +306,7 @@ main {
     100% { background-position: 50% 0%; }
 }
 
-.headerdiv button:hover, .gate button:hover, #landing_div button:hover, #registration-form button:hover, #account_form button:hover, #joindiv button:hover {
+.headerdiv button:hover, .gate button:hover, #landing_div button:hover, #registration-form button:hover, #account_form button:hover, #joindiv button:hover, #admin_form button:hover {
     border: none;
     cursor:pointer;
 
@@ -316,6 +403,19 @@ main {
     flex-direction: column;
     justify-items: center;
 }
+#admin_form {
+    display: grid;
+    width: 100%;
+    gap: 3vh;
+    grid-template-columns: 7fr 10fr 7fr;
+    border: none;
+    /*cursor:not-allowed;*/
+    height:100%;
+    background-size: 150% 150%;
+    animation: gradient 8s ease infinite;
+    flex-direction: column;
+    justify-items: center;
+}
 #registration-form {
     margin-left: auto;
     margin-right: auto;
@@ -345,7 +445,7 @@ main {
     border-bottom-left-radius: 1vh;
     border-bottom-right-radius: 1vh;
 }
-#registration-form a, #account_form a {
+#registration-form a, #account_form a, #admin_form a {
   grid-column: 1 / span 2;
 }
 #registration-form input, #registration-form label, #registration-form select, #registration-form input::placeholder {
@@ -354,7 +454,7 @@ main {
     color: var(--text);
     width:80%;
 }
-#account_form input, #account_form label, #account_form select, #account_form input::placeholder {
+#admin_form input, #admin_form label, #admin_form select, #admin_form input::placeholder,#account_form input, #account_form label, #account_form select, #account_form input::placeholder {
     margin: 2vh;
     font-family: var(--font);
     color: var(--text);
