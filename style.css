@@ -238,9 +238,12 @@ body {
 #pfp {  
     border-radius:100%;
     aspect-ratio: 1 / 1;
-    width:100%;
+    width:80%;
 }
 #pfpDiv {
+    position: relative;
+    display: inline-block;
+    width:100%;
     aspect-ratio: 1 / 1;
     padding:10%;
 }
@@ -659,4 +662,20 @@ main {
 
     background-size: 150% 150%;
     animation: gradient 8s ease infinite;
+}
+#credit {
+    display: grid; 
+    width: 100%;
+    justify-items: center;
+}
+#deco {
+    position:absolute;
+    transform: scale(1.1);
+    width:90%;
+      top: -2%;           /* Distance from top of container */
+      left: -3%;          /* Distance from left of container */
+      /* z-index: 2;          Ensure it appears above image1 */
+}
+.creds {
+    width: 25vh;
 }

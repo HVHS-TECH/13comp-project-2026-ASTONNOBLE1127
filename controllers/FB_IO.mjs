@@ -306,6 +306,8 @@ export default class FB_IO {
             if(_user != null) {
                 if (await INSTANCES[FB_IO_INSTANCE].FB_Read(`/users/${_user.uid}/publicFixed/uid`) == _user.uid) {
                     //await console.log('success')
+                    let deco = await INSTANCES[FB_IO_INSTANCE].FB_Read(`/users/${_user.uid}/public/profile decoration`)
+                    document.getElementById('deco').setAttribute('src',`../images/${deco}.png`)
                     INSTANCES[CONTENT_MANAGER_INSTANCE].changePage(Home_page)
                     document.getElementById('pfp').setAttribute('src',_user.photoURL)
                 }
@@ -376,6 +378,7 @@ export default class FB_IO {
     async signOut() {
         await signOut(getAuth())
         INSTANCES[CONTENT_MANAGER_INSTANCE].changePage(Landing_page)
+        document.getElementById('deco').setAttribute('src','')
         document.getElementById('pfp').setAttribute('src','./images/unnamed.png')
     }
 }

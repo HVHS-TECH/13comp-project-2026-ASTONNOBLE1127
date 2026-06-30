@@ -49,13 +49,29 @@ export default class Registration_page extends Page {
     //
     //sets the text on the page and makes the buttons work
     /*****************************************************/
-    displayText() {
+    async displayText() {
+        let countriesRaw = await fetch('../countries_comprehensive.json')
+        let countries = await countriesRaw.json()
+        let regRaw = await fetch('../login_fields.json')
+        let reg = await regRaw.json()
+        reg["field"]["country of birth"] = countries
         document.getElementById('title').textContent = "Registration Page";
         document.getElementById('description').textContent = "Fill the fields below to register"
-        this.createForm({username:'',age:'',gender:{male:'',female:'',audi:''}},{username:'string',age:'number',gender:'dropdown'})
+        this.createForm(reg["field"],reg["type"])
         document.getElementById('registration-form').addEventListener('submit', (_event) => this.attemptRegister(_event));
         document.getElementById('submit').innerHTML = 'submit'
-
+        const addressSearch = new autocomplete.GeocoderAutocomplete(
+        document.getElementById("address-search"),
+            "7add43974cb242659ce2a8bd7c9b709c",
+            {
+                skipIcons: false,
+                allowNonVerifiedStreet: true,
+                allowNonVerifiedHouseNumber: true,
+                skipSelectionOnArrowKey: false
+            }
+        );
+        document.querySelector(".geoapify-autocomplete-input").classList.add('field')
+        document.querySelector(".geoapify-autocomplete-input").setAttribute('id','address')
     }
 
     /*****************************************************/
@@ -72,7 +88,7 @@ export default class Registration_page extends Page {
         const FORMFIELDS = document.querySelectorAll('.field');
         let invalid = false
         FORMFIELDS.forEach(_el => {
-            if (_el.value.replace(/\s+/g, "").length > 0 && (
+            if (_el.validity.patternMismatch != true && (_el.value.replace(/\s+/g, "").length > 0 && _el.value.length < 100) && (
                 !(_el.nodeName == 'SELECT') || (_el.value != '--select--' ))) {
                 if (Number.isNaN(Number(_el.value))) registrationFields[_el.id] = _el.value
                 else registrationFields[_el.id] = Number(_el.value)

@@ -24,3 +24,6 @@ module comments:
 naming conventions:
 FB_<function> = Firebase function
 use camel case
+
+<a href='https://pngtree.com/freepng/logo-frame_7456369.html'>png image from pngtree.com/</a>
+<a href='https://pngtree.com/freepng/metallic-game-avatar-frame-vector-icon_7393473.html'>png image from pngtree.com/</a>

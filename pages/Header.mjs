@@ -14,6 +14,7 @@ import Landing_page from "./Landing_page.mjs"
 import Home_page from "./Home_page.mjs"
 import Leaderboards_page from "./Leaderboards_page.mjs"
 import Account_page from "./Account_page.mjs"
+import Credits_page from "./Credits_page.mjs"
 import {
     INSTANCES,
     CONTENT_MANAGER_INSTANCE,
@@ -35,11 +36,13 @@ export default class Header extends Page {
     /*****************************************************/
     prepareHTML() {
         return this.makeElement('div',{},[
-            this.makeElement('div',{id:'pfpDiv'},[this.makeElement('img',{id:'pfp',src:'./images/unnamed.png'})]),
+            this.makeElement('div',{id:'pfpDiv'},[this.makeElement('img',{id:'pfp',src:'./images/unnamed.png'}),
+                this.makeElement('img',{id:'deco',src:'./images/something.png'})]),
             this.makeElement('div',{id:'homebuttondiv',class:'headerdiv'},[this.makeElement('button',{id:'homebutton'})]),
             this.makeElement('div',{id:'accountbuttondiv',class:'headerdiv'},[this.makeElement('button',{id:'accountbutton'})]),
             this.makeElement('div',{id:'leaderboardsdiv',class:'headerdiv'},[this.makeElement('button',{id:'leaderboards'})]),
             this.makeElement('div',{id:'signoutdiv',class:'headerdiv'},[this.makeElement('button',{id:'signout'})]),
+            this.makeElement('div',{id:'creditsdiv',class:'headerdiv'},[this.makeElement('button',{id:'credits'})]),
             this.makeElement('div',{id:'admindiv',class:'headerdiv'})
         ])
     }
@@ -54,10 +57,12 @@ export default class Header extends Page {
         const ACCOUNT = document.getElementById('accountbutton')
         const SIGNOUT = document.getElementById('signout')
         const LEADERBOARDS = document.getElementById('leaderboards')
+        const CREDITS = document.getElementById('credits')
         HOME.textContent = 'home'
         SIGNOUT.textContent = 'signout'
         LEADERBOARDS.textContent = 'leaderboards'
         ACCOUNT.textContent = 'account'
+        CREDITS.textContent = 'credits'
         HOME.onclick = () => {
             if (INSTANCES[FB_IO_INSTANCE].auth()) {
                 INSTANCES[CONTENT_MANAGER_INSTANCE].changePage(Home_page)
@@ -69,6 +74,7 @@ export default class Header extends Page {
         }
         LEADERBOARDS.onclick = () => INSTANCES[CONTENT_MANAGER_INSTANCE].changePage(Leaderboards_page)
         ACCOUNT.onclick = () => INSTANCES[CONTENT_MANAGER_INSTANCE].changePage(Account_page)
+        CREDITS.onclick = () => INSTANCES[CONTENT_MANAGER_INSTANCE].changePage(Credits_page)
         INSTANCES[FB_IO_INSTANCE].userCheck(this.checkAdmin.bind(this))
     }
     

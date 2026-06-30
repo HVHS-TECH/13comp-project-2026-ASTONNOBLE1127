@@ -1,0 +1,245 @@
+.geoapify-input-wrapper {
+    display: flex;
+    position: relative;
+    /* flex: 0 0 auto; */
+    width:100%;
+    justify-content: center;
+}
+#address-search {
+    width: 100%;
+    justify-items: center;
+}
+.geoapify-geocoder-autocomplete-container {
+    display: grid;
+    flex-direction: column;
+    align-items: stretch;
+    position: relative;
+    pointer-events: all;
+    width: 100%;
+
+}
+
+.geoapify-autocomplete-input {
+    padding: 0 0 0 0;
+    width: 100%;
+    align-self: center;
+    outline: none;
+    margin-left: auto;
+    margin-right: auto;
+
+    line-height: 36px;
+    height: 36px;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+
+    font-size: 14px;
+}
+
+.geoapify-autocomplete-items {
+    width:80%;
+    display: grid;
+    justify-self: center;
+    position: absolute;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-top: none;
+    background-color: #fff;
+    
+    z-index: 99;
+    top: 80%;
+    left: 0;
+    right: 0;
+}
+
+.geoapify-autocomplete-items div {
+    padding: 10px;
+    cursor: pointer;
+}
+
+.geoapify-autocomplete-items div:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.geoapify-autocomplete-items .active {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.geoapify-autocomplete-item {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.geoapify-autocomplete-item .icon {
+    display: inline-block;
+    width: 40px;
+    height: 24px;
+    color: #aaa;
+    flex: 0 0 40px;
+}
+
+.geoapify-autocomplete-item .icon.emoji {
+    color: unset;
+    font-size: 20px;
+    opacity: 0.9;
+}
+
+.geoapify-close-button {
+    position: absolute;
+    right: 5px;
+    top: 0;
+
+    height: 100%;
+    display: none;
+    align-items: center;
+}
+
+.geoapify-close-button.visible {
+    display: flex;
+}
+
+.geoapify-close-button {
+    color: rgba(0, 0, 0, 0.4);
+    cursor: pointer;
+}
+
+.geoapify-close-button:hover {
+    color: rgba(0, 0, 0, 0.6);
+}
+
+.geoapify-autocomplete-items .main-part .non-verified {
+    color:  #ff4848;
+}
+
+.geoapify-autocomplete-items .secondary-part {
+    margin-left: 10px;
+    font-size: small;
+    color: rgba(0, 0, 0, 0.6);
+}
+
+.geoapify-places-list {
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    background-color: #fff;
+    display: none;
+    margin-top: 5px;
+}
+
+.geoapify-places-list.active {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+}
+
+.geoapify-places-title-bar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    background-color: #f8f9fa;
+    font-size: 13px;
+    color: rgba(0, 0, 0, 0.7);
+}
+
+.geoapify-places-title-icon {
+    display: inline-flex;
+    align-items: center;
+    color: rgba(0, 0, 0, 0.5);
+}
+
+.geoapify-places-title-icon svg {
+    height: 14px;
+    width: 14px;
+}
+
+.geoapify-places-title-label {
+    font-weight: 500;
+    margin-left: auto;
+}
+
+.geoapify-places-scroll-container {
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-gutter: stable;
+    max-height: 100%;
+}
+
+.geoapify-places-scroll-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.geoapify-places-scroll-container::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.08);
+    border-radius: 3px;
+}
+
+.geoapify-places-scroll-container::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.35);
+    border-radius: 3px;
+}
+
+.geoapify-places-scroll-container::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.6);
+}
+
+.geoapify-places-item {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    cursor: pointer;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    transition: background-color 0.15s ease;
+    min-width: 0; /* Allow flex item to shrink below content size */
+}
+
+.geoapify-places-item:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.geoapify-places-item.active {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.geoapify-places-item:last-child {
+    border-bottom: none;
+}
+
+.geoapify-places-text-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0; /* Allow text to shrink */
+}
+
+.geoapify-places-main-part {
+    font-size: 16px;
+    font-weight: 500;
+    color: #202124;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.geoapify-places-secondary-part {
+    font-size: 12px;
+    color: rgba(0, 0, 0, 0.6);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.geoapify-places-hours-info {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+    margin-left: auto;
+    font-size: 13px;
+    color: rgba(0, 0, 0, 0.6);
+    max-width: 150px;
+}
+span {
+    color: #aaa;
+}

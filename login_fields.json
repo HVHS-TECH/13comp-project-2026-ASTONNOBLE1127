@@ -1,0 +1,32 @@
+{
+    "field": {
+        "username":"",
+        "age":"",
+        "gender":{
+            "male":"",
+            "female":"",
+            "other":""},
+        "measurement system":{
+            "imperial":"",
+            "metric":"",
+            "customary":""
+        },
+        "country of birth":"countries",
+        "address":"",
+        "profile decoration": {
+            "none":"",
+            "gold":"",
+            "starbucks":"",
+            "gamer":""
+        }
+    },
+    "type": {
+        "username":"string",
+        "age":"number",
+        "gender":"dropdown",
+        "measurement system":"dropdown",
+        "country of birth":"dropdown",
+        "address":"address",
+        "profile decoration":"dropdown"
+    }
+}

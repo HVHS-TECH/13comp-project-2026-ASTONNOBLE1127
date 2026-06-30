@@ -88,7 +88,44 @@ export default class Page {
                     class: 'label'
                 })
             )
-            if (_inputType[_id] != 'dropdown') {
+        if (_inputType[_id] == 'address') {
+            element.push(
+                this.makeElement('div',{
+                    id: 'address-search',
+                    //class: 'field',
+                    lang:'en'
+                })
+                )
+        } else if (_inputType[_id] == 'credit') {
+            element.push(
+                this.makeElement('div',{id:'credit'},[
+                this.makeElement('input',{
+                    id: _id,
+                    class: 'field',
+                    placeholder: '0000-0000-0000-0000',
+                    value: _ID[_id],
+                    type: _inputType[_id],
+                    pattern: '[0-9]{4} [0-9]{4} [0-9]{4} [0-9]{4}'
+                }),
+                this.makeElement('input',{
+                    id: _id,
+                    class: 'field',
+                    placeholder: '000',
+                    value: _ID[_id],
+                    type: _inputType[_id],
+                    pattern:'[0-9]{3}'
+                }),
+                this.makeElement('input',{
+                    id: _id,
+                    class: 'field',
+                    placeholder: '00/00',
+                    value: _ID[_id],
+                    type: _inputType[_id],
+                    pattern:'[0-9]{2}\/[0-9]{2}'
+                })
+                ])
+            )
+        } else if (_inputType[_id] != 'dropdown') {
             element.push(
                 this.makeElement('input',{
                     id: _id,
@@ -112,7 +149,11 @@ export default class Page {
                 },dropdownEls)
             )
         }
-            element.push(this.makeElement('a',{id:`${_id}error`}))
+            if (_inputType[_id] == 'address') {
+                element.push(this.makeElement('a',{id:`addresserror`}))
+            } else {
+                element.push(this.makeElement('a',{id:`${_id}error`}))
+            }
         })
         element.push(
             this.makeElement('button',{
