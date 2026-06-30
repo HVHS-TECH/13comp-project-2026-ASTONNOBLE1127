@@ -92,7 +92,7 @@ export default class Clicker_game_page extends Page {
         document.getElementById('title').innerHTML = 'Welcome to the clicker game'
         document.getElementById('save').innerHTML = 'save'
         const UID = INSTANCES[FB_IO_INSTANCE].getUID()
-        let count = await INSTANCES[FB_IO_INSTANCE].FB_Read(`leaderboards/clicker/${UID}/score`)
+        let count = await INSTANCES[FB_IO_INSTANCE].FB_Read(`leaderboards/clicker/${UID}/wins`)
         if (count != null && count != undefined) this.#count = count
         document.getElementById('count').innerHTML = Math.floor(this.#count)
         document.getElementById('click').onclick = () => this.click()
@@ -124,7 +124,7 @@ export default class Clicker_game_page extends Page {
     /*****************************************************/
     save() {
         const UID = INSTANCES[FB_IO_INSTANCE].getUID()
-        INSTANCES[FB_IO_INSTANCE].FB_Write(`leaderboards/clicker/${UID}`,{score:this.#count})
+        INSTANCES[FB_IO_INSTANCE].FB_Write(`leaderboards/clicker/${UID}`,{wins:this.#count,uid:UID})
     }
 
     makeReadable (_number) {
