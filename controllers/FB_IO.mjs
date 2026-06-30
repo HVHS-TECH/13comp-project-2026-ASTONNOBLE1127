@@ -351,7 +351,7 @@ export default class FB_IO {
     //registers the users details to the firebase
     /*****************************************************/
     FB_Register(_formFields){
-        onAuthStateChanged(getAuth(),_user => {
+        onAuthStateChanged(getAuth(),async _user => {
             let userDetails = {
                 [_user.uid]:{
                     private: {
@@ -367,6 +367,8 @@ export default class FB_IO {
             this.FB_Write("/users/",userDetails);
             INSTANCES[CONTENT_MANAGER_INSTANCE].changePage(Home_page)
             document.getElementById('pfp').setAttribute('src',_user.photoURL)
+            let deco = await INSTANCES[FB_IO_INSTANCE].FB_Read(`/users/${_user.uid}/public/profile decoration`)
+            document.getElementById('deco').setAttribute('src',`./images/${deco}.png`)
         })
     }
 
