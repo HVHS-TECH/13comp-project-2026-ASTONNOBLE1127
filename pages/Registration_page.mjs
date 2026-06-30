@@ -50,9 +50,9 @@ export default class Registration_page extends Page {
     //sets the text on the page and makes the buttons work
     /*****************************************************/
     async displayText() {
-        let countriesRaw = await fetch('../countries_comprehensive.json')
+        let countriesRaw = await fetch('./countries_comprehensive.json')
         let countries = await countriesRaw.json()
-        let regRaw = await fetch('../login_fields.json')
+        let regRaw = await fetch('./login_fields.json')
         let reg = await regRaw.json()
         reg["field"]["country of birth"] = countries
         document.getElementById('title').textContent = "Registration Page";

@@ -60,9 +60,9 @@ export default class Account_page extends Page {
             document.getElementById(`${_private}label`).innerHTML = _private + ': '
             document.getElementById(`${_private}value`).innerHTML = account['private'][_private]
         })
-        let countriesRaw = await fetch('../countries_comprehensive.json')
+        let countriesRaw = await fetch('./countries_comprehensive.json')
         let countries = await countriesRaw.json()
-        let regRaw = await fetch('../login_fields.json')
+        let regRaw = await fetch('./login_fields.json')
         let reg = await regRaw.json()
         reg["field"]["country of birth"] = countries
         console.log(reg["field"],account.public)
