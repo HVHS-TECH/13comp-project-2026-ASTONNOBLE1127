@@ -30,7 +30,7 @@ export default class Account_page extends Page {
     //prepares the HTML for creation
     /*****************************************************/
     prepareHTML() {
-        return this.makeElement('div',{id:'leaderboards_div'},[
+        return this.makeElement('div',{id:'account_div'},[
             this.makeElement('h1',{
                 id: 'title'
             }),
@@ -52,7 +52,6 @@ export default class Account_page extends Page {
         const UID = INSTANCES[FB_IO_INSTANCE].getUID()
         let account = await INSTANCES[FB_IO_INSTANCE].FB_Read(`users/${UID}`)
         console.log(account)
-        let publick = Object.keys(account.public)
         Object.keys(account.private).forEach(_private => {
             document.getElementById('account_form').append(
                 this.makeElement('label',{id:`${_private}label`}),
@@ -61,10 +60,42 @@ export default class Account_page extends Page {
             document.getElementById(`${_private}label`).innerHTML = _private + ': '
             document.getElementById(`${_private}value`).innerHTML = account['private'][_private]
         })
-        let type = {}
-        publick.forEach(_field => type[_field] = 'string')
-        type['age'] = 'number'
-        this.createForm(account.public,type)
+        let countriesRaw = await fetch('../countries_comprehensive.json')
+        let countries = await countriesRaw.json()
+        let regRaw = await fetch('../login_fields.json')
+        let reg = await regRaw.json()
+        reg["field"]["country of birth"] = countries
+        console.log(reg["field"],account.public)
+        let pre = {}
+        Object.keys(reg["type"]).forEach(_obj => {
+            if (reg['type'][_obj] != "dropdown") {
+                if (account.public[_obj] == undefined) reg["field"][_obj] = ''
+                else reg["field"][_obj] = account.public[_obj]
+            } else if (_obj == 'gender') {
+                reg['type'][_obj] = 'string'
+                reg["field"][_obj] = account.public[_obj]
+            }
+        })
+        this.createForm(reg["field"],reg["type"])
+        Object.keys(reg["type"]).forEach(_obj => {
+            if (reg['type'][_obj] == "dropdown") {
+                document.getElementById(_obj).value = account.public[_obj]
+            }
+        })
+        document.getElementById('submit').innerHTML = 'submit'
+        const addressSearch = new autocomplete.GeocoderAutocomplete(
+        document.getElementById("address-search"),
+            "7add43974cb242659ce2a8bd7c9b709c",
+            {
+                skipIcons: false,
+                allowNonVerifiedStreet: true,
+                allowNonVerifiedHouseNumber: true,
+                skipSelectionOnArrowKey: false
+            }
+        );
+        document.querySelector(".geoapify-autocomplete-input").classList.add('field')
+        document.querySelector(".geoapify-autocomplete-input").setAttribute('id','address')
+        document.querySelector(".geoapify-autocomplete-input").value = account.public["address"]
         document.getElementById('title').textContent = "Welcome to the Account Page!";
         document.getElementById('description').textContent = "change the fields below to modify account"
         document.getElementById('submit').innerHTML = 'submit'
@@ -81,13 +112,14 @@ export default class Account_page extends Page {
     /*****************************************************/
     async updateDetails(_event) {
         _event.preventDefault();
-        let registrationFields = {}
+        let accountFields = {}
         const FORMFIELDS = document.querySelectorAll('.field');
         let invalid = false
         FORMFIELDS.forEach(_el => {
-            if (_el.value.replace(/\s+/g, "").length > 0) {
-                if (Number.isNaN(Number(_el.value))) registrationFields[_el.id] = _el.value
-                else registrationFields[_el.id] = Number(_el.value)
+            if (_el.validity.patternMismatch != true && (_el.value.replace(/\s+/g, "").length > 0 && _el.value.length < 100) && (
+                !(_el.nodeName == 'SELECT') || (_el.value != '--select--' ))) {
+                if (Number.isNaN(Number(_el.value))) accountFields[_el.id] = _el.value
+                else accountFields[_el.id] = Number(_el.value)
                 document.getElementById(_el.id + 'error').innerHTML = ''
             } else {
                 invalid = true
@@ -95,9 +127,9 @@ export default class Account_page extends Page {
             }
         })
         if (invalid == true) return
-        if (Object.keys(registrationFields).length == FORMFIELDS.length) {
-            console.log(registrationFields)
-            INSTANCES[FB_IO_INSTANCE].FB_Register(registrationFields)
+        if (Object.keys(accountFields).length == FORMFIELDS.length) {
+            console.log(accountFields)
+            INSTANCES[FB_IO_INSTANCE].FB_Register(accountFields)
         }
     }
 

@@ -84,7 +84,7 @@ export default class Page {
         Object.keys(_ID).forEach(_id => {
             element.push(
                 this.makeElement('label',{
-                    id: _id,
+                    id: _id + 'l',
                     class: 'label'
                 })
             )

@@ -358,7 +358,7 @@ main {
     border-bottom-left-radius: 1vh;
     border-bottom-right-radius: 1vh;
 }
-#landing_div, #infodiv, #joindiv, #leaderboards_div {
+#landing_div, #infodiv, #joindiv, #leaderboards_div, #account_div {
     margin-left: auto;
     margin-right: auto;
     margin-bottom: 2vh;
@@ -388,7 +388,7 @@ main {
     border-bottom-right-radius: 1vh;
     border: none;
 }
-#landing_div h1, #landing_div p, #infodiv h1, #infodiv p, #joindiv a, #leaderboards_div h1, #leaderboards_div p {
+#landing_div h1, #landing_div p, #infodiv h1, #infodiv p, #joindiv a, #leaderboards_div h1, #leaderboards_div p, #account_div h1, #account_div p {
     margin: 5vh;
     color:var(--text);  
     font-family: var(--font);
