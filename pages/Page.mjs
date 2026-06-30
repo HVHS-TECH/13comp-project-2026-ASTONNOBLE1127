@@ -176,9 +176,10 @@ export default class Page {
         _form.forEach(_el =>
         document.querySelector('form').appendChild(_el))
         document.querySelectorAll(".label").forEach(_el => 
-            _el.innerHTML = _el.id + ": ")
+            _el.innerHTML = _el.id.slice(0,_el.id.length-1) + ": ")
         document.querySelectorAll('.option').forEach(_el =>
             _el.innerHTML = _el.id)
+        document.getElementById('age').setAttribute('min',0)
     }
     
     /*****************************************************/
