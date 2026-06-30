@@ -116,7 +116,7 @@ export default class Account_page extends Page {
         const FORMFIELDS = document.querySelectorAll('.field');
         let invalid = false
         FORMFIELDS.forEach(_el => {
-            if (_el.validity.patternMismatch != true && (_el.value.replace(/\s+/g, "").length > 0 && _el.value.length < 100) && (
+            if (_el.validity.patternMismatch != true && (_el.value.replace(/\s+/g, "").length > 0 && _el.value.length <= 100) && (
                 !(_el.nodeName == 'SELECT') || (_el.value != '--select--' ))) {
                 if (Number.isNaN(Number(_el.value))) accountFields[_el.id] = _el.value
                 else accountFields[_el.id] = Number(_el.value)

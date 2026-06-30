@@ -159,7 +159,7 @@ export default class Mahjong_page extends Page {
                             this.makeLeaveButton(`/lobbies/mahjong/${Object.keys(ref.val())[0]}/players/player${i}`)
                             break;
                         } else if (i == 4) {
-                            INSTANCES[FB_IO_INSTANCE].FB_Write(`/lobbies/mahjong/${Object.keys(ref.val())[0]}/`,{open:"false"})
+                            INSTANCES[FB_IO_INSTANCE].FB_Write(`/lobbies/mahjong/${Object.keys(ref.val())[0]}/`,{open:"pending"})
                             this.joinLobby(UID)
                         }
                     } else {
@@ -190,7 +190,7 @@ export default class Mahjong_page extends Page {
             document.getElementById('waitCount').innerHTML = '0 players in current lobby'
         }
         if (INSTANCES[FB_IO_INSTANCE].getUID() == _ref['players'][`player1`]) {
-            if (Object.keys(_ref['players']).length == 4 && _ref['open'] == 'true') {
+            if (Object.keys(_ref['players']).length == 4 && (_ref['open'] == 'true' || _ref['open'] == 'pending')) {
                 INSTANCES[FB_IO_INSTANCE].FB_Write(this.#currentLobby,{open:"false"})
                 this.createGame()
             }
