@@ -73,7 +73,11 @@ export default class Header extends Page {
             document.getElementById('adminbutton')?.remove()
         }
         LEADERBOARDS.onclick = () => INSTANCES[CONTENT_MANAGER_INSTANCE].changePage(Leaderboards_page)
-        ACCOUNT.onclick = () => INSTANCES[CONTENT_MANAGER_INSTANCE].changePage(Account_page)
+        ACCOUNT.onclick = () => {
+            if (INSTANCES[FB_IO_INSTANCE].auth()) {
+                INSTANCES[CONTENT_MANAGER_INSTANCE].changePage(Account_page)
+            } else INSTANCES[CONTENT_MANAGER_INSTANCE].changePage(Landing_page)
+        }
         CREDITS.onclick = () => INSTANCES[CONTENT_MANAGER_INSTANCE].changePage(Credits_page)
         INSTANCES[FB_IO_INSTANCE].userCheck(this.checkAdmin.bind(this))
     }

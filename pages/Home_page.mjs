@@ -15,6 +15,8 @@ import {
     CONTENT_MANAGER_INSTANCE,
     FB_IO_INSTANCE
 } from "../controllers/Instance_vault.mjs"
+import Clicker_instructions_page from "./Clicker_instructions_page.mjs"
+import Mahjong_instructions_page from "./Mahjong_instructions_page.mjs"
 
 export default class Home_page extends Page {
     /*****************************************************/
@@ -27,12 +29,14 @@ export default class Home_page extends Page {
         mahjong:{
             page:Mahjong_page,
             instructions:true,
-            thumbnail:'./images/dragonthumb.png'
+            thumbnail:'./images/dragonthumb.png',
+            instruction:Mahjong_instructions_page
         },
         clicker:{
             page:Clicker_game_page,
             instructions:true,
-            thumbnail:'./images/unnamed.png'
+            thumbnail:'./images/unnamed.png',
+            instruction:Clicker_instructions_page
         }/*,
         mahjong2:{
             page:Home_page,
@@ -108,8 +112,10 @@ export default class Home_page extends Page {
             _el.onclick = () => {
                 INSTANCES[CONTENT_MANAGER_INSTANCE].changePage(Home_page.#GATES[_el.id].page)}
             _el.innerHTML = 'play'})
-        document.querySelectorAll('.instructions').forEach(_el =>
-            _el.innerHTML = 'instructions')
+        document.querySelectorAll('.instructions').forEach(_el =>{
+            _el.onclick = () => {
+                INSTANCES[CONTENT_MANAGER_INSTANCE].changePage(Home_page.#GATES[_el.id.slice(0,-1)].instruction)}
+            _el.innerHTML = 'instructions'})
     }
 
 
