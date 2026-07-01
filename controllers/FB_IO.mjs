@@ -355,7 +355,8 @@ export default class FB_IO {
             let userDetails = {
                 [_user.uid]:{
                     private: {
-                        email: _user.email
+                        email: _user.email,
+                        address: _formFields.address
                     },
                     publicFixed: {
                         PhotoURL: _user.photoURL,
@@ -364,6 +365,7 @@ export default class FB_IO {
                     public: _formFields
                 }
             }
+            delete userDetails[_user.uid].public.address
             this.FB_Write("/users/",userDetails);
             INSTANCES[CONTENT_MANAGER_INSTANCE].changePage(Home_page)
             document.getElementById('pfp').setAttribute('src',_user.photoURL)

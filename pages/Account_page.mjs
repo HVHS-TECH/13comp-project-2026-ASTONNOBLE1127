@@ -53,12 +53,14 @@ export default class Account_page extends Page {
         let account = await INSTANCES[FB_IO_INSTANCE].FB_Read(`users/${UID}`)
         console.log(account)
         Object.keys(account.private).forEach(_private => {
-            document.getElementById('account_form').append(
-                this.makeElement('label',{id:`${_private}label`}),
-                this.makeElement('label',{id:`${_private}value`})
-            )
-            document.getElementById(`${_private}label`).innerHTML = _private + ': '
-            document.getElementById(`${_private}value`).innerHTML = account['private'][_private]
+            //if (_private != 'address') {
+                document.getElementById('account_form').append(
+                    this.makeElement('label',{id:`${_private}label`}),
+                    this.makeElement('label',{id:`${_private}value`})
+                )
+                document.getElementById(`${_private}label`).innerHTML = _private + ': '
+                document.getElementById(`${_private}value`).innerHTML = account['private'][_private]
+            //}
         })
         let countriesRaw = await fetch('./countries_comprehensive.json')
         let countries = await countriesRaw.json()
@@ -95,7 +97,7 @@ export default class Account_page extends Page {
         );
         document.querySelector(".geoapify-autocomplete-input").classList.add('field')
         document.querySelector(".geoapify-autocomplete-input").setAttribute('id','address')
-        document.querySelector(".geoapify-autocomplete-input").value = account.public["address"]
+        document.querySelector(".geoapify-autocomplete-input").value = account.private["address"]
         document.getElementById('title').textContent = "Welcome to the Account Page!";
         document.getElementById('description').textContent = "change the fields below to modify account"
         document.getElementById('submit').innerHTML = 'submit'
