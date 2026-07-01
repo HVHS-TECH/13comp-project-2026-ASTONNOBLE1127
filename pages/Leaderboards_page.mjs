@@ -73,6 +73,14 @@ export default class Leaderboards_page extends Page {
             })
             arr.reverse()
             let sorted = sortedRaw.val()
+                document.getElementById('boarddiv').append(this.makeElement('div',{id:`placmentDiv$`,class:'placementDiv'},[
+                    this.makeElement('a',{id:`placment$`,class:'placement'}),
+                    this.makeElement('a',{id:`placmentName$`,class:'placementName'}),
+                    this.makeElement('a',{id:`placmentScore$`,class:'placementScore'})
+                ]))
+                document.getElementById(`placment$`).innerHTML = 'placement'
+                document.getElementById(`placmentName$`).innerHTML = 'username'
+                document.getElementById(`placmentScore$`).innerHTML = 'score'
             for (let i = 0; i < Object.keys(sorted).length;i++) {
                 document.getElementById('boarddiv').append(this.makeElement('div',{id:`placmentDiv${i}`,class:'placementDiv'},[
                     this.makeElement('a',{id:`placment${i}`,class:'placement'}),
@@ -82,7 +90,7 @@ export default class Leaderboards_page extends Page {
                 document.getElementById(`placment${i}`).innerHTML = (i + 1)+': '
                 let player = await INSTANCES[FB_IO_INSTANCE].FB_Read(`users/${arr[i]['uid']}/public/username`)
                 document.getElementById(`placmentName${i}`).innerHTML = player
-                document.getElementById(`placmentScore${i}`).innerHTML = (arr[i]['wins'])+' wins'
+                document.getElementById(`placmentScore${i}`).innerHTML = Math.floor(arr[i]['wins'])//+' wins'
             }
         })
     }

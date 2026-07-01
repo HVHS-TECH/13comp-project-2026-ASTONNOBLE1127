@@ -33,6 +33,8 @@ export default class Clicker_game_page extends Page {
     #modifier = 1
     //factorys
     #factorys = {}
+    //interval id
+    #intervalid
     
     /*****************************************************/
     //prepareHTML()
@@ -97,17 +99,19 @@ export default class Clicker_game_page extends Page {
         document.getElementById('count').innerHTML = Math.floor(this.#count)
         document.getElementById('click').onclick = () => this.click()
         document.getElementById('save').onclick = () => this.save()
-        const gametick = setInterval(this.tick.bind(this), 100)
+        this.#intervalid = setInterval(this.tick.bind(this), 100)
     }
 
     /*****************************************************/
     //tick()
     /*****************************************************/
     tick() {
-        Object.keys(this.#factorys).forEach(_fact => {
-            this.#count+= this.#factorys[_fact]['production'] * this.#factorys[_fact]['ammount']/10
-        })
-        document.getElementById('count').innerHTML = this.makeReadable(Math.floor(this.#count))
+        if (document.title == Clicker_game_page.#PAGEID) {
+            Object.keys(this.#factorys).forEach(_fact => {
+                this.#count+= this.#factorys[_fact]['production'] * this.#factorys[_fact]['ammount']/10
+            })
+            document.getElementById('count').innerHTML = this.makeReadable(Math.floor(this.#count))
+        } else clearInterval(this.#intervalid)
     }
 
     /*****************************************************/
