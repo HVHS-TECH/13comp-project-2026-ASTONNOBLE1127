@@ -2,7 +2,7 @@
 //Clicker_game_page.mjs
 //written by Aston Noble
 //started 17/06/2026
-//updated 17/06/2026
+//updated 03/07/2026
 //clicker game class, makes the clicker game page
 /*********************************************************/
 
@@ -104,6 +104,8 @@ export default class Clicker_game_page extends Page {
 
     /*****************************************************/
     //tick()
+    //
+    //runs every tick
     /*****************************************************/
     tick() {
         if (document.title == Clicker_game_page.#PAGEID) {
@@ -116,6 +118,8 @@ export default class Clicker_game_page extends Page {
 
     /*****************************************************/
     //click()
+    //
+    //handles clicks
     /*****************************************************/
     click() {
         this.#count+= 1 * this.#modifier
@@ -125,6 +129,8 @@ export default class Clicker_game_page extends Page {
 
     /*****************************************************/
     //save()
+    //
+    //saves your score to the DB
     /*****************************************************/
     save() {
         const UID = INSTANCES[FB_IO_INSTANCE].getUID()
