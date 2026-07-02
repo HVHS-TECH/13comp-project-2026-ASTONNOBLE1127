@@ -99,6 +99,8 @@ export default class Mahjong_page extends Page {
             this.#listenerIsOn = false
             INSTANCES[FB_IO_INSTANCE].FB_Write(this.#currentLobby,{open:"true"})
             document.getElementById('waitCount').innerHTML = '0 players in current lobby'
+            INSTANCES[FB_IO_INSTANCE].FB_Remove(this.#currentLobby)
+            window.location.reload(true);
         }
         if (!isNaN(_ref.slice(-1)) && this.#listenerIsOn == false) {
             this.#listenerIsOn = true
