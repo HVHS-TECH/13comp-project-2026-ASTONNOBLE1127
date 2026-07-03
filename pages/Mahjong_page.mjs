@@ -603,7 +603,7 @@ export default class Mahjong_page extends Page {
       el.remove();
       el2.remove();
       document.querySelectorAll(".tile").forEach((_el) => {
-        _el.setAttribute("disabled", false)
+        _el.removeAttribute("disabled")
       });
     };
     el2.onclick = async () => {
