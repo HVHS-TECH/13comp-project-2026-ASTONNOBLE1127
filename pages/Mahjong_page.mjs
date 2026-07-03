@@ -602,9 +602,9 @@ export default class Mahjong_page extends Page {
     el.onclick = () => {
       el.remove();
       el2.remove();
-      document
-        .querySelectorAll(".tile")
-        .forEach((_el) => _el.setAttribute("disabled", false));
+      document.querySelectorAll(".tile").forEach((_el) => {
+        _el.setAttribute("disabled", false)
+      });
     };
     el2.onclick = async () => {
       el.remove();
