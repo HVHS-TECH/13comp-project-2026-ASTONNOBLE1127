@@ -81,6 +81,7 @@ export default class Mahjong_page extends Page {
   //makes the leave button
   /*****************************************************/
   async makeLeaveButton(_ref) {
+    document.getElementById('join').setAttribute("disabled",true)
     this.#currentLobby = _ref.slice(0, -16);
     document
       .getElementById("joindiv")
@@ -140,6 +141,7 @@ export default class Mahjong_page extends Page {
   //checks if the player is in a lobby
   /*****************************************************/
   async lobbyCheck(_join) {
+    //console.log(this.#callCount,this.#currentLobby,this.#currentPlayer,this.#hasDiscarded,this.#isInLobby,this.#listenerIsOn,this.#playOrder)
     const UID = INSTANCES[FB_IO_INSTANCE].getUID();
     let j = 0;
     let lobby;
